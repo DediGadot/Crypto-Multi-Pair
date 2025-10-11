@@ -15,6 +15,11 @@ common technical analysis approaches for crypto markets.
 4. Bollinger Breakout - Bollinger Bands volatility breakout
 5. Triple EMA - Triple EMA trend filter with reduced lag
 
+**SOTA 2024 Strategies**:
+6. Supertrend ATR - Advanced trend following with ATR-based stops and RSI confirmation
+7. Ichimoku Cloud - Multi-dimensional Japanese indicator system for trend and momentum
+8. VWAP Mean Reversion - Volume-weighted price action with mean reversion around VWAP
+
 **Usage Example**:
 ```python
 from crypto_trader.strategies.library import (
@@ -47,6 +52,9 @@ from crypto_trader.strategies.library.rsi_mean_reversion import RSIMeanReversion
 from crypto_trader.strategies.library.macd_momentum import MACDMomentumStrategy
 from crypto_trader.strategies.library.bollinger_breakout import BollingerBreakoutStrategy
 from crypto_trader.strategies.library.triple_ema import TripleEMAStrategy
+from crypto_trader.strategies.library.supertrend_atr import SupertrendATRStrategy
+from crypto_trader.strategies.library.ichimoku_cloud import IchimokuCloudStrategy
+from crypto_trader.strategies.library.vwap_mean_reversion import VWAPMeanReversionStrategy
 
 __all__ = [
     "SMACrossoverStrategy",
@@ -54,6 +62,9 @@ __all__ = [
     "MACDMomentumStrategy",
     "BollingerBreakoutStrategy",
     "TripleEMAStrategy",
+    "SupertrendATRStrategy",
+    "IchimokuCloudStrategy",
+    "VWAPMeanReversionStrategy",
 ]
 
 # Version information
@@ -85,7 +96,10 @@ if __name__ == "__main__":
             'RSIMeanReversionStrategy',
             'MACDMomentumStrategy',
             'BollingerBreakoutStrategy',
-            'TripleEMAStrategy'
+            'TripleEMAStrategy',
+            'SupertrendATRStrategy',
+            'IchimokuCloudStrategy',
+            'VWAPMeanReversionStrategy'
         }
         actual_exports = set(__all__)
 
@@ -107,7 +121,10 @@ if __name__ == "__main__":
             'RSI_MeanReversion',
             'MACD_Momentum',
             'BollingerBreakout',
-            'TripleEMA'
+            'TripleEMA',
+            'Supertrend_ATR',
+            'Ichimoku_Cloud',
+            'VWAP_MeanReversion'
         }
 
         registered_strategies = set(registry.get_strategy_names())
@@ -133,7 +150,10 @@ if __name__ == "__main__":
             (RSIMeanReversionStrategy, "RSI_MeanReversion"),
             (MACDMomentumStrategy, "MACD_Momentum"),
             (BollingerBreakoutStrategy, "BollingerBreakout"),
-            (TripleEMAStrategy, "TripleEMA")
+            (TripleEMAStrategy, "TripleEMA"),
+            (SupertrendATRStrategy, "Supertrend_ATR"),
+            (IchimokuCloudStrategy, "Ichimoku_Cloud"),
+            (VWAPMeanReversionStrategy, "VWAP_MeanReversion")
         ]
 
         instantiation_failures = []
@@ -167,7 +187,8 @@ if __name__ == "__main__":
         metadata_failures = []
 
         for strategy_name in ['SMA_Crossover', 'RSI_MeanReversion', 'MACD_Momentum',
-                              'BollingerBreakout', 'TripleEMA']:
+                              'BollingerBreakout', 'TripleEMA', 'Supertrend_ATR',
+                              'Ichimoku_Cloud', 'VWAP_MeanReversion']:
             try:
                 info = registry.get_strategy_info(strategy_name)
 
@@ -201,7 +222,10 @@ if __name__ == "__main__":
             'RSI_MeanReversion': ['mean_reversion', 'rsi', 'oscillator'],
             'MACD_Momentum': ['momentum', 'macd', 'crossover'],
             'BollingerBreakout': ['volatility', 'bollinger_bands', 'breakout'],
-            'TripleEMA': ['trend_following', 'ema', 'crossover', 'trend_filter']
+            'TripleEMA': ['trend_following', 'ema', 'crossover', 'trend_filter'],
+            'Supertrend_ATR': ['trend_following', 'supertrend', 'volatility', 'rsi', 'sota_2024'],
+            'Ichimoku_Cloud': ['trend_following', 'ichimoku', 'multi_timeframe', 'sota_2024'],
+            'VWAP_MeanReversion': ['mean_reversion', 'vwap', 'volume', 'rsi', 'sota_2024']
         }
 
         tag_failures = []
@@ -266,7 +290,10 @@ if __name__ == "__main__":
             'RSI_MeanReversion': RSIMeanReversionStrategy,
             'MACD_Momentum': MACDMomentumStrategy,
             'BollingerBreakout': BollingerBreakoutStrategy,
-            'TripleEMA': TripleEMAStrategy
+            'TripleEMA': TripleEMAStrategy,
+            'Supertrend_ATR': SupertrendATRStrategy,
+            'Ichimoku_Cloud': IchimokuCloudStrategy,
+            'VWAP_MeanReversion': VWAPMeanReversionStrategy
         }
 
         for strategy_name, expected_class in strategy_mapping.items():
@@ -312,11 +339,12 @@ if __name__ == "__main__":
         print(f"✅ VALIDATION PASSED - All {total_tests} tests produced expected results")
         print()
         print("Strategy Library Summary:")
-        print(f"  - Total Strategies: 5")
-        print(f"  - Trend Following: 2 (SMA_Crossover, TripleEMA)")
-        print(f"  - Mean Reversion: 1 (RSI_MeanReversion)")
+        print(f"  - Total Strategies: 8")
+        print(f"  - Trend Following: 4 (SMA_Crossover, TripleEMA, Supertrend_ATR, Ichimoku_Cloud)")
+        print(f"  - Mean Reversion: 2 (RSI_MeanReversion, VWAP_MeanReversion)")
         print(f"  - Momentum: 1 (MACD_Momentum)")
         print(f"  - Volatility: 1 (BollingerBreakout)")
+        print(f"  - SOTA 2024: 3 (Supertrend_ATR, Ichimoku_Cloud, VWAP_MeanReversion)")
         print()
         print("All strategies are validated and ready for use!")
         sys.exit(0)
