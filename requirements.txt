@@ -1,0 +1,61 @@
+# Crypto Trader - Requirements
+# Production Dependencies
+
+# Exchange connectivity
+ccxt>=4.0.0
+
+# Data manipulation
+pandas>=2.1.0
+numpy>=1.25.0
+
+# Technical analysis
+pandas-ta>=0.3.14b0
+
+# Backtesting
+vectorbt>=0.26.0
+
+# Database
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.9
+
+# Caching
+redis>=5.0.0
+
+# Web framework
+fastapi>=0.104.0
+uvicorn>=0.24.0
+streamlit>=1.28.0
+
+# CLI
+typer[all]>=0.9.0
+rich>=13.7.0
+
+# Configuration
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+pyyaml>=6.0.0
+python-dotenv>=1.0.0
+
+# Logging
+loguru>=0.7.0
+
+# Visualization
+plotly>=5.17.0
+matplotlib>=3.8.0
+
+# Utilities
+python-dateutil>=2.8.2
+aiohttp>=3.9.0
+
+# ============================================
+# Development Dependencies (Optional)
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+# ============================================
+
+# Uncomment below to install dev dependencies
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.1.0
+# black>=23.7.0
+# ruff>=0.1.0
+# mypy>=1.6.0

@@ -1,0 +1,51 @@
+# Example Strategy Configuration File
+# This file demonstrates how to configure trading strategies for the crypto trading system
+
+strategies:
+  # Moving Average Crossover Strategy with default settings
+  - name: "MA_Cross_10_20"
+    class: "MovingAverageCrossover"
+    enabled: true
+    description: "Fast MA crossover strategy with 10/20 periods"
+    tags: ["momentum", "short_term"]
+    parameters:
+      fast_period: 10
+      slow_period: 20
+      signal_threshold: 0.75
+      ma_type: "SMA"
+
+  # Moving Average Crossover Strategy with longer periods
+  - name: "MA_Cross_50_200"
+    class: "MovingAverageCrossover"
+    enabled: true
+    description: "Golden cross strategy with 50/200 periods"
+    tags: ["momentum", "long_term"]
+    parameters:
+      fast_period: 50
+      slow_period: 200
+      signal_threshold: 0.8
+      ma_type: "SMA"
+
+  # EMA-based strategy
+  - name: "EMA_Cross_12_26"
+    class: "MovingAverageCrossover"
+    enabled: true
+    description: "EMA crossover similar to MACD signal line"
+    tags: ["momentum", "ema"]
+    parameters:
+      fast_period: 12
+      slow_period: 26
+      signal_threshold: 0.7
+      ma_type: "EMA"
+
+  # Disabled strategy (not loaded by default)
+  - name: "MA_Cross_Experimental"
+    class: "MovingAverageCrossover"
+    enabled: false
+    description: "Experimental settings for testing"
+    tags: ["experimental"]
+    parameters:
+      fast_period: 5
+      slow_period: 15
+      signal_threshold: 0.6
+      ma_type: "SMA"
