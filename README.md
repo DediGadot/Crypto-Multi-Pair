@@ -1,27 +1,27 @@
-# Crypto Trader - Modular Algorithmic Trading System
+# Crypto Trading Pipeline
 
-A comprehensive, modular cryptocurrency trading and analysis platform built for backtesting, strategy development, and systematic trading.
+A comprehensive cryptocurrency backtesting framework with multiple trading strategies and portfolio rebalancing capabilities. Test your strategies against historical data before risking real capital.
 
-[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## 🌟 Features
 
-## Features
+- **5 Battle-Tested Trading Strategies**: SMA Crossover, RSI Mean Reversion, MACD Momentum, Bollinger Breakout, Triple EMA
+- **Portfolio Rebalancing**: Multi-asset portfolio management with threshold, calendar, and hybrid rebalancing methods
+- **Enhanced Reporting**: Deep-dive analysis with trade-by-trade breakdowns and actionable recommendations
+- **Comprehensive Metrics**: Total return, Sharpe ratio, max drawdown, win rate, profit factor, and more
+- **Historical Data**: Fetches real data from Binance with smart caching
+- **Flexible Timeframes**: 1m, 5m, 15m, 1h, 4h, 1d
+- **Visual Reports**: HTML charts and detailed CSV exports
 
-- **Modular Architecture**: Clean separation of concerns across 7 layers (UI, Orchestration, Strategy, Backtesting, Analysis, Data, Storage)
-- **5 Starter Strategies**: SMA Crossover, RSI Mean Reversion, MACD Momentum, Bollinger Breakout, Triple EMA
-- **Plugin System**: Easy strategy registration with decorators
-- **Comprehensive Backtesting**: VectorBT-powered vectorized backtesting engine
-- **20+ Performance Metrics**: Sharpe, Sortino, Calmar, Max DD, Win Rate, Profit Factor, and more
-- **Risk Management**: Position sizing (Fixed Fraction, Kelly, Volatility-based, Risk Parity), risk limits, drawdown tracking
-- **Data Integration**: Binance integration via CCXT, CSV storage, caching layer
-- **Interactive Dashboard**: Streamlit-based web interface for strategy comparison
-- **CLI Tools**: Typer-based command-line interface
-- **Comprehensive Analysis**: Strategy comparison, correlation analysis, statistical significance testing
-- **Rich Reporting**: HTML reports, JSON/CSV exports, interactive Plotly charts
+---
 
-## Quick Start
+## 📦 Installation
 
-### Installation
+### Prerequisites
+
+- **Python 3.10+**
+- **uv** (Python package manager)
+
+### Quick Install
 
 ```bash
 # Clone the repository
@@ -31,337 +31,673 @@ cd crypto
 # Install dependencies using uv
 uv sync
 
-# Activate virtual environment
-source venv/bin/activate  # On Linux/Mac
-# or
-venv\Scripts\activate     # On Windows
+# Or install manually
+pip install -r requirements.txt
 ```
 
-### Quick Analysis - Full Pipeline Runner
-
-The fastest way to analyze any trading pair is using the full pipeline runner:
-
-```bash
-# Run complete analysis with one command (all 5 strategies, full reports)
-uv run python run_full_pipeline.py BTC/USDT
-
-# This automatically:
-# 1. Fetches 1 year of hourly data from Binance
-# 2. Runs all 5 strategies with optimized parameters
-# 3. Generates HTML reports, comparison charts, and CSV exports
-# 4. Creates a summary report with best performers
-# Results saved to: results/ directory
-```
-
-**Customize the analysis:**
-```bash
-# Different timeframe and period
-uv run python run_full_pipeline.py ETH/USDT --timeframe 4h --days 180
-
-# Higher capital
-uv run python run_full_pipeline.py BTC/USDT --capital 100000
-
-# Save to custom directory
-uv run python run_full_pipeline.py SOL/USDT --output-dir sol_analysis
-```
-
-See [PIPELINE_GUIDE.md](PIPELINE_GUIDE.md) for complete documentation.
-
-### Running Individual Backtests (CLI)
-
-For more control, use the CLI commands:
-
-```bash
-# Fetch BTC/USDT data
-uv run crypto-trader data fetch BTC/USDT --timeframe 1h --days 30
-
-# Run a backtest
-uv run crypto-trader backtest run SMA_Crossover BTC/USDT 1h \
-  --fast-period 10 --slow-period 20 --capital 10000
-
-# Compare multiple strategies
-uv run crypto-trader backtest compare BTC/USDT 1h \
-  --strategies SMA_Crossover RSI_MeanReversion MACD_Momentum \
-  --capital 10000
-```
-
-### Launching the Dashboard
-
-```bash
-# Start the Streamlit dashboard
-streamlit run src/crypto_trader/web/app.py
-```
-
-Navigate to `http://localhost:8501` to access the interactive dashboard.
-
-## Project Structure
-
-```
-crypto/
-├── data/                      # OHLCV data storage (CSV files)
-│   └── ohlcv/
-│       ├── BTC_USDT/
-│       └── ETH_USDT/
-├── docs/                      # Documentation
-├── src/
-│   └── crypto_trader/
-│       ├── core/              # Core types, config, exceptions
-│       ├── data/              # Data fetchers, storage, cache
-│       ├── strategies/        # Strategy framework & library
-│       │   ├── base.py        # BaseStrategy abstract class
-│       │   ├── registry.py    # Strategy registry (singleton)
-│       │   └── library/       # 5 pre-built strategies
-│       ├── backtesting/       # Backtesting engine (VectorBT)
-│       ├── analysis/          # Metrics, comparison, reporting
-│       ├── risk/              # Position sizing, limits, manager
-│       ├── cli/               # CLI commands (Typer)
-│       └── web/               # Streamlit dashboard
-├── tests/                     # Test suite
-│   └── test_end_to_end.py    # Comprehensive integration test
-├── run_full_pipeline.py       # 🚀 Full pipeline runner script
-├── PIPELINE_GUIDE.md          # Pipeline runner documentation
-├── requirements.txt           # pip dependencies
-├── requirements-dev.txt       # Development dependencies
-├── pyproject.toml             # Project configuration
-└── README.md
-```
-
-## Available Strategies
-
-### 1. SMA Crossover
-Classic moving average crossover (Golden/Death Cross)
-- **Tags**: `trend_following`, `moving_average`, `crossover`
-- **Parameters**: `fast_period` (default: 50), `slow_period` (default: 200)
-- **Signals**: BUY on golden cross, SELL on death cross
-
-### 2. RSI Mean Reversion
-RSI-based oversold/overbought strategy
-- **Tags**: `mean_reversion`, `rsi`, `oscillator`
-- **Parameters**: `rsi_period` (14), `oversold` (30), `overbought` (70)
-- **Signals**: BUY when RSI < oversold, SELL when RSI > overbought
-
-### 3. MACD Momentum
-MACD signal line crossover
-- **Tags**: `momentum`, `macd`, `crossover`
-- **Parameters**: `fast_period` (12), `slow_period` (26), `signal_period` (9)
-- **Signals**: BUY on bullish crossover, SELL on bearish crossover
-
-### 4. Bollinger Breakout
-Bollinger Bands volatility breakout
-- **Tags**: `volatility`, `bollinger_bands`, `breakout`
-- **Parameters**: `period` (20), `std_dev` (2.0)
-- **Signals**: BUY on upper band breakout, SELL on lower band breakout
-
-### 5. Triple EMA
-Triple EMA trend filter with reduced lag
-- **Tags**: `trend_following`, `ema`, `crossover`, `trend_filter`
-- **Parameters**: `fast_period` (8), `medium_period` (21), `slow_period` (55)
-- **Signals**: BUY when all EMAs align bullish, SELL when bearish
-
-## Creating Custom Strategies
-
-```python
-from crypto_trader.strategies import register_strategy, BaseStrategy, SignalType
-
-@register_strategy(
-    name="MyStrategy",
-    description="Custom strategy description",
-    tags=["custom", "tag"]
-)
-class MyStrategy(BaseStrategy):
-    """Custom strategy implementation."""
-
-    def __init__(self):
-        super().__init__(name="MyStrategy")
-
-    def initialize(self, config: dict) -> None:
-        """Initialize strategy parameters."""
-        self.param1 = config.get("param1", 10)
-        self.param2 = config.get("param2", 20)
-
-    def generate_signals(self, data):
-        """Generate trading signals."""
-        signals = data.copy()
-        signals['signal'] = SignalType.HOLD.value
-
-        # Your strategy logic here
-        # Set signals['signal'] to 'BUY', 'SELL', or 'HOLD'
-
-        return signals
-```
-
-## CLI Commands
-
-### Data Management
-```bash
-# Fetch data
-crypto-trader data fetch SYMBOL --timeframe TIMEFRAME --days DAYS
-
-# Update existing data
-crypto-trader data update SYMBOL TIMEFRAME
-
-# List available data
-crypto-trader data list
-
-# Validate data integrity
-crypto-trader data validate SYMBOL TIMEFRAME
-```
-
-### Strategy Management
-```bash
-# List all strategies
-crypto-trader strategy list
-
-# Filter by tags
-crypto-trader strategy list --tags trend_following
-
-# Get strategy info
-crypto-trader strategy info SMA_Crossover
-
-# Test strategy on data
-crypto-trader strategy test SMA_Crossover BTC/USDT 1h
-```
-
-### Backtesting
-```bash
-# Run single strategy
-crypto-trader backtest run STRATEGY SYMBOL TIMEFRAME [OPTIONS]
-
-# Compare multiple strategies
-crypto-trader backtest compare SYMBOL TIMEFRAME \
-  --strategies STRATEGY1 STRATEGY2 [OPTIONS]
-
-# Optimize parameters
-crypto-trader backtest optimize STRATEGY SYMBOL TIMEFRAME [OPTIONS]
-
-# Generate HTML report
-crypto-trader backtest report RESULT_FILE --output report.html
-```
-
-## Configuration
-
-### Risk Management
-Configure risk parameters in your backtest:
-
-```python
-from crypto_trader.core.config import RiskConfig
-
-risk_config = RiskConfig(
-    max_position_risk=0.02,        # 2% max risk per position
-    max_portfolio_risk=0.10,       # 10% max total portfolio risk
-    max_daily_loss=0.05,           # 5% max daily loss
-    max_drawdown=0.15,             # 15% max drawdown
-    position_sizing_method="fixed_percent",  # or kelly, volatility, risk_parity
-)
-```
-
-### Backtesting Parameters
-```python
-from crypto_trader.core.config import BacktestConfig
-
-backtest_config = BacktestConfig(
-    initial_capital=10000.0,
-    commission=0.001,              # 0.1% commission
-    slippage=0.0005,               # 0.05% slippage
-)
-```
-
-## Performance Metrics
-
-The system calculates 20+ performance metrics:
-
-- **Returns**: Total Return, Annual Return, Monthly Return
-- **Risk-Adjusted**: Sharpe Ratio, Sortino Ratio, Calmar Ratio
-- **Risk Metrics**: Max Drawdown, Volatility, Downside Deviation
-- **Trade Statistics**: Win Rate, Profit Factor, Total Trades, Avg Win/Loss
-- **Quality Metrics**: Risk-Adjusted Quality Score
-
-## Data Sources
-
-- **Exchange**: Binance (via CCXT)
-- **Supported Symbols**: All Binance spot pairs
-- **Timeframes**: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
-- **Storage**: CSV files in `data/ohlcv/{symbol}/{timeframe}.csv`
-- **Caching**: In-memory LRU cache with TTL (1700x faster than API)
-
-## Testing
-
-### Run End-to-End Test
-```bash
-uv run python tests/test_end_to_end.py
-```
-
-This comprehensive test validates:
-1. Configuration system
-2. Data layer (fetching, storage, caching)
-3. Strategy framework
-4. Backtesting engine
-5. Analysis and comparison
-6. Risk management
-7. Report generation
-
-### Validation Tests
-All modules include validation functions:
-```bash
-# Validate individual modules
-uv run python src/crypto_trader/data/storage.py
-uv run python src/crypto_trader/strategies/library/__init__.py
-uv run python src/crypto_trader/analysis/metrics.py
-```
-
-## Architecture
-
-The system follows a 7-layer architecture:
-
-1. **UI Layer**: Streamlit dashboard, CLI commands
-2. **Orchestration Layer**: Workflow coordination
-3. **Strategy Layer**: Strategy framework, registry, library
-4. **Backtesting Layer**: VectorBT integration, portfolio simulation
-5. **Analysis Layer**: Metrics calculation, comparison, reporting
-6. **Data Layer**: CCXT integration, caching
-7. **Storage Layer**: CSV storage, data validation
-
-## Dependencies
-
-Key dependencies:
-- **Python**: 3.12+
-- **Data**: `ccxt`, `pandas`, `numpy`
-- **Analysis**: `pandas-ta` (150+ indicators), `vectorbt`
-- **Backtesting**: `vectorbt`
-- **Web**: `streamlit`, `fastapi`
-- **CLI**: `typer`, `rich`
-- **Visualization**: `plotly`, `matplotlib`
-- **Validation**: `pydantic`
-- **Logging**: `loguru`
-
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all validation tests pass
-5. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details
-
-## Acknowledgments
-
-- Built with [VectorBT](https://vectorbt.dev/) for high-performance backtesting
-- Exchange data via [CCXT](https://github.com/ccxt/ccxt)
-- Technical indicators from [pandas-ta](https://github.com/twopirllc/pandas-ta)
-- Dashboard powered by [Streamlit](https://streamlit.io/)
-
-## Support
-
-For issues, questions, or contributions:
-- Open an issue on GitHub
-- Check the documentation in `docs/`
-- Run validation tests to verify your setup
+### Dependencies
+
+The project uses:
+- `ccxt` - Cryptocurrency exchange integration
+- `pandas` - Data manipulation
+- `numpy` - Numerical computing
+- `ta` - Technical analysis indicators
+- `plotly` - Interactive charts
+- `pyyaml` - Configuration files
+- `loguru` - Beautiful logging
 
 ---
 
-**Disclaimer**: This software is for educational and research purposes only. Cryptocurrency trading carries significant risk. Always do your own research and never invest more than you can afford to lose.
+## 🚀 Quick Start
+
+### Single-Pair Mode (Test Multiple Strategies)
+
+Run all 5 strategies on a single trading pair:
+
+```bash
+# Basic usage - BTC/USDT for 1 year
+uv run python run_full_pipeline.py BTC/USDT
+
+# Custom timeframe and period
+uv run python run_full_pipeline.py ETH/USDT --timeframe 4h --days 180
+
+# With enhanced report
+uv run python run_full_pipeline.py BTC/USDT --days 90 --report
+```
+
+### Portfolio Mode (Multi-Asset Rebalancing)
+
+Test portfolio rebalancing strategies:
+
+```bash
+# 1-year portfolio test
+uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml
+
+# 8+ years with enhanced report
+uv run python run_full_pipeline.py --portfolio --config config_improved_10pct.yaml --report
+```
+
+---
+
+## 📊 Trading Strategies Explained
+
+### 1. SMA Crossover (Simple Moving Average)
+
+**Type**: Trend Following
+
+**How It Works**:
+- Uses two moving averages: Fast (50-period) and Slow (200-period)
+- **Buy Signal**: When fast MA crosses above slow MA (Golden Cross)
+- **Sell Signal**: When fast MA crosses below slow MA (Death Cross)
+
+**Best Used When**:
+- Markets are trending (up or down)
+- Clear directional moves
+- Avoid in sideways/choppy markets
+
+**Parameters**:
+```python
+fast_period: 50   # Short-term trend
+slow_period: 200  # Long-term trend
+```
+
+**Pros**:
+- Simple and reliable
+- Catches major trends
+- Easy to understand
+
+**Cons**:
+- Lags at trend reversals
+- Many false signals in sideways markets
+- Late entries/exits
+
+**Real-World Example**:
+If BTC 50-day MA crosses above 200-day MA, it signals potential bull market (Golden Cross). This happened in April 2019 and led to a 300% rally.
+
+---
+
+### 2. RSI Mean Reversion
+
+**Type**: Mean Reversion / Counter-Trend
+
+**How It Works**:
+- Uses Relative Strength Index (RSI) to identify overbought/oversold conditions
+- RSI ranges from 0 to 100
+- **Buy Signal**: RSI < 30 (oversold - price likely to bounce)
+- **Sell Signal**: RSI > 70 (overbought - price likely to correct)
+
+**Best Used When**:
+- Range-bound markets
+- Clear support/resistance levels
+- High volatility with frequent reversals
+
+**Parameters**:
+```python
+rsi_period: 14   # Lookback period for RSI calculation
+oversold: 30     # Buy threshold
+overbought: 70   # Sell threshold
+```
+
+**Pros**:
+- Catches reversals early
+- Works well in ranging markets
+- High win rate potential
+
+**Cons**:
+- Fails in strong trends
+- Can stay overbought/oversold for long periods
+- Requires good timing
+
+**Real-World Example**:
+During BTC consolidation in mid-2023 between $25k-$31k, RSI mean reversion captured multiple 10-20% bounces when RSI hit oversold levels.
+
+---
+
+### 3. MACD Momentum
+
+**Type**: Momentum / Trend Following
+
+**How It Works**:
+- MACD = Fast EMA (12) - Slow EMA (26)
+- Signal Line = 9-period EMA of MACD
+- Histogram = MACD - Signal Line
+- **Buy Signal**: MACD crosses above signal line (bullish momentum)
+- **Sell Signal**: MACD crosses below signal line (bearish momentum)
+
+**Best Used When**:
+- Catching medium to long-term trends
+- Confirming trend strength
+- Identifying momentum shifts
+
+**Parameters**:
+```python
+fast_period: 12    # Fast EMA for MACD
+slow_period: 26    # Slow EMA for MACD
+signal_period: 9   # Signal line smoothing
+```
+
+**Pros**:
+- Combines trend and momentum
+- Histogram shows strength
+- Widely used and reliable
+
+**Cons**:
+- Lags at reversals
+- Can whipsaw in consolidation
+- Multiple components to interpret
+
+**Real-World Example**:
+ETH's MACD showed bullish crossover in October 2023 at $1,550, signaling the start of a rally to $4,000+ by March 2024.
+
+---
+
+### 4. Bollinger Breakout
+
+**Type**: Volatility Breakout
+
+**How It Works**:
+- Three bands: Middle (20-period MA), Upper (+2 std dev), Lower (-2 std dev)
+- Bands expand in high volatility, contract in low volatility
+- **Buy Signal**: Price breaks above upper band (continuation signal)
+- **Sell Signal**: Price breaks below lower band or returns to middle band
+
+**Best Used When**:
+- Volatile markets
+- Breakouts from consolidation
+- Trending markets
+
+**Parameters**:
+```python
+period: 20       # Moving average period
+std_dev: 2.0     # Standard deviations for bands
+```
+
+**Pros**:
+- Adapts to volatility
+- Identifies breakouts early
+- Visual and intuitive
+
+**Cons**:
+- False breakouts common
+- Can be whipsawed
+- Requires confirmation
+
+**Real-World Example**:
+BTC squeezed in Bollinger Bands at $28k in September 2023 (low volatility), then broke out above upper band leading to rally to $44k.
+
+---
+
+### 5. Triple EMA
+
+**Type**: Advanced Trend Following
+
+**How It Works**:
+- Uses three Exponential Moving Averages: Fast (8), Medium (21), Slow (55)
+- **Buy Signal**: All three EMAs aligned bullishly (fast > medium > slow)
+- **Sell Signal**: Alignment breaks or reverses
+
+**Best Used When**:
+- Strong trending markets
+- Need high-probability signals
+- Avoiding false signals
+
+**Parameters**:
+```python
+fast_period: 8     # Very short-term
+medium_period: 21  # Short-term
+slow_period: 55    # Medium-term
+```
+
+**Pros**:
+- High probability signals
+- Strong trend confirmation
+- Fewer false signals than simple crossovers
+
+**Cons**:
+- Fewer trade opportunities
+- Late entries in fast moves
+- Requires patience
+
+**Real-World Example**:
+During BTC's 2024 bull run, Triple EMA alignment from January through March provided clear long signals with minimal whipsaws.
+
+---
+
+## 🎯 Portfolio Rebalancing Explained
+
+Portfolio rebalancing is a systematic approach to maintaining target allocations across multiple assets. It forces you to "buy low, sell high" by automatically rebalancing when assets drift from their targets.
+
+### How It Works
+
+1. **Set Target Allocations**: e.g., 40% BTC, 30% ETH, 15% SOL, 15% BNB
+2. **Monitor Deviations**: Assets grow/shrink at different rates
+3. **Trigger Rebalance**: When deviation exceeds threshold (e.g., 10%)
+4. **Execute Trades**: Sell overweight assets, buy underweight assets
+5. **Repeat**: Continue monitoring
+
+### Rebalancing Methods
+
+#### 1. Threshold-Based
+- Triggers when any asset deviates > threshold from target
+- **Lower threshold** (5%): More frequent rebalancing, captures mean reversion
+- **Higher threshold** (15%): Less frequent, follows trends more
+
+#### 2. Calendar-Based
+- Rebalances on fixed schedule (monthly, quarterly)
+- Predictable and systematic
+- Ignores market conditions
+
+#### 3. Hybrid (Recommended)
+- Combines threshold AND calendar
+- Rebalances when either condition is met
+- Best of both worlds
+
+### Why It Works
+
+**Example**: Portfolio starts 40% BTC, 30% ETH
+- BTC rallies 100% → Now 57% of portfolio
+- ETH rallies 20% → Now 22% of portfolio
+- **Rebalance**: Sell some BTC (at high price), buy more ETH (at lower price)
+- If ETH then catches up, you profit from both
+
+**Historical Performance**:
+- Our 10% threshold strategy: **+601.79%** outperformance vs buy-and-hold over 8 years
+- Adds value through systematic mean reversion
+
+---
+
+## 📈 Understanding Metrics
+
+### Total Return
+**What**: Percentage gain/loss on initial capital
+**Good**: >0% (profitable)
+**Excellent**: >100% annual
+**Example**: $10,000 → $15,000 = 50% return
+
+### Sharpe Ratio
+**What**: Risk-adjusted return (return per unit of risk)
+**Good**: >1.0
+**Excellent**: >2.0
+**Formula**: (Return - Risk-Free Rate) / Standard Deviation
+**Example**: 2.5 Sharpe means excellent risk-adjusted returns
+
+### Max Drawdown
+**What**: Largest peak-to-trough decline
+**Good**: <20%
+**Acceptable**: <30%
+**Example**: Portfolio drops from $20k to $15k = 25% drawdown
+
+### Win Rate
+**What**: Percentage of profitable trades
+**Good**: >50%
+**Excellent**: >60%
+**Example**: 7 wins out of 10 trades = 70% win rate
+
+### Profit Factor
+**What**: Gross profit ÷ Gross loss
+**Good**: >1.0 (profitable)
+**Excellent**: >2.0
+**Example**: $10k profit, $5k loss = 2.0 profit factor
+
+### Average Win/Loss
+**What**: Average profit per winning trade / Average loss per losing trade
+**Good**: >1.0 (wins larger than losses)
+**Excellent**: >2.0
+**Example**: Avg win $500, avg loss $200 = 2.5 ratio
+
+---
+
+## ⚙️ Configuration
+
+### Single-Pair Options
+
+```bash
+--symbol SYMBOL           Trading pair (e.g., BTC/USDT)
+--timeframe TIMEFRAME     Candle timeframe: 1m, 5m, 15m, 1h, 4h, 1d
+--days DAYS               Days of historical data (default: 365)
+--capital CAPITAL         Initial capital (default: 10000)
+--commission RATE         Trading fee (default: 0.001 = 0.1%)
+--slippage RATE          Slippage rate (default: 0.0005 = 0.05%)
+--output-dir DIR         Output directory (default: results)
+--report                 Generate enhanced report
+```
+
+### Portfolio Configuration (YAML)
+
+```yaml
+run:
+  name: "portfolio_10pct_threshold"
+  description: "Optimized portfolio with 10% threshold"
+  mode: "portfolio"
+
+data:
+  timeframe: "1h"
+  days: 365
+
+portfolio:
+  assets:
+    - symbol: "BTC/USDT"
+      weight: 0.40
+    - symbol: "ETH/USDT"
+      weight: 0.30
+    - symbol: "SOL/USDT"
+      weight: 0.15
+    - symbol: "BNB/USDT"
+      weight: 0.15
+
+  rebalancing:
+    enabled: true
+    threshold: 0.10                      # 10% deviation threshold
+    rebalance_method: "threshold"        # "threshold", "calendar", or "hybrid"
+    min_rebalance_interval_hours: 24     # Minimum hours between rebalances
+    calendar_period_days: 30             # For calendar/hybrid methods
+    use_momentum_filter: false           # Skip rebalancing in strong trends
+    momentum_lookback_days: 30           # Lookback for momentum filter
+
+capital:
+  initial_capital: 10000.0
+
+costs:
+  commission: 0.001   # 0.1%
+  slippage: 0.0005    # 0.05%
+
+output:
+  directory: "results_10pct"
+  save_trades: true
+  save_equity_curve: true
+```
+
+---
+
+## 📁 Output Files
+
+### Single-Pair Mode
+
+```
+results/
+├── SUMMARY.txt                          # Overview of all strategies
+├── ENHANCED_REPORT.txt                  # Detailed analysis (with --report)
+├── data/
+│   ├── BTC_USDT_1h.csv                 # Raw price data
+│   ├── strategy_comparison.csv          # Comparison table
+│   ├── {Strategy}_result.json          # Full results per strategy
+│   ├── {Strategy}_trades.csv           # All trades per strategy
+│   └── ...
+└── reports/
+    ├── {Strategy}_report.html          # Visual reports
+    ├── comparison_total_return.html    # Performance charts
+    └── ...
+```
+
+### Portfolio Mode
+
+```
+results_10pct/
+├── PORTFOLIO_SUMMARY.txt               # Basic summary
+├── ENHANCED_PORTFOLIO_REPORT.txt       # Detailed analysis (with --report)
+└── data/
+    ├── portfolio_equity_curve.csv      # Portfolio value over time
+    ├── buy_hold_benchmark.csv          # Benchmark comparison
+    └── rebalance_events.csv            # All rebalancing events
+```
+
+---
+
+## 🔍 Enhanced Reports
+
+### Single-Pair Enhanced Report
+
+When you use `--report` with single-pair mode, you get:
+
+1. **Financial Metrics Explained**: One-liner definitions
+2. **Strategy Comparison Table**: All strategies vs buy-and-hold
+3. **Detailed Performance Metrics**: Profit factor, win/loss ratio
+4. **Deep Dive**: Best strategy with trade-by-trade analysis
+   - Top 5 winning trades
+   - Top 5 losing trades
+   - Trade statistics
+   - Strategy-specific insights
+   - Risk analysis
+5. **Recommendations**: Actionable advice for improvement
+
+### Portfolio Enhanced Report
+
+When you use `--report` with portfolio mode, you get:
+
+1. **Portfolio Metrics Explained**: Clear terminology
+2. **Performance Summary**: Rebalanced vs buy-and-hold comparison
+3. **Individual Asset Performance**: Each asset's contribution
+4. **Detailed Rebalancing Events**: Every rebalance with BUY/SELL actions
+5. **Strategy Analysis**: How your method works
+6. **Recommendations**: Threshold adjustments, frequency analysis, risk insights
+
+---
+
+## 💡 Usage Examples
+
+### Basic Single-Pair Backtest
+
+```bash
+# Test all 5 strategies on BTC for 1 year
+uv run python run_full_pipeline.py BTC/USDT
+
+# View results
+cat results/SUMMARY.txt
+```
+
+### Custom Timeframe and Period
+
+```bash
+# 4-hour candles, 6 months of data
+uv run python run_full_pipeline.py ETH/USDT --timeframe 4h --days 180
+
+# Daily candles, 2 years
+uv run python run_full_pipeline.py SOL/USDT --timeframe 1d --days 730
+```
+
+### With Enhanced Report
+
+```bash
+# Get deep-dive analysis
+uv run python run_full_pipeline.py BTC/USDT --days 90 --report
+
+# View enhanced report
+cat results/ENHANCED_REPORT.txt
+```
+
+### Portfolio Rebalancing
+
+```bash
+# Quick test (1 year)
+uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml
+
+# Full backtest (8+ years) with enhanced report
+uv run python run_full_pipeline.py --portfolio --config config_improved_10pct.yaml --report
+
+# View results
+cat results_10pct/ENHANCED_PORTFOLIO_REPORT.txt
+```
+
+### Custom Configuration
+
+Create your own config file:
+
+```bash
+# Copy and modify
+cp config_improved_10pct.yaml my_portfolio.yaml
+nano my_portfolio.yaml
+
+# Run your custom portfolio
+uv run python run_full_pipeline.py --portfolio --config my_portfolio.yaml --report
+```
+
+---
+
+## 🎓 Strategy Selection Guide
+
+### Which Strategy Should I Use?
+
+| Market Condition | Best Strategy | Why |
+|-----------------|---------------|-----|
+| **Strong Uptrend** | SMA Crossover, Triple EMA | Catch and ride the trend |
+| **Strong Downtrend** | SMA Crossover, MACD | Exit early, avoid losses |
+| **Sideways/Range** | RSI Mean Reversion | Profit from oscillations |
+| **High Volatility** | Bollinger Breakout | Catch explosive moves |
+| **Low Volatility** | Wait or use RSI | Avoid false signals |
+| **Bull Market** | Triple EMA | Strong trend confirmation |
+| **Bear Market** | MACD, SMA | Early exit signals |
+
+### Portfolio vs Single Strategy?
+
+**Use Portfolio Rebalancing When**:
+- You want diversification
+- You believe in mean reversion
+- You can't predict which asset will win
+- You want lower volatility
+- Long-term investing (1+ years)
+
+**Use Single-Pair Strategies When**:
+- You want to focus on one asset
+- You have strong conviction
+- Higher risk tolerance
+- Active trading approach
+- Short to medium-term (weeks to months)
+
+---
+
+## 📚 Terminology Glossary
+
+### Technical Terms
+
+- **Candlestick**: Price bar showing Open, High, Low, Close for a time period
+- **Moving Average (MA)**: Average price over N periods (smooths out noise)
+- **Exponential Moving Average (EMA)**: MA that gives more weight to recent prices
+- **Crossover**: When one indicator crosses above/below another (signal)
+- **RSI (Relative Strength Index)**: Momentum oscillator (0-100 scale)
+- **MACD**: Moving Average Convergence Divergence (trend + momentum)
+- **Bollinger Bands**: Volatility bands around price
+- **Standard Deviation**: Measure of volatility/dispersion
+- **Timeframe**: Duration of each candle (1h, 4h, 1d, etc.)
+
+### Trading Terms
+
+- **Long**: Buying an asset (betting price goes up)
+- **Short**: Selling an asset (betting price goes down - not implemented)
+- **Entry**: Opening a trade (buying)
+- **Exit**: Closing a trade (selling)
+- **Position**: An open trade
+- **Stop Loss**: Automatic exit at predefined loss level
+- **Take Profit**: Automatic exit at predefined profit level
+- **Slippage**: Difference between expected and actual execution price
+- **Commission**: Trading fee charged by exchange
+
+### Performance Terms
+
+- **Equity Curve**: Graph of portfolio value over time
+- **Drawdown**: Decline from peak to trough
+- **Recovery**: Time to regain previous peak after drawdown
+- **Risk-Adjusted Return**: Return relative to risk taken
+- **Volatility**: How much prices fluctuate
+- **Correlation**: How assets move together
+- **Alpha**: Excess return vs benchmark
+- **Beta**: Volatility relative to market
+
+---
+
+## ⚠️ Important Notes
+
+### Backtesting Limitations
+
+1. **Past performance ≠ Future results**: Historical data doesn't guarantee future success
+2. **Overfitting Risk**: Don't over-optimize on historical data
+3. **Market Changes**: Strategies work differently in different market regimes
+4. **No Emotions**: Real trading involves fear and greed (backtests don't)
+5. **Perfect Execution**: Backtests assume perfect fills (reality differs)
+
+### Best Practices
+
+- **Test Multiple Timeframes**: What works on 1h may fail on 4h
+- **Out-of-Sample Testing**: Save recent data for validation
+- **Consider Transaction Costs**: Commissions and slippage matter
+- **Risk Management**: Never risk more than you can afford to lose
+- **Diversify**: Don't put all capital in one strategy
+- **Paper Trade First**: Test with fake money before using real capital
+- **Stay Informed**: Markets evolve, strategies must adapt
+
+---
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+crypto/
+├── src/crypto_trader/
+│   ├── strategies/          # Strategy implementations
+│   ├── backtesting/         # Backtest engine
+│   ├── data/                # Data fetching and storage
+│   ├── analysis/            # Performance analysis
+│   └── risk/                # Risk management
+├── tests/                   # Unit and integration tests
+├── config*.yaml             # Portfolio configurations
+└── run_full_pipeline.py     # Main entry point
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test file
+uv run pytest tests/test_portfolio_rebalancer.py
+
+# Run with coverage
+uv run pytest --cov=crypto_trader
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+[Specify your license here]
+
+---
+
+## 📞 Support
+
+For questions or issues:
+- Open an issue on GitHub
+- Check existing documentation
+- Review example configurations
+
+---
+
+## 🎯 Next Steps
+
+1. **Install the dependencies**: `uv sync`
+2. **Run a quick test**: `uv run python run_full_pipeline.py BTC/USDT --days 30`
+3. **Review the results**: `cat results/SUMMARY.txt`
+4. **Generate enhanced report**: Add `--report` flag
+5. **Try portfolio mode**: `uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml --report`
+6. **Customize your strategy**: Modify configs or parameters
+7. **Backtest longer periods**: Use `--days 365` or more
+8. **Paper trade**: Test in real-time with fake money first
+
+---
+
+**Happy Trading! 📈🚀**
+
+Remember: Always backtest thoroughly and practice risk management. The best strategy is one that you understand and can stick with through market ups and downs.
