@@ -319,16 +319,29 @@ class OHLCVCache:
         Returns:
             Number of cache entries invalidated
         """
-        # This is a simplified implementation
-        # A production version might track keys more efficiently
-        stats_before = self._cache.get_stats()
+        # Remove expired entries first so stats remain accurate
         self._cache.cleanup_expired()
-        stats_after = self._cache.get_stats()
 
-        # For now, just clear everything (simplified)
-        # In production, you'd iterate through keys and delete matching ones
-        logger.info(f"Invalidated cache for {symbol}")
-        return stats_before['size'] - stats_after['size']
+        if timeframe:
+            prefix = f"{symbol}:{timeframe}:"
+        else:
+            prefix = f"{symbol}:"
+
+        removed = 0
+        with self._cache._lock:
+            keys_to_delete = [key for key in list(self._cache._cache.keys()) if key.startswith(prefix)]
+            for key in keys_to_delete:
+                del self._cache._cache[key]
+                if key in self._cache._expiry:
+                    del self._cache._expiry[key]
+                removed += 1
+
+        if removed:
+            logger.info(f"Invalidated {removed} cache entr{'y' if removed == 1 else 'ies'} for {symbol}{'' if not timeframe else f' {timeframe}'}")
+        else:
+            logger.debug(f"No cache entries found for {symbol}{'' if not timeframe else f' {timeframe}'}")
+
+        return removed
 
     def get_stats(self) -> dict:
         """Get cache statistics."""

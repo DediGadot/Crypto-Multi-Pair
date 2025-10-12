@@ -4,7 +4,7 @@ PORTFOLIO REBALANCING - SUMMARY REPORT
 
 Run Name: portfolio_10pct_threshold_1year
 Description: Optimized portfolio with 10% threshold - 1 year test
-Generated: 2025-10-12 12:33:46
+Generated: 2025-10-12 12:56:48
 
 ======================================================================
 PORTFOLIO CONFIGURATION

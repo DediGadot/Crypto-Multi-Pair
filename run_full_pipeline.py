@@ -120,8 +120,8 @@ class FullPipelineRunner:
         self.storage = OHLCVStorage()
         self.backtest_config = BacktestConfig(
             initial_capital=initial_capital,
-            commission=commission,
-            slippage=slippage,
+            trading_fee_percent=commission,
+            slippage_percent=slippage,
         )
         self.risk_config = RiskConfig(
             max_position_risk=max_position_risk,

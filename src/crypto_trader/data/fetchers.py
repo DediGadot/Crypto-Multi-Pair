@@ -515,7 +515,12 @@ class BinanceDataFetcher(DataProvider):
             if needed > 1000:
                 new_df = self._fetch_paginated(symbol, timeframe, needed, datetime.fromtimestamp(end_ms/1000))
             else:
-                ohlcv_data = self._fetch_with_retry(symbol, timeframe, since=None, limit=needed)
+                # Request candles ending just before the earliest stored one
+                timeframe_duration_ms = self._get_timeframe_duration_ms(timeframe)
+                lookback_ms = timeframe_duration_ms * (needed + 1)
+                since_ms = max(0, end_ms - lookback_ms)
+
+                ohlcv_data = self._fetch_with_retry(symbol, timeframe, since=since_ms, limit=needed)
                 new_df = self._convert_to_dataframe(ohlcv_data)
                 new_df = new_df[new_df.index < oldest_stored]
 

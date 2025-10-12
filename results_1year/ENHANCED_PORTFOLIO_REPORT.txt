@@ -7,7 +7,7 @@ Description: Optimized portfolio with 10% threshold - 1 year test
 Initial Capital: $10,000.00
 Period: 2024-10-12 07:00:00 to 2025-10-11 13:00:00
 Duration: 364 days
-Generated: 2025-10-12 12:33:46
+Generated: 2025-10-12 12:56:48
 
 ====================================================================================================
 PORTFOLIO METRICS EXPLAINED

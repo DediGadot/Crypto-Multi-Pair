@@ -6,11 +6,250 @@ A comprehensive cryptocurrency backtesting framework with multiple trading strat
 
 - **5 Battle-Tested Trading Strategies**: SMA Crossover, RSI Mean Reversion, MACD Momentum, Bollinger Breakout, Triple EMA
 - **Portfolio Rebalancing**: Multi-asset portfolio management with threshold, calendar, and hybrid rebalancing methods
+- **🚀 Portfolio Optimization**: Walk-forward parameter optimization with 2-15x speedup using parallel processing
 - **Enhanced Reporting**: Deep-dive analysis with trade-by-trade breakdowns and actionable recommendations
 - **Comprehensive Metrics**: Total return, Sharpe ratio, max drawdown, win rate, profit factor, and more
 - **Historical Data**: Fetches real data from Binance with smart caching
 - **Flexible Timeframes**: 1m, 5m, 15m, 1h, 4h, 1d
 - **Visual Reports**: HTML charts and detailed CSV exports
+- **Research-Grade Analysis**: Walk-forward validation, out-of-sample testing, statistical significance
+
+---
+
+## 🏗️ System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          CRYPTO TRADING PIPELINE                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  DATA LAYER                                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────┐      ┌─────────────────┐      ┌──────────────────┐      │
+│  │  Binance API │─────▶│ Data Fetchers   │─────▶│   Cache Layer    │      │
+│  │  (ccxt)      │      │ - Smart caching │      │ - TTLCache       │      │
+│  └──────────────┘      │ - Rate limiting │      │ - In-memory      │      │
+│                        │ - Pagination    │      └──────────────────┘      │
+│                        └─────────────────┘                │                │
+│                               │                            │                │
+│                               ▼                            ▼                │
+│                        ┌─────────────────┐      ┌──────────────────┐      │
+│                        │ OHLCV Storage   │◀─────│ Historical Data  │      │
+│                        │ - CSV files     │      │ - Multiple pairs │      │
+│                        │ - Versioned     │      │ - All timeframes │      │
+│                        └─────────────────┘      └──────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STRATEGY LAYER                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  SINGLE-PAIR STRATEGIES                                             │    │
+│  ├────────────────────────────────────────────────────────────────────┤    │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐     │    │
+│  │  │ SMA Crossover│  │ RSI Mean Rev │  │ MACD Momentum        │     │    │
+│  │  └──────────────┘  └──────────────┘  └──────────────────────┘     │    │
+│  │  ┌──────────────┐  ┌──────────────┐                               │    │
+│  │  │ Bollinger    │  │ Triple EMA   │                               │    │
+│  │  │ Breakout     │  │              │                               │    │
+│  │  └──────────────┘  └──────────────┘                               │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  PORTFOLIO STRATEGIES                                               │    │
+│  ├────────────────────────────────────────────────────────────────────┤    │
+│  │  ┌──────────────────────────────────────────────────────────────┐  │    │
+│  │  │  Portfolio Rebalancer                                         │  │    │
+│  │  │  - Multi-asset allocation                                     │  │    │
+│  │  │  - Threshold-based rebalancing                                │  │    │
+│  │  │  - Calendar-based rebalancing                                 │  │    │
+│  │  │  - Hybrid rebalancing                                         │  │    │
+│  │  │  - Momentum filter (optional)                                 │  │    │
+│  │  └──────────────────────────────────────────────────────────────┘  │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  BACKTESTING ENGINE                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Core Backtesting Logic                                           │      │
+│  │  - Event-driven simulation                                        │      │
+│  │  - Order execution with slippage                                  │      │
+│  │  - Commission calculation                                         │      │
+│  │  - Position sizing                                                │      │
+│  │  - Risk management                                                │      │
+│  │  - Trade history tracking                                         │      │
+│  │  - Equity curve generation                                        │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                    ┌──────────────────┴──────────────────┐
+                    ▼                                      ▼
+┌──────────────────────────────────┐    ┌──────────────────────────────────┐
+│  SINGLE-PAIR BACKTEST            │    │  PORTFOLIO BACKTEST              │
+├──────────────────────────────────┤    ├──────────────────────────────────┤
+│  - Test one pair                 │    │  - Test multiple assets          │
+│  - Multiple strategies           │    │  - Dynamic rebalancing           │
+│  - Strategy comparison           │    │  - Buy-and-hold benchmark        │
+│  - Best strategy selection       │    │  - Rebalance event tracking      │
+└──────────────────────────────────┘    └──────────────────────────────────┘
+                    │                                      │
+                    └──────────────────┬──────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  OPTIMIZATION LAYER (Portfolio Only)                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Walk-Forward Analysis                                            │      │
+│  │  ┌────────────────────────────────────────────────────────────┐  │      │
+│  │  │ Split 1: Train(W1) → Test(W2)  [Unseen data]              │  │      │
+│  │  │ Split 2: Train(W1+W2) → Test(W3)                           │  │      │
+│  │  │ Split 3: Train(W1+W2+W3) → Test(W4)                        │  │      │
+│  │  └────────────────────────────────────────────────────────────┘  │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│  ┌──────────────────────────┐         ┌──────────────────────────┐         │
+│  │  SERIAL OPTIMIZER        │         │  PARALLEL OPTIMIZER      │         │
+│  ├──────────────────────────┤         ├──────────────────────────┤         │
+│  │  - Sequential testing    │         │  - Multi-core processing │         │
+│  │  - Baseline reference    │         │  - 2-15x speedup         │         │
+│  │  - 1x speed             │         │  - Worker pool           │         │
+│  └──────────────────────────┘         │  - Progress tracking     │         │
+│                                        │  - Config-level parallel │         │
+│                                        └──────────────────────────┘         │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Parameter Grid Search                                            │      │
+│  │  - Asset combinations (2-5 assets)                                │      │
+│  │  - Weight allocations (various schemes)                           │      │
+│  │  - Rebalancing thresholds (5%-20%)                                │      │
+│  │  - Rebalancing methods (threshold/calendar/hybrid)                │      │
+│  │  - Minimum intervals (12-72 hours)                                │      │
+│  │  - Calendar periods (7-90 days)                                   │      │
+│  │  - Momentum filter (on/off)                                       │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ANALYSIS & METRICS                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Performance Metrics                                              │      │
+│  │  - Total Return                  - Sharpe Ratio                   │      │
+│  │  - Max Drawdown                  - Win Rate                       │      │
+│  │  - Profit Factor                 - Avg Win/Loss Ratio             │      │
+│  │  - Trade Count                   - Volatility                     │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Optimization Metrics (Portfolio)                                 │      │
+│  │  - Test Outperformance (primary)   - Test Win Rate               │      │
+│  │  - Generalization Gap               - Robustness Score            │      │
+│  │  - Test Consistency (std dev)       - Statistical Significance    │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  Risk Analysis                                                     │      │
+│  │  - Drawdown periods              - Recovery time                  │      │
+│  │  - Risk-adjusted returns         - Downside volatility            │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  REPORTING & OUTPUT                                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  SINGLE-PAIR REPORTS                                              │      │
+│  │  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────┐ │      │
+│  │  │ SUMMARY.txt      │  │ ENHANCED_REPORT  │  │ strategy_*.csv │ │      │
+│  │  │ - All strategies │  │ - Deep analysis  │  │ - Trade data   │ │      │
+│  │  │ - Comparison     │  │ - Top trades     │  │ - Metrics      │ │      │
+│  │  └──────────────────┘  └──────────────────┘  └────────────────┘ │      │
+│  │  ┌──────────────────┐  ┌──────────────────┐                      │      │
+│  │  │ HTML Reports     │  │ Equity Curves    │                      │      │
+│  │  │ - Interactive    │  │ - CSV exports    │                      │      │
+│  │  └──────────────────┘  └──────────────────┘                      │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  PORTFOLIO REPORTS                                                │      │
+│  │  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────┐ │      │
+│  │  │ PORTFOLIO_       │  │ ENHANCED_        │  │ portfolio_     │ │      │
+│  │  │ SUMMARY.txt      │  │ PORTFOLIO_REPORT │  │ equity.csv     │ │      │
+│  │  │ - Quick overview │  │ - Full analysis  │  │ - Time series  │ │      │
+│  │  └──────────────────┘  └──────────────────┘  └────────────────┘ │      │
+│  │  ┌──────────────────┐  ┌──────────────────┐                      │      │
+│  │  │ rebalance_       │  │ buy_hold_        │                      │      │
+│  │  │ events.csv       │  │ benchmark.csv    │                      │      │
+│  │  └──────────────────┘  └──────────────────┘                      │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  OPTIMIZATION REPORTS                                             │      │
+│  │  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────┐ │      │
+│  │  │ optimized_       │  │ OPTIMIZATION_    │  │ optimization_  │ │      │
+│  │  │ config.yaml      │  │ REPORT.txt       │  │ results.csv    │ │      │
+│  │  │ - Best config    │  │ - TL;DR summary  │  │ - All configs  │ │      │
+│  │  │ - Ready to use   │  │ - Top 5 configs  │  │ - Full data    │ │      │
+│  │  │                  │  │ - Robustness     │  │                │ │      │
+│  │  └──────────────────┘  └──────────────────┘  └────────────────┘ │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  EXECUTION PATHS                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Path 1: Single-Pair Backtest                                               │
+│  ────────────────────────────────────────────────────────────────────────   │
+│  run_full_pipeline.py BTC/USDT --days 365 --report                          │
+│                                                                              │
+│  Data Layer → Strategy Layer → Backtest Engine → Analysis → Reports         │
+│  (5 strategies tested in parallel, best strategy identified)                │
+│                                                                              │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│                                                                              │
+│  Path 2: Portfolio Backtest                                                 │
+│  ────────────────────────────────────────────────────────────────────────   │
+│  run_full_pipeline.py --portfolio --config config.yaml --report             │
+│                                                                              │
+│  Data Layer → Portfolio Strategy → Backtest Engine → Analysis → Reports     │
+│  (Multi-asset with rebalancing vs buy-and-hold benchmark)                   │
+│                                                                              │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│                                                                              │
+│  Path 3: Portfolio Optimization                                             │
+│  ────────────────────────────────────────────────────────────────────────   │
+│  optimize_portfolio_parallel.py --quick                                     │
+│                                                                              │
+│  Data Layer → Walk-Forward Splits → Parallel Optimizer →                    │
+│  Grid Search → Analysis → Optimized Config + Report                         │
+│  (Tests 100s-1000s of configs, finds best out-of-sample performer)          │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+KEY FEATURES:
+├─ Smart Caching: Minimize API calls with TTL cache + persistent storage
+├─ Rate Limiting: Respect exchange limits (1200 req/min)
+├─ Multiple Strategies: 5 battle-tested single-pair + portfolio rebalancing
+├─ Walk-Forward: Out-of-sample testing prevents overfitting
+├─ Parallel Processing: 2-15x speedup using all CPU cores
+├─ Progress Tracking: Real-time progress bars during optimization
+├─ Enhanced Reports: Deep analysis with actionable recommendations
+└─ Research-Grade: Statistical significance, robustness testing, confidence scores
+```
 
 ---
 
@@ -76,6 +315,45 @@ uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml
 # 8+ years with enhanced report
 uv run python run_full_pipeline.py --portfolio --config config_improved_10pct.yaml --report
 ```
+
+### Portfolio Optimization (Find Best Config)
+
+Automatically find optimal portfolio parameters:
+
+```bash
+# Quick test (3-5 minutes)
+uv run python optimize_portfolio_parallel.py --quick
+
+# Full optimization (scales with CPU cores)
+uv run python optimize_portfolio_parallel.py --workers auto
+
+# Verify parallelization works (1 second proof)
+uv run python test_parallel_proof.py
+```
+
+---
+
+## ⚡ Quick Reference
+
+### Most Common Commands
+
+```bash
+# Single-pair backtest
+uv run python run_full_pipeline.py BTC/USDT --days 90 --report
+
+# Portfolio backtest
+uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml --report
+
+# Portfolio optimization (recommended)
+uv run python optimize_portfolio_parallel.py --quick
+```
+
+### Performance Tip
+
+**Use parallel optimization for 2-15x speedup**:
+- 4-core system: ~2x faster
+- 8-core system: ~5x faster
+- 16-core system: ~10x faster
 
 ---
 
@@ -306,6 +584,108 @@ Portfolio rebalancing is a systematic approach to maintaining target allocations
 
 ---
 
+## 🚀 Portfolio Optimization (NEW!)
+
+Find the best portfolio configuration automatically using research-grade optimization with walk-forward analysis.
+
+### What It Optimizes
+
+**1. Asset Selection** - Which cryptocurrencies to include
+**2. Weight Allocation** - How to distribute capital across assets
+**3. Rebalancing Parameters** - When and how to rebalance
+
+### Quick Start
+
+```bash
+# Fast test (3-5 minutes, reduced parameter grid)
+uv run python optimize_portfolio_parallel.py --quick
+
+# Full optimization (varies by system)
+uv run python optimize_portfolio_parallel.py --workers auto
+
+# Custom parameters
+uv run python optimize_portfolio_parallel.py \
+  --window-days 365 \
+  --test-windows 5 \
+  --workers 8
+```
+
+### Performance
+
+**Parallel Processing** for **2-15x speedup**:
+
+| System | Workers | Speedup | Time for 10K Configs |
+|--------|---------|---------|---------------------|
+| 4-core | 3 | 2.1x | ~8 minutes |
+| 8-core | 7 | 4.9x | ~3 minutes |
+| 16-core | 15 | **10.6x** | **~1.6 minutes** |
+
+### What You Get
+
+1. **optimized_config.yaml** - Best configuration, ready to use
+2. **OPTIMIZATION_REPORT.txt** - Research-grade analysis with:
+   - **TL;DR section**: Executive summary and recommendations
+   - **Top 5 configurations**: Ranked by out-of-sample performance
+   - **Parameter sensitivity**: Which parameters matter most
+   - **Statistical testing**: Significance analysis
+   - **Robustness assessment**: How confident you can be
+3. **optimization_results.csv** - All tested configurations for analysis
+
+### Walk-Forward Validation
+
+**Prevents overfitting** by testing on unseen data:
+
+```
+Timeline: |--Window 1--|--Window 2--|--Window 3--|--Window 4--|
+
+Split 1: Train(W1) → Test(W2)  ← Tests on unseen future data
+Split 2: Train(W1+W2) → Test(W3)
+Split 3: Train(W1+W2+W3) → Test(W4)
+```
+
+**Key Principle**: You NEVER train on data you're testing on. This simulates real forward testing.
+
+### Key Metrics
+
+- **Test Outperformance**: How much strategy beats buy-and-hold in unseen data (primary metric)
+- **Test Win Rate**: % of test periods where strategy won (aim for >60%)
+- **Generalization Gap**: Difference between train and test performance (lower is better, <5% is excellent)
+- **Robustness**: Based on consistency across different time periods
+
+### Example Results
+
+```
+🎯 RECOMMENDED CONFIGURATION:
+   Assets: BTC/USDT + ETH/USDT + SOL/USDT + BNB/USDT
+   Allocation: 40% + 30% + 15% + 15%
+   Rebalance: Threshold method, 10% threshold
+
+📈 EXPECTED PERFORMANCE (Out-of-Sample):
+   Outperforms Buy-and-Hold by: 8.11% per year
+   Win Rate: 80% (won in 4/5 test periods)
+   Risk-Adjusted (Sharpe): 2.15
+
+🔬 ROBUSTNESS ASSESSMENT:
+   Status: ✅ HIGHLY ROBUST - Consistent out-of-sample performance
+```
+
+### Documentation
+
+- **[docs/OPTIMIZATION_GUIDE.md](docs/OPTIMIZATION_GUIDE.md)** - Complete usage guide
+- **[docs/PARALLELIZATION_EVIDENCE.md](docs/PARALLELIZATION_EVIDENCE.md)** - Performance proof and benchmarks
+
+### Verify Performance
+
+```bash
+# Prove parallel speedup (takes ~1 second)
+uv run python test_parallel_proof.py
+
+# Benchmark serial vs parallel (optional)
+uv run python benchmark_parallel.py --quick
+```
+
+---
+
 ## 📈 Understanding Metrics
 
 ### Total Return
@@ -531,6 +911,29 @@ nano my_portfolio.yaml
 uv run python run_full_pipeline.py --portfolio --config my_portfolio.yaml --report
 ```
 
+### Portfolio Optimization
+
+```bash
+# Quick optimization test (3-5 minutes)
+uv run python optimize_portfolio_parallel.py --quick
+
+# Full optimization with custom parameters
+uv run python optimize_portfolio_parallel.py \
+  --window-days 365 \
+  --test-windows 5 \
+  --timeframe 1h \
+  --workers auto
+
+# Use optimized config
+uv run python run_full_pipeline.py \
+  --portfolio \
+  --config optimization_results/optimized_config.yaml \
+  --report
+
+# Verify optimization performance
+uv run python test_parallel_proof.py
+```
+
 ---
 
 ## 🎓 Strategy Selection Guide
@@ -687,6 +1090,8 @@ For questions or issues:
 
 ## 🎯 Next Steps
 
+### Beginner Path
+
 1. **Install the dependencies**: `uv sync`
 2. **Run a quick test**: `uv run python run_full_pipeline.py BTC/USDT --days 30`
 3. **Review the results**: `cat results/SUMMARY.txt`
@@ -696,8 +1101,38 @@ For questions or issues:
 7. **Backtest longer periods**: Use `--days 365` or more
 8. **Paper trade**: Test in real-time with fake money first
 
+### Advanced Path (Optimization)
+
+1. **Verify parallel works**: `uv run python test_parallel_proof.py` (~1 second)
+2. **Quick optimization**: `uv run python optimize_portfolio_parallel.py --quick` (~3-5 min)
+3. **Review TL;DR**: `cat optimization_results/OPTIMIZATION_REPORT.txt | head -60`
+4. **Validate config**: `uv run python run_full_pipeline.py --portfolio --config optimization_results/optimized_config.yaml --report`
+5. **Full optimization**: Run without `--quick` flag for comprehensive search
+6. **Compare results**: Check if backtest matches optimization expectations
+7. **Deploy carefully**: Start with small position sizes
+8. **Monitor performance**: Track actual vs expected results
+
+### Learning Path
+
+- Read **[docs/OPTIMIZATION_GUIDE.md](docs/OPTIMIZATION_GUIDE.md)** for walk-forward analysis theory
+- Review **[docs/PARALLELIZATION_EVIDENCE.md](docs/PARALLELIZATION_EVIDENCE.md)** for performance details
+- Study **[docs/HOW_TO_RUN_PORTFOLIO_STRATEGY.md](docs/HOW_TO_RUN_PORTFOLIO_STRATEGY.md)** for portfolio basics
+- Check **[docs/PORTFOLIO_REBALANCING_ANALYSIS.md](docs/PORTFOLIO_REBALANCING_ANALYSIS.md)** for deep dive
+
+---
+
+## 📚 Additional Documentation
+
+- **[docs/OPTIMIZATION_GUIDE.md](docs/OPTIMIZATION_GUIDE.md)** - Complete portfolio optimization guide
+- **[docs/PARALLELIZATION_EVIDENCE.md](docs/PARALLELIZATION_EVIDENCE.md)** - Performance benchmarks and proof
+- **[docs/HOW_TO_RUN_PORTFOLIO_STRATEGY.md](docs/HOW_TO_RUN_PORTFOLIO_STRATEGY.md)** - Portfolio strategy basics
+- **[docs/PORTFOLIO_REBALANCING_ANALYSIS.md](docs/PORTFOLIO_REBALANCING_ANALYSIS.md)** - Rebalancing theory
+- **[PARALLELIZATION_COMPLETE.md](PARALLELIZATION_COMPLETE.md)** - Parallel implementation summary
+
 ---
 
 **Happy Trading! 📈🚀**
 
 Remember: Always backtest thoroughly and practice risk management. The best strategy is one that you understand and can stick with through market ups and downs.
+
+**New in 2025**: Portfolio optimization with walk-forward validation and parallel processing brings research-grade analysis to your backtesting workflow. Test robustly, deploy confidently.
