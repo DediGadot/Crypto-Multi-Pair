@@ -1,0 +1,43 @@
+run:
+  name: "portfolio_10pct_threshold_1year"
+  description: "Optimized portfolio with 10% threshold - 1 year test"
+  mode: "portfolio"
+
+data:
+  timeframe: "1h"
+  days: 365  # 1 year
+
+portfolio:
+  assets:
+    - symbol: "BTC/USDT"
+      weight: 0.40
+    - symbol: "ETH/USDT"
+      weight: 0.30
+    - symbol: "SOL/USDT"
+      weight: 0.15
+    - symbol: "BNB/USDT"
+      weight: 0.15
+
+  rebalancing:
+    enabled: true
+    threshold: 0.10  # 10% threshold
+    rebalance_method: "threshold"
+    min_rebalance_interval_hours: 24
+    use_momentum_filter: false
+    momentum_lookback_days: 30
+
+capital:
+  initial_capital: 10000.0
+
+costs:
+  commission: 0.001
+  slippage: 0.0005
+
+output:
+  directory: "results_1year"
+  save_trades: true
+  save_equity_curve: true
+
+logging:
+  level: "INFO"
+  save_to_file: true

@@ -55,6 +55,7 @@ from crypto_trader.strategies.library.triple_ema import TripleEMAStrategy
 from crypto_trader.strategies.library.supertrend_atr import SupertrendATRStrategy
 from crypto_trader.strategies.library.ichimoku_cloud import IchimokuCloudStrategy
 from crypto_trader.strategies.library.vwap_mean_reversion import VWAPMeanReversionStrategy
+from crypto_trader.strategies.library.portfolio_rebalancer import PortfolioRebalancerStrategy
 
 __all__ = [
     "SMACrossoverStrategy",
@@ -65,6 +66,7 @@ __all__ = [
     "SupertrendATRStrategy",
     "IchimokuCloudStrategy",
     "VWAPMeanReversionStrategy",
+    "PortfolioRebalancerStrategy",
 ]
 
 # Version information

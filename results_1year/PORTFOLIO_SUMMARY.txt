@@ -1,0 +1,49 @@
+======================================================================
+PORTFOLIO REBALANCING - SUMMARY REPORT
+======================================================================
+
+Run Name: portfolio_10pct_threshold_1year
+Description: Optimized portfolio with 10% threshold - 1 year test
+Generated: 2025-10-12 12:33:46
+
+======================================================================
+PORTFOLIO CONFIGURATION
+======================================================================
+
+Assets:
+  BTC/USDT: 40.0%
+  ETH/USDT: 30.0%
+  SOL/USDT: 15.0%
+  BNB/USDT: 15.0%
+
+Rebalancing:
+  Method: threshold
+  Threshold: 10.0%
+  Min Interval: 24 hours
+
+======================================================================
+PERFORMANCE COMPARISON
+======================================================================
+
+Initial Capital: $10,000.00
+
+REBALANCED PORTFOLIO:
+  Final Value: $17,493.14
+  Total Return: 74.93%
+  Rebalance Events: 2
+
+BUY & HOLD (No Rebalancing):
+  Final Value: $16,682.09
+  Total Return: 66.82%
+
+RESULT: Portfolio OUTPERFORMED by 8.11%
+Status: ✅ SUCCESS - Rebalancing added value
+
+======================================================================
+OUTPUT FILES
+======================================================================
+
+Data Directory: results_1year/data
+  - portfolio_equity_curve.csv
+  - buy_hold_benchmark.csv
+  - rebalance_events.csv

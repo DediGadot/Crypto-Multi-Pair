@@ -289,6 +289,8 @@ class BacktestEngine:
             init_cash=config.initial_capital,
             fees=config.trading_fee_percent,
             slippage=config.slippage_percent,
+            size=np.inf,  # Use all available cash for each trade
+            size_type='value',  # Size in value terms (VectorBT SizeType.Value)
             freq='1h'  # Adjust based on timeframe
         )
 
@@ -302,8 +304,8 @@ class BacktestEngine:
                     # Convert VectorBT trade to our Trade type
                     entry_time = trade_row['Entry Timestamp']
                     exit_time = trade_row['Exit Timestamp']
-                    entry_price = trade_row['Entry Price']
-                    exit_price = trade_row['Exit Price']
+                    entry_price = trade_row['Avg Entry Price']  # VectorBT uses 'Avg Entry Price'
+                    exit_price = trade_row['Avg Exit Price']    # VectorBT uses 'Avg Exit Price'
                     size = trade_row['Size']
                     pnl = trade_row['PnL']
                     return_pct = trade_row['Return'] * 100

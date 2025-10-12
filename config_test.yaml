@@ -1,0 +1,55 @@
+# Test Configuration - 30 Days
+run:
+  name: "portfolio_test_30days"
+  description: "Quick test of portfolio rebalancing with 30 days"
+  mode: "portfolio"
+
+data:
+  timeframe: "1h"
+  days: 30
+
+portfolio:
+  assets:
+    - symbol: "BTC/USDT"
+      weight: 0.40
+    - symbol: "ETH/USDT"
+      weight: 0.30
+    - symbol: "SOL/USDT"
+      weight: 0.15
+    - symbol: "BNB/USDT"
+      weight: 0.15
+
+  rebalancing:
+    enabled: true
+    threshold: 0.15
+    method: "threshold"
+    period_days: 30
+    min_rebalance_interval_hours: 24
+
+  strategy:
+    name: "PortfolioRebalancer"
+    params: {}
+
+capital:
+  initial_capital: 10000.0
+
+costs:
+  commission: 0.001
+  slippage: 0.0005
+
+risk:
+  max_position_risk: 0.02
+  max_portfolio_risk: 0.10
+  stop_loss_pct: 0.05
+  take_profit_pct: 0.10
+
+output:
+  directory: "results_test"
+  save_trades: true
+  save_equity_curve: true
+  generate_html_reports: true
+  generate_comparison_charts: true
+
+logging:
+  level: "INFO"
+  save_to_file: true

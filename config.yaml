@@ -1,0 +1,100 @@
+# ============================================================================
+# CRYPTO TRADING PIPELINE - CONFIGURATION FILE
+# ============================================================================
+# This file contains all configuration parameters for backtesting
+# Use this for reproducible, version-controlled strategy testing
+# ============================================================================
+
+# Run Configuration
+run:
+  name: "portfolio_rebalancing_4asset"  # Name for this backtest run
+  description: "Multi-asset portfolio with 15% rebalancing threshold"
+  mode: "portfolio"  # Options: "single" (one pair), "portfolio" (multi-pair)
+
+# Data Configuration
+data:
+  timeframe: "1h"  # Options: 1m, 5m, 15m, 1h, 4h, 1d, 1w
+  days: 2977  # Number of days to backtest (-1 for all available)
+
+# Portfolio Configuration (only used when mode: "portfolio")
+portfolio:
+  # Asset allocation
+  assets:
+    - symbol: "BTC/USDT"
+      weight: 0.40  # 40% of portfolio
+    - symbol: "ETH/USDT"
+      weight: 0.30  # 30% of portfolio
+    - symbol: "SOL/USDT"
+      weight: 0.15  # 15% of portfolio
+    - symbol: "BNB/USDT"
+      weight: 0.15  # 15% of portfolio
+
+  # Rebalancing parameters
+  rebalancing:
+    enabled: true
+    threshold: 0.15  # Rebalance when any asset deviates >15% from target
+    method: "threshold"  # Options: "threshold", "periodic", "both"
+    period_days: 30  # For periodic rebalancing (if method is "periodic" or "both")
+    min_rebalance_interval_hours: 24  # Don't rebalance more often than this
+
+  # Single strategy mode: apply one strategy to entire portfolio
+  strategy:
+    name: "PortfolioRebalancer"  # Uses rebalancing logic above
+    params: {}  # No additional params needed
+
+# Single-Pair Configuration (only used when mode: "single")
+single:
+  symbol: "BTC/USDT"
+  strategies:
+    - name: "SMA_Crossover"
+      params:
+        fast_period: 50
+        slow_period: 200
+    - name: "RSI_MeanReversion"
+      params:
+        rsi_period: 14
+        oversold: 30
+        overbought: 70
+    - name: "MACD_Momentum"
+      params:
+        fast_period: 12
+        slow_period: 26
+        signal_period: 9
+    - name: "BollingerBreakout"
+      params:
+        period: 20
+        std_dev: 2.0
+    - name: "TripleEMA"
+      params:
+        fast_period: 8
+        medium_period: 21
+        slow_period: 55
+
+# Capital & Risk Configuration
+capital:
+  initial_capital: 10000.0  # Starting capital in USDT
+
+# Trading Costs
+costs:
+  commission: 0.001  # 0.1% per trade
+  slippage: 0.0005   # 0.05% slippage
+
+# Risk Management
+risk:
+  max_position_risk: 0.02  # Max 2% risk per position
+  max_portfolio_risk: 0.10  # Max 10% total portfolio risk
+  stop_loss_pct: 0.05  # 5% stop loss (if enabled)
+  take_profit_pct: 0.10  # 10% take profit (if enabled)
+
+# Output Configuration
+output:
+  directory: "results"
+  save_trades: true
+  save_equity_curve: true
+  generate_html_reports: true
+  generate_comparison_charts: true
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  save_to_file: true
