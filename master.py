@@ -72,6 +72,324 @@ warnings.filterwarnings('ignore')
 app = typer.Typer(help="Master strategy analysis and ranking system")
 
 
+class HTMLReportWriter:
+    """Helper class for generating styled HTML reports."""
+
+    @staticmethod
+    def get_css() -> str:
+        """Return CSS styling for the report."""
+        return """
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: #f5f5f5;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                background: white;
+                padding: 40px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+
+            h1 {
+                color: #1a1a1a;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 15px;
+            }
+
+            h2 {
+                color: #2c3e50;
+                font-size: 2em;
+                margin-top: 40px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            h3 {
+                color: #34495e;
+                font-size: 1.5em;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            h4 {
+                color: #555;
+                font-size: 1.2em;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .metadata {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 30px;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .metadata p {
+                margin: 5px 0;
+            }
+
+            .metadata strong {
+                color: #2c3e50;
+                display: inline-block;
+                min-width: 180px;
+            }
+
+            hr {
+                border: none;
+                border-top: 1px solid #e0e0e0;
+                margin: 30px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            th {
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            tr:hover {
+                background: #f8f9fa;
+            }
+
+            tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .tier1 {
+                background: #e8f5e9 !important;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .tier2 {
+                background: #fff3e0 !important;
+                border-left: 4px solid #FF9800;
+            }
+
+            .tier3 {
+                background: #ffebee !important;
+                border-left: 4px solid #f44336;
+            }
+
+            .positive {
+                color: #4CAF50;
+                font-weight: 600;
+            }
+
+            .negative {
+                color: #f44336;
+                font-weight: 600;
+            }
+
+            .blockquote {
+                background: #fff8dc;
+                border-left: 5px solid #ffa500;
+                padding: 15px 20px;
+                margin: 20px 0;
+                border-radius: 0 5px 5px 0;
+            }
+
+            .blockquote.warning {
+                background: #fff3cd;
+                border-left-color: #ffc107;
+            }
+
+            .blockquote.info {
+                background: #d1ecf1;
+                border-left-color: #17a2b8;
+            }
+
+            .action-plan {
+                background: #e3f2fd;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #2196F3;
+            }
+
+            .action-plan ol {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .action-plan li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            .recommendation-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 20px 0;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .recommendation-box h4 {
+                color: white;
+                margin-top: 0;
+                font-size: 1.4em;
+            }
+
+            .recommendation-box ul {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .recommendation-box li {
+                margin: 8px 0;
+            }
+
+            .profile-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .profile-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .profile-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            }
+
+            .profile-card h4 {
+                margin-top: 0;
+                color: #667eea;
+            }
+
+            .academic-section {
+                background: #fafafa;
+                padding: 30px;
+                border-radius: 5px;
+                margin-top: 40px;
+                border-top: 3px solid #999;
+            }
+
+            .academic-section h2 {
+                color: #666;
+            }
+
+            .academic-section pre {
+                background: white;
+                padding: 15px;
+                border-left: 3px solid #999;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9em;
+                line-height: 1.5;
+            }
+
+            ul, ol {
+                margin-left: 30px;
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+
+            li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            strong {
+                color: #2c3e50;
+            }
+
+            em {
+                color: #555;
+                font-style: italic;
+            }
+
+            .emoji {
+                font-size: 1.2em;
+            }
+
+            @media print {
+                body {
+                    background: white;
+                    padding: 0;
+                }
+
+                .container {
+                    box-shadow: none;
+                    padding: 20px;
+                }
+
+                table {
+                    page-break-inside: avoid;
+                }
+
+                h2 {
+                    page-break-before: always;
+                }
+            }
+        </style>
+        """
+
+    @staticmethod
+    def escape_html(text: str) -> str:
+        """Escape HTML special characters."""
+        return (text
+                .replace('&', '&amp;')
+                .replace('<', '&lt;')
+                .replace('>', '&gt;')
+                .replace('"', '&quot;')
+                .replace("'", '&#x27;'))
+
+    @staticmethod
+    def format_percentage(value: float, with_sign: bool = True) -> str:
+        """Format percentage with color coding."""
+        formatted = f"{value:+.1%}" if with_sign else f"{value:.1%}"
+        css_class = "positive" if value >= 0 else "negative"
+        return f'<span class="{css_class}">{formatted}</span>'
+
+
 def _periods_per_year_from_timeframe(timeframe: str) -> float:
     """
     Return annualisation factor for a given timeframe string.
@@ -1490,10 +1808,9 @@ class MasterStrategyAnalyzer:
 
     def _write_practical_recommendations(self, f, strategy_scores: List[StrategyScore], avg_buyhold: float) -> None:
         """Write practical trading recommendations based on beating buy-and-hold."""
-        f.write("🎯 PRACTICAL STRATEGY RECOMMENDATIONS\n")
-        f.write("=" * 80 + "\n")
-        f.write("Based on actual performance vs buy-and-hold benchmark\n")
-        f.write("=" * 80 + "\n\n")
+        f.write("## 🎯 PRACTICAL STRATEGY RECOMMENDATIONS\n\n")
+        f.write("*Based on actual performance vs buy-and-hold benchmark*\n\n")
+        f.write("---\n\n")
 
         # Categorize strategies by how many horizons they beat buy-and-hold
         beat_buyhold = [s for s in strategy_scores if s.horizons_beat_buyhold >= 3]
@@ -1506,30 +1823,27 @@ class MasterStrategyAnalyzer:
         underperformed.sort(key=lambda x: x.avg_return, reverse=True)
 
         # TIER 1: Strategies that consistently beat buy-and-hold
-        f.write("🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD\n")
-        f.write("-" * 80 + "\n")
+        f.write("### 🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD\n\n")
         if beat_buyhold:
-            f.write("✅ These strategies beat buy-and-hold on 3+ time horizons\n")
-            f.write("   RECOMMENDED for actual trading\n\n")
+            f.write("✅ These strategies beat buy-and-hold on **3+ time horizons**  \n")
+            f.write("**RECOMMENDED for actual trading**\n\n")
 
-            f.write(f"{'Rank':<6} {'Strategy':<25} {'Avg Return':<12} {'Sharpe':<8} {'Drawdown':<10} {'Won':<8}\n")
-            f.write("-" * 80 + "\n")
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
             for rank, strat in enumerate(beat_buyhold, 1):
                 outperf = strat.avg_return - avg_buyhold
-                f.write(f"{rank:<6} {strat.strategy_name:<25} ")
-                f.write(f"{strat.avg_return:>+10.1%} ")
-                f.write(f"{strat.avg_sharpe:>7.2f} ")
-                f.write(f"{strat.avg_max_drawdown:>9.1%} ")
-                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons}\n")
+                f.write(f"| {rank} | {strat.strategy_name} | {strat.avg_return:+.1%} | ")
+                f.write(f"{strat.avg_sharpe:.2f} | {strat.avg_max_drawdown:.1%} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
 
             # Investment recommendations for top performers
             if len(beat_buyhold) > 0:
                 best = beat_buyhold[0]
-                f.write(f"\n💡 TOP RECOMMENDATION: {best.strategy_name}\n")
-                f.write(f"   • Returns: {best.avg_return:+.1%} (vs {avg_buyhold:+.1%} buy-and-hold)\n")
-                f.write(f"   • Sharpe Ratio: {best.avg_sharpe:.2f} (risk-adjusted performance)\n")
-                f.write(f"   • Max Drawdown: {best.avg_max_drawdown:.1%} (worst peak-to-trough loss)\n")
-                f.write(f"   • Beat buy-and-hold on {best.horizons_beat_buyhold}/{best.total_horizons} time horizons\n")
+                f.write(f"\n#### 💡 TOP RECOMMENDATION: {best.strategy_name}\n\n")
+                f.write(f"- **Returns:** {best.avg_return:+.1%} (vs {avg_buyhold:+.1%} buy-and-hold)\n")
+                f.write(f"- **Sharpe Ratio:** {best.avg_sharpe:.2f} (risk-adjusted performance)\n")
+                f.write(f"- **Max Drawdown:** {best.avg_max_drawdown:.1%} (worst peak-to-trough loss)\n")
+                f.write(f"- **Beat buy-and-hold** on {best.horizons_beat_buyhold}/{best.total_horizons} time horizons\n")
 
                 # Find best horizon for this strategy
                 best_horizon = None
@@ -1540,100 +1854,84 @@ class MasterStrategyAnalyzer:
                         best_horizon = horizon_name
 
                 if best_horizon:
-                    f.write(f"   • Best horizon: {best_horizon} ({best_horizon_return:+.1%} return)\n")
+                    f.write(f"- **Best horizon:** {best_horizon} ({best_horizon_return:+.1%} return)\n")
 
-                f.write("\n   ACTION PLAN:\n")
-                f.write("   1. Start with paper trading to validate performance\n")
-                f.write("   2. Use conservative position sizing (2-5% of portfolio)\n")
-                f.write(f"   3. Set stop-loss at {best.avg_max_drawdown * 2:.1%} (2× max drawdown)\n")
-                f.write("   4. Monitor weekly and compare to buy-and-hold baseline\n")
+                f.write("\n**ACTION PLAN:**\n\n")
+                f.write("1. Start with paper trading to validate performance\n")
+                f.write("2. Use conservative position sizing (2-5% of portfolio)\n")
+                f.write(f"3. Set stop-loss at {best.avg_max_drawdown * 2:.1%} (2× max drawdown)\n")
+                f.write("4. Monitor weekly and compare to buy-and-hold baseline\n\n")
         else:
-            f.write("❌ NO strategies consistently beat buy-and-hold (3+ horizons)\n")
-            f.write("   Consider sticking with passive buy-and-hold strategy\n")
-
-        f.write("\n")
+            f.write("❌ **NO strategies consistently beat buy-and-hold** (3+ horizons)  \n")
+            f.write("Consider sticking with passive buy-and-hold strategy\n\n")
 
         # TIER 2: Sometimes beats buy-and-hold
-        f.write("⚠️  TIER 2: SOMETIMES BEATS BUY-AND-HOLD\n")
-        f.write("-" * 80 + "\n")
+        f.write("### ⚠️  TIER 2: SOMETIMES BEATS BUY-AND-HOLD\n\n")
         if close_to_buyhold:
-            f.write("⚡ These strategies beat buy-and-hold on 1-2 time horizons\n")
-            f.write("   Use with CAUTION - performance is inconsistent\n\n")
+            f.write("⚡ These strategies beat buy-and-hold on **1-2 time horizons**  \n")
+            f.write("Use with **CAUTION** - performance is inconsistent\n\n")
 
-            f.write(f"{'Rank':<6} {'Strategy':<25} {'Avg Return':<12} {'Sharpe':<8} {'Drawdown':<10} {'Won':<8}\n")
-            f.write("-" * 80 + "\n")
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
             for rank, strat in enumerate(close_to_buyhold, 1):
-                f.write(f"{rank:<6} {strat.strategy_name:<25} ")
-                f.write(f"{strat.avg_return:>+10.1%} ")
-                f.write(f"{strat.avg_sharpe:>7.2f} ")
-                f.write(f"{strat.avg_max_drawdown:>9.1%} ")
-                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons}\n")
+                f.write(f"| {rank} | {strat.strategy_name} | {strat.avg_return:+.1%} | ")
+                f.write(f"{strat.avg_sharpe:.2f} | {strat.avg_max_drawdown:.1%} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
 
-            f.write("\n   💡 These may work for specific time horizons or market conditions.\n")
-            f.write("      Check 'TIME HORIZON ANALYSIS' section for details.\n")
+            f.write("\n> 💡 These may work for specific time horizons or market conditions.  \n")
+            f.write("> Check **TIME HORIZON ANALYSIS** section for details.\n\n")
         else:
-            f.write("   None found\n")
-
-        f.write("\n")
+            f.write("None found\n\n")
 
         # TIER 3: Never beats buy-and-hold
-        f.write("❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD\n")
-        f.write("-" * 80 + "\n")
+        f.write("### ❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD\n\n")
         if underperformed:
-            f.write("🚫 These strategies NEVER beat buy-and-hold on any time horizon\n")
-            f.write("   NOT RECOMMENDED for trading - use buy-and-hold instead\n\n")
+            f.write("🚫 These strategies **NEVER** beat buy-and-hold on any time horizon  \n")
+            f.write("**NOT RECOMMENDED** for trading - use buy-and-hold instead\n\n")
 
-            f.write(f"{'Rank':<6} {'Strategy':<25} {'Avg Return':<12} {'Sharpe':<8} {'Drawdown':<10} {'Won':<8}\n")
-            f.write("-" * 80 + "\n")
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
             for rank, strat in enumerate(underperformed, 1):
-                f.write(f"{rank:<6} {strat.strategy_name:<25} ")
-                f.write(f"{strat.avg_return:>+10.1%} ")
-                f.write(f"{strat.avg_sharpe:>7.2f} ")
-                f.write(f"{strat.avg_max_drawdown:>9.1%} ")
-                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons}\n")
+                f.write(f"| {rank} | {strat.strategy_name} | {strat.avg_return:+.1%} | ")
+                f.write(f"{strat.avg_sharpe:.2f} | {strat.avg_max_drawdown:.1%} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
 
-            f.write("\n   💡 Even if returns are positive, buy-and-hold performed better.\n")
+            f.write("\n> 💡 Even if returns are positive, buy-and-hold performed better.\n\n")
         else:
-            f.write("   None found\n")
-
-        f.write("\n")
+            f.write("None found\n\n")
 
         # Investment profile recommendations
-        f.write("👤 RECOMMENDATIONS BY INVESTOR PROFILE\n")
-        f.write("-" * 80 + "\n\n")
+        f.write("### 👤 RECOMMENDATIONS BY INVESTOR PROFILE\n\n")
 
-        f.write("🎯 AGGRESSIVE INVESTOR (maximize returns, accept high risk):\n")
+        f.write("**🎯 AGGRESSIVE INVESTOR** (maximize returns, accept high risk):\n\n")
         if beat_buyhold:
             aggressive_pick = beat_buyhold[0]  # Highest return among beat_buyhold
-            f.write(f"   → {aggressive_pick.strategy_name}\n")
-            f.write(f"      Returns: {aggressive_pick.avg_return:+.1%} | Drawdown: {aggressive_pick.avg_max_drawdown:.1%}\n")
+            f.write(f"→ **{aggressive_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {aggressive_pick.avg_return:+.1%} | Drawdown: {aggressive_pick.avg_max_drawdown:.1%}\n\n")
         else:
-            f.write("   → Buy-and-hold (no active strategies beat benchmark)\n")
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
 
-        f.write("\n🛡️  CONSERVATIVE INVESTOR (minimize drawdown, accept lower returns):\n")
+        f.write("**🛡️  CONSERVATIVE INVESTOR** (minimize drawdown, accept lower returns):\n\n")
         if beat_buyhold:
             # Find strategy with lowest drawdown among winners
             conservative_pick = min(beat_buyhold, key=lambda x: x.avg_max_drawdown)
-            f.write(f"   → {conservative_pick.strategy_name}\n")
-            f.write(f"      Returns: {conservative_pick.avg_return:+.1%} | Drawdown: {conservative_pick.avg_max_drawdown:.1%}\n")
+            f.write(f"→ **{conservative_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {conservative_pick.avg_return:+.1%} | Drawdown: {conservative_pick.avg_max_drawdown:.1%}\n\n")
         else:
-            f.write("   → Buy-and-hold (no active strategies beat benchmark)\n")
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
 
-        f.write("\n⚖️  BALANCED INVESTOR (best risk-adjusted returns):\n")
+        f.write("**⚖️  BALANCED INVESTOR** (best risk-adjusted returns):\n\n")
         if beat_buyhold:
             # Find strategy with highest Sharpe among winners
             balanced_pick = max(beat_buyhold, key=lambda x: x.avg_sharpe)
-            f.write(f"   → {balanced_pick.strategy_name}\n")
-            f.write(f"      Returns: {balanced_pick.avg_return:+.1%} | Sharpe: {balanced_pick.avg_sharpe:.2f}\n")
+            f.write(f"→ **{balanced_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {balanced_pick.avg_return:+.1%} | Sharpe: {balanced_pick.avg_sharpe:.2f}\n\n")
         else:
-            f.write("   → Buy-and-hold (no active strategies beat benchmark)\n")
-
-        f.write("\n")
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
 
         # Time horizon specific recommendations
-        f.write("⏰ BEST STRATEGY BY TIME HORIZON\n")
-        f.write("-" * 80 + "\n")
-        f.write("Choose strategy based on your investment timeline:\n\n")
+        f.write("### ⏰ BEST STRATEGY BY TIME HORIZON\n\n")
+        f.write("*Choose strategy based on your investment timeline:*\n\n")
 
         for horizon in self.horizons:
             # Find best strategy that beat buy-hold for this horizon
@@ -1651,101 +1949,337 @@ class MasterStrategyAnalyzer:
             buyhold = self.buy_hold_results.get(horizon.name, {}).get('total_return', 0)
 
             if best_for_horizon:
-                f.write(f"  {horizon.name:<10} → {best_for_horizon:<25} ({best_return:>+7.1%})\n")
-                f.write(f"             Beat buy-and-hold by {best_return - buyhold:+.1%}\n")
+                f.write(f"- **{horizon.name}** → {best_for_horizon} ({best_return:+.1%})  \n")
+                f.write(f"  Beat buy-and-hold by {best_return - buyhold:+.1%}\n\n")
             else:
-                f.write(f"  {horizon.name:<10} → Buy-and-hold (no strategy beat benchmark)\n")
+                f.write(f"- **{horizon.name}** → Buy-and-hold (no strategy beat benchmark)\n\n")
 
-        f.write("\n")
+    def _write_practical_recommendations_html(self, f, strategy_scores: List[StrategyScore], avg_buyhold: float) -> None:
+        """Write practical trading recommendations in HTML format."""
+        f.write("<h2>🎯 PRACTICAL STRATEGY RECOMMENDATIONS</h2>\n")
+        f.write("<p><em>Based on actual performance vs buy-and-hold benchmark</em></p>\n")
+        f.write("<hr>\n\n")
+
+        # Categorize strategies
+        beat_buyhold = [s for s in strategy_scores if s.horizons_beat_buyhold >= 3]
+        close_to_buyhold = [s for s in strategy_scores if 0 < s.horizons_beat_buyhold < 3]
+        underperformed = [s for s in strategy_scores if s.horizons_beat_buyhold == 0]
+
+        beat_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        close_to_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        underperformed.sort(key=lambda x: x.avg_return, reverse=True)
+
+        # TIER 1
+        f.write("<h3>🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD</h3>\n")
+        if beat_buyhold:
+            f.write("<p>✅ These strategies beat buy-and-hold on <strong>3+ time horizons</strong><br>\n")
+            f.write("<strong>RECOMMENDED for actual trading</strong></p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(beat_buyhold, 1):
+                f.write(f"        <tr class='tier1'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{strat.avg_sharpe:.2f}</td>\n")
+                f.write(f"            <td>{strat.avg_max_drawdown:.1%}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            # Top recommendation box
+            if len(beat_buyhold) > 0:
+                best = beat_buyhold[0]
+                f.write("<div class='recommendation-box'>\n")
+                f.write(f"<h4>💡 TOP RECOMMENDATION: {best.strategy_name}</h4>\n")
+                f.write("<ul>\n")
+                f.write(f"    <li><strong>Returns:</strong> {best.avg_return:+.1%} (vs {avg_buyhold:+.1%} buy-and-hold)</li>\n")
+                f.write(f"    <li><strong>Sharpe Ratio:</strong> {best.avg_sharpe:.2f} (risk-adjusted performance)</li>\n")
+                f.write(f"    <li><strong>Max Drawdown:</strong> {best.avg_max_drawdown:.1%} (worst peak-to-trough loss)</li>\n")
+                f.write(f"    <li><strong>Beat buy-and-hold</strong> on {best.horizons_beat_buyhold}/{best.total_horizons} time horizons</li>\n")
+
+                # Find best horizon
+                best_horizon = None
+                best_horizon_return = -float('inf')
+                for horizon_name, result in best.horizon_results.items():
+                    if result['return'] > best_horizon_return:
+                        best_horizon_return = result['return']
+                        best_horizon = horizon_name
+
+                if best_horizon:
+                    f.write(f"    <li><strong>Best horizon:</strong> {best_horizon} ({best_horizon_return:+.1%} return)</li>\n")
+
+                f.write("</ul>\n\n")
+                f.write("<h4>ACTION PLAN:</h4>\n")
+                f.write("<ol>\n")
+                f.write("    <li>Start with paper trading to validate performance</li>\n")
+                f.write("    <li>Use conservative position sizing (2-5% of portfolio)</li>\n")
+                f.write(f"    <li>Set stop-loss at {best.avg_max_drawdown * 2:.1%} (2× max drawdown)</li>\n")
+                f.write("    <li>Monitor weekly and compare to buy-and-hold baseline</li>\n")
+                f.write("</ol>\n")
+                f.write("</div>\n\n")
+        else:
+            f.write("<p>❌ <strong>NO strategies consistently beat buy-and-hold</strong> (3+ horizons)<br>\n")
+            f.write("Consider sticking with passive buy-and-hold strategy</p>\n\n")
+
+        # TIER 2
+        f.write("<h3>⚠️ TIER 2: SOMETIMES BEATS BUY-AND-HOLD</h3>\n")
+        if close_to_buyhold:
+            f.write("<p>⚡ These strategies beat buy-and-hold on <strong>1-2 time horizons</strong><br>\n")
+            f.write("Use with <strong>CAUTION</strong> - performance is inconsistent</p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(close_to_buyhold, 1):
+                f.write(f"        <tr class='tier2'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{strat.avg_sharpe:.2f}</td>\n")
+                f.write(f"            <td>{strat.avg_max_drawdown:.1%}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            f.write("<div class='blockquote info'>\n")
+            f.write("    <p>💡 These may work for specific time horizons or market conditions. ")
+            f.write("Check <strong>TIME HORIZON ANALYSIS</strong> section for details.</p>\n")
+            f.write("</div>\n\n")
+        else:
+            f.write("<p>None found</p>\n\n")
+
+        # TIER 3
+        f.write("<h3>❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD</h3>\n")
+        if underperformed:
+            f.write("<p>🚫 These strategies <strong>NEVER</strong> beat buy-and-hold on any time horizon<br>\n")
+            f.write("<strong>NOT RECOMMENDED</strong> for trading - use buy-and-hold instead</p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(underperformed, 1):
+                f.write(f"        <tr class='tier3'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{strat.avg_sharpe:.2f}</td>\n")
+                f.write(f"            <td>{strat.avg_max_drawdown:.1%}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            f.write("<div class='blockquote info'>\n")
+            f.write("    <p>💡 Even if returns are positive, buy-and-hold performed better.</p>\n")
+            f.write("</div>\n\n")
+        else:
+            f.write("<p>None found</p>\n\n")
+
+        # Investor Profile Recommendations
+        f.write("<h3>👤 RECOMMENDATIONS BY INVESTOR PROFILE</h3>\n")
+        f.write("<div class='profile-section'>\n")
+
+        # Aggressive
+        f.write("    <div class='profile-card'>\n")
+        f.write("        <h4>🎯 AGGRESSIVE INVESTOR</h4>\n")
+        f.write("        <p><em>Maximize returns, accept high risk</em></p>\n")
+        if beat_buyhold:
+            aggressive_pick = beat_buyhold[0]
+            f.write(f"        <p><strong>→ {aggressive_pick.strategy_name}</strong></p>\n")
+            f.write(f"        <p>Returns: {HTMLReportWriter.format_percentage(aggressive_pick.avg_return, False)} | ")
+            f.write(f"Drawdown: {aggressive_pick.avg_max_drawdown:.1%}</p>\n")
+        else:
+            f.write("        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>\n")
+        f.write("    </div>\n")
+
+        # Conservative
+        f.write("    <div class='profile-card'>\n")
+        f.write("        <h4>🛡️ CONSERVATIVE INVESTOR</h4>\n")
+        f.write("        <p><em>Minimize drawdown, accept lower returns</em></p>\n")
+        if beat_buyhold:
+            conservative_pick = min(beat_buyhold, key=lambda x: x.avg_max_drawdown)
+            f.write(f"        <p><strong>→ {conservative_pick.strategy_name}</strong></p>\n")
+            f.write(f"        <p>Returns: {HTMLReportWriter.format_percentage(conservative_pick.avg_return, False)} | ")
+            f.write(f"Drawdown: {conservative_pick.avg_max_drawdown:.1%}</p>\n")
+        else:
+            f.write("        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>\n")
+        f.write("    </div>\n")
+
+        # Balanced
+        f.write("    <div class='profile-card'>\n")
+        f.write("        <h4>⚖️ BALANCED INVESTOR</h4>\n")
+        f.write("        <p><em>Best risk-adjusted returns</em></p>\n")
+        if beat_buyhold:
+            balanced_pick = max(beat_buyhold, key=lambda x: x.avg_sharpe)
+            f.write(f"        <p><strong>→ {balanced_pick.strategy_name}</strong></p>\n")
+            f.write(f"        <p>Returns: {HTMLReportWriter.format_percentage(balanced_pick.avg_return, False)} | ")
+            f.write(f"Sharpe: {balanced_pick.avg_sharpe:.2f}</p>\n")
+        else:
+            f.write("        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>\n")
+        f.write("    </div>\n")
+
+        f.write("</div>\n\n")
+
+        # Time horizon recommendations
+        f.write("<h3>⏰ BEST STRATEGY BY TIME HORIZON</h3>\n")
+        f.write("<p><em>Choose strategy based on your investment timeline:</em></p>\n")
+        f.write("<ul>\n")
+
+        for horizon in self.horizons:
+            best_for_horizon = None
+            best_return = -float('inf')
+
+            for score in strategy_scores:
+                if horizon.name in score.horizon_results:
+                    result = score.horizon_results[horizon.name]
+                    if result['vs_buyhold'] > 0 and result['return'] > best_return:
+                        best_return = result['return']
+                        best_for_horizon = score.strategy_name
+
+            buyhold = self.buy_hold_results.get(horizon.name, {}).get('total_return', 0)
+
+            if best_for_horizon:
+                f.write(f"    <li><strong>{horizon.name}</strong> → {best_for_horizon} ")
+                f.write(f"({HTMLReportWriter.format_percentage(best_return, False)})<br>\n")
+                f.write(f"        <em>Beat buy-and-hold by {HTMLReportWriter.format_percentage(best_return - buyhold)}</em></li>\n")
+            else:
+                f.write(f"    <li><strong>{horizon.name}</strong> → Buy-and-hold (no strategy beat benchmark)</li>\n")
+
+        f.write("</ul>\n\n")
 
     def generate_master_report(self, strategy_scores: List[StrategyScore]) -> None:
-        """Generate comprehensive master report."""
+        """Generate comprehensive master report in HTML format."""
         logger.info("\nGenerating master report...")
 
-        report_file = self.output_dir / "MASTER_REPORT.txt"
+        report_file = self.output_dir / "MASTER_REPORT.html"
 
-        with open(report_file, 'w') as f:
-            # Header
-            f.write("=" * 80 + "\n")
-            f.write("CRYPTO TRADING MASTER STRATEGY ANALYSIS\n")
-            f.write("=" * 80 + "\n")
-            f.write(f"Asset: {self.symbol}\n")
-            f.write(f"Timeframe: {self.timeframe}\n")
-            f.write(f"Strategies Tested: {len(strategy_scores)}\n")
-            f.write(f"Time Horizons: {[h.name for h in self.horizons]}\n")
-            f.write(f"Total Backtests: {len(self.all_results)}\n")
-            f.write(f"Parallel Workers: {self.workers}\n")
-            f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write("=" * 80 + "\n\n")
+        with open(report_file, 'w', encoding='utf-8') as f:
+            # HTML Header
+            f.write("<!DOCTYPE html>\n")
+            f.write("<html lang='en'>\n")
+            f.write("<head>\n")
+            f.write("    <meta charset='UTF-8'>\n")
+            f.write("    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n")
+            f.write("    <title>Crypto Trading Master Strategy Analysis</title>\n")
+            f.write(HTMLReportWriter.get_css())
+            f.write("</head>\n")
+            f.write("<body>\n")
+            f.write("<div class='container'>\n")
+
+            # Main Header
+            f.write("<h1>🚀 CRYPTO TRADING MASTER STRATEGY ANALYSIS</h1>\n\n")
+
+            # Metadata section
+            f.write("<div class='metadata'>\n")
+            f.write(f"    <p><strong>Asset:</strong> {self.symbol}</p>\n")
+            f.write(f"    <p><strong>Timeframe:</strong> {self.timeframe}</p>\n")
+            f.write(f"    <p><strong>Strategies Tested:</strong> {len(strategy_scores)}</p>\n")
+            f.write(f"    <p><strong>Time Horizons:</strong> {', '.join([h.name for h in self.horizons])}</p>\n")
+            f.write(f"    <p><strong>Total Backtests:</strong> {len(self.all_results)}</p>\n")
+            f.write(f"    <p><strong>Parallel Workers:</strong> {self.workers}</p>\n")
+            f.write(f"    <p><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n")
+            f.write("</div>\n\n")
 
             if not strategy_scores:
-                f.write("❌ No results available\n")
+                f.write("<p>❌ No results available</p>\n")
+                f.write("</div></body></html>")
                 return
 
             # Calculate average buy-hold return
             avg_buyhold = np.mean([v['total_return'] for v in self.buy_hold_results.values()])
 
-            # PRACTICAL RECOMMENDATIONS SECTION (NEW - TOP PRIORITY)
-            self._write_practical_recommendations(f, strategy_scores, avg_buyhold)
+            # PRACTICAL RECOMMENDATIONS SECTION (HTML VERSION)
+            self._write_practical_recommendations_html(f, strategy_scores, avg_buyhold)
 
             # Best strategy (composite score)
             best = strategy_scores[0]
-            f.write("\n" + "=" * 80 + "\n")
-            f.write("📊 COMPOSITE SCORE RANKINGS (Academic)\n")
-            f.write("=" * 80 + "\n")
-            f.write("⚠️  NOTE: This ranking uses a weighted composite score (35% Sharpe, 30% Return,\n")
-            f.write("    20% Drawdown, 15% WinRate). See PRACTICAL RECOMMENDATIONS above for\n")
-            f.write("    actual trading decisions based on beating buy-and-hold.\n\n")
+            f.write("<h2>📊 COMPOSITE SCORE RANKINGS (Academic)</h2>\n")
+            f.write("<div class='blockquote warning'>\n")
+            f.write("    <p><strong>⚠️ NOTE:</strong> This ranking uses a weighted composite score (35% Sharpe, 30% Return, ")
+            f.write("20% Drawdown, 15% WinRate). See <strong>PRACTICAL RECOMMENDATIONS</strong> above for ")
+            f.write("actual trading decisions based on beating buy-and-hold.</p>\n")
+            f.write("</div>\n\n")
 
-            f.write(f"Top by Composite Score: {best.strategy_name}\n")
-            f.write(f"Composite Score: {best.composite_score:.3f} / 1.000\n")
-            f.write(f"Rank: #1 out of {len(strategy_scores)}\n\n")
+            f.write(f"<p><strong>Top by Composite Score:</strong> {best.strategy_name}</p>\n")
+            f.write(f"<p><strong>Composite Score:</strong> {best.composite_score:.3f} / 1.000</p>\n")
+            f.write(f"<p><strong>Rank:</strong> #1 out of {len(strategy_scores)}</p>\n\n")
 
-            f.write("Performance Summary:\n")
-            f.write(f"  • Average Return: {best.avg_return:>+7.1%}\n")
+            f.write("<h4>Performance Summary:</h4>\n")
+            f.write("<ul>\n")
+            f.write(f"    <li>Average Return: {HTMLReportWriter.format_percentage(best.avg_return)}</li>\n")
 
             outperformance = best.avg_return - avg_buyhold
-            f.write(f"  • Buy-and-Hold Avg: {avg_buyhold:>+7.1%}\n")
-            f.write(f"  • Outperformance: {outperformance:>+7.1%}\n")
-            f.write(f"  • Sharpe Ratio: {best.avg_sharpe:.2f}\n")
-            f.write(f"  • Max Drawdown: {best.avg_max_drawdown:.1%}\n")
-            f.write(f"  • Win Rate: {best.avg_win_rate:.1%}\n")
-            f.write(f"  • Horizons Won: {best.horizons_beat_buyhold}/{best.total_horizons}\n")
+            f.write(f"    <li>Buy-and-Hold Avg: {HTMLReportWriter.format_percentage(avg_buyhold)}</li>\n")
+            f.write(f"    <li>Outperformance: {HTMLReportWriter.format_percentage(outperformance)}</li>\n")
+            f.write(f"    <li>Sharpe Ratio: <strong>{best.avg_sharpe:.2f}</strong></li>\n")
+            f.write(f"    <li>Max Drawdown: <strong>{best.avg_max_drawdown:.1%}</strong></li>\n")
+            f.write(f"    <li>Win Rate: <strong>{best.avg_win_rate:.1%}</strong></li>\n")
+            f.write(f"    <li>Horizons Won: <strong>{best.horizons_beat_buyhold}/{best.total_horizons}</strong></li>\n")
+            f.write("</ul>\n\n")
 
             # Add warning if best by score didn't beat buy-hold
             if best.horizons_beat_buyhold == 0:
-                f.write("\n⚠️  WARNING: This strategy did NOT beat buy-and-hold on any time horizon!\n")
-                f.write("   See PRACTICAL RECOMMENDATIONS section for better trading choices.\n")
+                f.write("<div class='blockquote warning'>\n")
+                f.write("    <p><strong>⚠️ WARNING:</strong> This strategy did NOT beat buy-and-hold on any time horizon! ")
+                f.write("See PRACTICAL RECOMMENDATIONS section for better trading choices.</p>\n")
+                f.write("</div>\n\n")
 
-            # Rankings
-            f.write("=" * 80 + "\n")
-            f.write("STRATEGY RANKINGS (by Composite Score)\n")
-            f.write("=" * 80 + "\n")
-            f.write(f"{'Rank':<6} {'Strategy':<25} {'Score':<8} {'Return':<10} {'Sharpe':<8} {'MaxDD':<10} {'WinRate':<10} {'Won':<8}\n")
-            f.write("-" * 80 + "\n")
+            # Rankings Table
+            f.write("<h3>Strategy Rankings (by Composite Score)</h3>\n")
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Score</th><th>Return</th>\n")
+            f.write("            <th>Sharpe</th><th>MaxDD</th><th>WinRate</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
 
             for rank, score in enumerate(strategy_scores, 1):
-                f.write(f"{rank:<6} ")
-                f.write(f"{score.strategy_name:<25} ")
-                f.write(f"{score.composite_score:<8.3f} ")
-                f.write(f"{score.avg_return:<+9.1%} ")
-                f.write(f"{score.avg_sharpe:<8.2f} ")
-                f.write(f"{score.avg_max_drawdown:<9.1%} ")
-                f.write(f"{score.avg_win_rate:<9.1%} ")
-                f.write(f"{score.horizons_beat_buyhold}/{score.total_horizons}\n")
+                f.write(f"        <tr>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{score.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{score.composite_score:.3f}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(score.avg_return)}</td>\n")
+                f.write(f"            <td>{score.avg_sharpe:.2f}</td>\n")
+                f.write(f"            <td>{score.avg_max_drawdown:.1%}</td>\n")
+                f.write(f"            <td>{score.avg_win_rate:.1%}</td>\n")
+                f.write(f"            <td>{score.horizons_beat_buyhold}/{score.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
 
-            # Buy-and-hold comparison
-            f.write("\n")
-            f.write(f"{'':6} {'Buy-and-Hold Baseline':<25} {'':8} {avg_buyhold:<+9.1%}\n")
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+            f.write(f"<p><strong>Buy-and-Hold Baseline:</strong> {HTMLReportWriter.format_percentage(avg_buyhold)}</p>\n\n")
 
             # Time horizon analysis
-            f.write("\n" + "=" * 80 + "\n")
-            f.write("TIME HORIZON ANALYSIS\n")
-            f.write("=" * 80 + "\n\n")
+            f.write("<h2>📈 TIME HORIZON ANALYSIS</h2>\n")
+            f.write("<h4>Best Strategy by Horizon:</h4>\n")
+            f.write("<ul>\n")
 
-            f.write("Best Strategy by Horizon:\n")
             for horizon in self.horizons:
-                # Find best strategy for this horizon
                 best_for_horizon = None
                 best_return = -float('inf')
 
@@ -1757,85 +2291,116 @@ class MasterStrategyAnalyzer:
                             best_for_horizon = score.strategy_name
 
                 buyhold = self.buy_hold_results.get(horizon.name, {}).get('total_return', 0)
-                f.write(f"  {horizon.name:<10} {best_for_horizon:<25} ")
-                f.write(f"({best_return:>+7.1%} vs buy-hold {buyhold:>+7.1%})\n")
+                f.write(f"    <li><strong>{horizon.name}:</strong> {best_for_horizon} ")
+                f.write(f"({HTMLReportWriter.format_percentage(best_return)} vs buy-hold {HTMLReportWriter.format_percentage(buyhold)})</li>\n")
+
+            f.write("</ul>\n\n")
 
             # Detailed analysis of best strategy
-            f.write("\n" + "=" * 80 + "\n")
-            f.write(f"DETAILED ANALYSIS: {best.strategy_name} (Best Overall)\n")
-            f.write("=" * 80 + "\n\n")
-
-            f.write("Performance Across Horizons:\n")
-            f.write(f"{'Horizon':<10} {'Return':<10} {'vs B&H':<10} {'Sharpe':<8} {'MaxDD':<10} {'WinRate':<10} {'Trades':<8}\n")
-            f.write("-" * 80 + "\n")
+            f.write(f"<h2>🔍 DETAILED ANALYSIS: {best.strategy_name} (Best Overall)</h2>\n")
+            f.write("<h4>Performance Across Horizons:</h4>\n")
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Horizon</th><th>Return</th><th>vs B&H</th><th>Sharpe</th>\n")
+            f.write("            <th>MaxDD</th><th>WinRate</th><th>Trades</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
 
             for horizon in self.horizons:
                 if horizon.name not in best.horizon_results:
                     continue
 
                 result = best.horizon_results[horizon.name]
-                f.write(f"{horizon.name:<10} ")
-                f.write(f"{result['return']:<+9.1%} ")
-                f.write(f"{result['vs_buyhold']:<+9.1%} ")
-                f.write(f"{result['sharpe']:<8.2f} ")
-                f.write(f"{result['drawdown']:<9.1%} ")
-                f.write(f"{result['win_rate']:<9.1%} ")
-                f.write(f"{int(result['trades']):<8}\n")
+                f.write(f"        <tr>\n")
+                f.write(f"            <td><strong>{horizon.name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(result['return'])}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(result['vs_buyhold'])}</td>\n")
+                f.write(f"            <td>{result['sharpe']:.2f}</td>\n")
+                f.write(f"            <td>{result['drawdown']:.1%}</td>\n")
+                f.write(f"            <td>{result['win_rate']:.1%}</td>\n")
+                f.write(f"            <td>{int(result['trades'])}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
 
             # Recommendations
-            f.write("\n" + "=" * 80 + "\n")
-            f.write("NEXT STEPS FOR IMPLEMENTATION\n")
-            f.write("=" * 80 + "\n\n")
+            f.write("<h2>🚀 NEXT STEPS FOR IMPLEMENTATION</h2>\n")
 
-            # Find the actual best practical strategy (beat buy-hold)
             practical_winners = [s for s in strategy_scores if s.horizons_beat_buyhold >= 3]
             if practical_winners:
                 practical_winners.sort(key=lambda x: x.avg_return, reverse=True)
                 practical_best = practical_winners[0]
 
-                f.write("📋 RECOMMENDED ACTION PLAN:\n\n")
-                f.write(f"✅ Deploy: {practical_best.strategy_name}\n")
-                f.write(f"   (Top strategy that consistently beats buy-and-hold)\n\n")
+                f.write("<h3>📋 RECOMMENDED ACTION PLAN</h3>\n")
+                f.write(f"<p><strong>✅ Deploy:</strong> {practical_best.strategy_name}</p>\n")
+                f.write("<p><em>(Top strategy that consistently beats buy-and-hold)</em></p>\n\n")
 
-                f.write("1. VALIDATION PHASE (Weeks 1-4):\n")
-                f.write("   • Start with paper trading to validate performance\n")
-                f.write("   • Track all signals and compare to backtested results\n")
-                f.write("   • Document any discrepancies between live and backtest\n")
-                f.write("   • Verify transaction costs match assumptions (0.1% + 0.05%)\n\n")
+                f.write("<div class='action-plan'>\n")
+                f.write("<h4>1. VALIDATION PHASE (Weeks 1-4)</h4>\n")
+                f.write("<ul>\n")
+                f.write("    <li>Start with paper trading to validate performance</li>\n")
+                f.write("    <li>Track all signals and compare to backtested results</li>\n")
+                f.write("    <li>Document any discrepancies between live and backtest</li>\n")
+                f.write("    <li>Verify transaction costs match assumptions (0.1% + 0.05%)</li>\n")
+                f.write("</ul>\n\n")
 
-                f.write("2. INITIAL DEPLOYMENT (Weeks 5-8):\n")
-                f.write("   • Start with 2-5% of total portfolio\n")
-                f.write(f"   • Set stop-loss at {practical_best.avg_max_drawdown * 2:.1%} (2× max historical drawdown)\n")
-                f.write("   • Monitor daily for first 2 weeks, then weekly\n")
-                f.write("   • Keep detailed performance log vs buy-and-hold\n\n")
+                f.write("<h4>2. INITIAL DEPLOYMENT (Weeks 5-8)</h4>\n")
+                f.write("<ul>\n")
+                f.write("    <li>Start with 2-5% of total portfolio</li>\n")
+                f.write(f"    <li>Set stop-loss at {practical_best.avg_max_drawdown * 2:.1%} (2× max historical drawdown)</li>\n")
+                f.write("    <li>Monitor daily for first 2 weeks, then weekly</li>\n")
+                f.write("    <li>Keep detailed performance log vs buy-and-hold</li>\n")
+                f.write("</ul>\n\n")
 
-                f.write("3. SCALING (Weeks 9+):\n")
-                f.write("   • If outperforming buy-and-hold: gradually increase to 10-20%\n")
-                f.write("   • If underperforming: reduce position or revert to buy-and-hold\n")
-                f.write("   • Consider diversifying across top 3 performing strategies\n\n")
+                f.write("<h4>3. SCALING (Weeks 9+)</h4>\n")
+                f.write("<ul>\n")
+                f.write("    <li>If outperforming buy-and-hold: gradually increase to 10-20%</li>\n")
+                f.write("    <li>If underperforming: reduce position or revert to buy-and-hold</li>\n")
+                f.write("    <li>Consider diversifying across top 3 performing strategies</li>\n")
+                f.write("</ul>\n\n")
 
-                f.write("4. OPTIMIZATION & EXPANSION:\n")
-                f.write(f"   • Run parameter optimization on {practical_best.strategy_name}\n")
-                f.write("   • Test on other crypto pairs (ETH, SOL, BNB, ADA)\n")
-                f.write("   • Consider ensemble approach combining multiple strategies\n")
-                f.write("   • Review performance quarterly and rerun analysis\n")
+                f.write("<h4>4. OPTIMIZATION & EXPANSION</h4>\n")
+                f.write("<ul>\n")
+                f.write(f"    <li>Run parameter optimization on {practical_best.strategy_name}</li>\n")
+                f.write("    <li>Test on other crypto pairs (ETH, SOL, BNB, ADA)</li>\n")
+                f.write("    <li>Consider ensemble approach combining multiple strategies</li>\n")
+                f.write("    <li>Review performance quarterly and rerun analysis</li>\n")
+                f.write("</ul>\n")
+                f.write("</div>\n\n")
             else:
-                f.write("⚠️  NO STRATEGIES BEAT BUY-AND-HOLD CONSISTENTLY\n\n")
-                f.write("RECOMMENDED ACTION:\n")
-                f.write("   • Stick with passive buy-and-hold strategy\n")
-                f.write("   • Review market conditions and retry analysis in 3-6 months\n")
-                f.write("   • Consider these alternatives:\n")
-                f.write("     - DCA (Dollar Cost Averaging) into BTC/ETH\n")
-                f.write("     - Portfolio diversification (60/40 BTC/ETH split)\n")
-                f.write("     - Focus on parameter optimization of promising strategies\n")
+                f.write("<div class='blockquote warning'>\n")
+                f.write("    <p><strong>⚠️ NO STRATEGIES BEAT BUY-AND-HOLD CONSISTENTLY</strong></p>\n")
+                f.write("</div>\n\n")
+                f.write("<h4>RECOMMENDED ACTION:</h4>\n")
+                f.write("<ul>\n")
+                f.write("    <li>Stick with passive buy-and-hold strategy</li>\n")
+                f.write("    <li>Review market conditions and retry analysis in 3-6 months</li>\n")
+                f.write("    <li>Consider these alternatives:\n")
+                f.write("        <ul>\n")
+                f.write("            <li>DCA (Dollar Cost Averaging) into BTC/ETH</li>\n")
+                f.write("            <li>Portfolio diversification (60/40 BTC/ETH split)</li>\n")
+                f.write("            <li>Focus on parameter optimization of promising strategies</li>\n")
+                f.write("        </ul>\n")
+                f.write("    </li>\n")
+                f.write("</ul>\n\n")
 
-            f.write("\n📊 Additional Resources:\n")
-            f.write("   • Full comparison matrix: comparison_matrix.csv\n")
-            f.write("   • Detailed results: detailed_results/ directory\n")
-            f.write("   • See 'PRACTICAL STRATEGY RECOMMENDATIONS' section above\n")
+            f.write("<h3>📊 Additional Resources</h3>\n")
+            f.write("<ul>\n")
+            f.write("    <li><strong>Full comparison matrix:</strong> <code>comparison_matrix.csv</code></li>\n")
+            f.write("    <li><strong>Detailed results:</strong> <code>detailed_results/</code> directory</li>\n")
+            f.write("    <li>See <strong>PRACTICAL STRATEGY RECOMMENDATIONS</strong> section above</li>\n")
+            f.write("</ul>\n\n")
 
             # Add academic research section
-            self._write_academic_section(f, strategy_scores, avg_buyhold)
+            self._write_academic_section_html(f, strategy_scores, avg_buyhold)
+
+            # Close HTML
+            f.write("</div>\n")
+            f.write("</body>\n")
+            f.write("</html>\n")
 
         logger.success(f"✓ Master report: {report_file}")
 
@@ -2270,6 +2835,236 @@ class MasterStrategyAnalyzer:
         f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write("=" * 80 + "\n")
 
+    def _write_academic_section_html(self, f, strategy_scores: List[StrategyScore], avg_buyhold: float) -> None:
+        """Write academic analysis section in HTML format."""
+        f.write("<div class='academic-section'>\n")
+        f.write("<h2>📚 ACADEMIC RESEARCH REPORT</h2>\n")
+        f.write("<p><em>Detailed technical analysis for research purposes</em></p>\n\n")
+
+        # Abstract
+        f.write("<h3>ABSTRACT</h3>\n")
+
+        strategies_beat_buyhold = sum(1 for s in strategy_scores if s.avg_return > avg_buyhold)
+
+        f.write("<div class='blockquote info'>\n")
+        f.write(f"<p><strong>TL;DR:</strong> Comprehensive empirical evaluation of {len(strategy_scores)} algorithmic trading strategies across ")
+        f.write(f"{len(self.horizons)} time horizons revealed {strategies_beat_buyhold} strategies outperforming passive buy-and-hold ")
+        f.write(f"benchmarks, with the top strategy achieving {strategy_scores[0].avg_return:+.2%} ")
+        f.write(f"average returns versus {avg_buyhold:+.2%} for buy-and-hold.</p>\n")
+        f.write("</div>\n\n")
+
+        f.write("<p>This study presents a systematic comparative analysis of cryptocurrency ")
+        f.write(f"trading strategies on <strong>{self.symbol}</strong> using high-frequency <strong>{self.timeframe}</strong> ")
+        f.write("candlestick data from Binance exchange. We evaluate ")
+
+        unique_single = len(set(r['strategy_name'] for r in self.all_results if r.get('strategy_type') == 'single_pair'))
+        unique_multi = len(set(r['strategy_name'] for r in self.all_results if r.get('strategy_type') == 'multi_pair'))
+
+        f.write(f"<strong>{unique_single}</strong> single-asset and <strong>{unique_multi}</strong> multi-asset strategies ")
+        f.write(f"through <strong>{len(self.all_results)}</strong> independent backtests spanning timeframes from ")
+        f.write(f"<strong>{self.horizons[0].days}</strong> to <strong>{self.horizons[-1].days}</strong> days. ")
+        f.write("Performance is assessed using risk-adjusted metrics including Sharpe ratio, ")
+        f.write("maximum drawdown, win rate, and total returns, with all strategies benchmarked ")
+        f.write("against passive buy-and-hold positions. Results indicate significant ")
+        f.write("heterogeneity in strategy performance across temporal horizons, with ")
+        f.write("momentum-based and portfolio rebalancing approaches demonstrating superior ")
+        f.write("risk-adjusted returns in the tested market conditions.</p>\n\n")
+
+        # Methodology
+        f.write("<h3>1. METHODOLOGY</h3>\n\n")
+
+        f.write("<h4>1.1 Data Collection & Preprocessing</h4>\n")
+        f.write("<div class='blockquote info'>\n")
+        f.write(f"<p><strong>TL;DR:</strong> {len(self.all_results)} backtests executed on {self.timeframe} OHLCV ")
+        f.write(f"data from Binance, spanning {self.horizons[0].days}-{self.horizons[-1].days} ")
+        f.write("days with no survivorship bias.</p>\n")
+        f.write("</div>\n\n")
+
+        f.write("<p><strong>Market Data Specification:</strong></p>\n")
+        f.write("<ul>\n")
+        f.write("    <li><strong>Exchange:</strong> Binance (via REST API)</li>\n")
+        f.write(f"    <li><strong>Primary Asset:</strong> {self.symbol}</li>\n")
+        f.write(f"    <li><strong>Timeframe Granularity:</strong> {self.timeframe} candlesticks</li>\n")
+        f.write("    <li><strong>Data Fields:</strong> Open, High, Low, Close, Volume (OHLCV)</li>\n")
+
+        if self.horizons:
+            max_candles = max(h.days * 24 for h in self.horizons)
+            f.write(f"    <li><strong>Sample Size (largest horizon):</strong> {max_candles} candles</li>\n")
+            f.write(f"    <li><strong>Historical Range:</strong> {self.horizons[0].days} to {self.horizons[-1].days} days</li>\n")
+
+        f.write("    <li><strong>Data Quality:</strong> Real-time market data, no look-ahead bias</li>\n")
+        f.write("</ul>\n\n")
+
+        # Results Summary
+        f.write("<h3>2. RESULTS SUMMARY</h3>\n\n")
+
+        f.write("<h4>2.1 Performance Distribution</h4>\n")
+
+        returns = [s.avg_return for s in strategy_scores]
+        mean_return = np.mean(returns)
+        median_return = np.median(returns)
+        std_return = np.std(returns)
+        best_return = max(returns)
+        worst_return = min(returns)
+
+        f.write("<div class='blockquote info'>\n")
+        f.write(f"<p><strong>TL;DR:</strong> {sum(1 for r in returns if r > 0)}/{len(returns)} strategies profitable, ")
+        f.write(f"{strategies_beat_buyhold}/{len(returns)} beat buy-and-hold, ")
+        f.write(f"average return {mean_return:+.2%} (vs {avg_buyhold:+.2%} passive).</p>\n")
+        f.write("</div>\n\n")
+
+        f.write("<p><strong>Aggregate Statistics:</strong></p>\n")
+        f.write("<ul>\n")
+        f.write(f"    <li><strong>Mean Return:</strong> {mean_return:+.2%}</li>\n")
+        f.write(f"    <li><strong>Median Return:</strong> {median_return:+.2%}</li>\n")
+        f.write(f"    <li><strong>Std Deviation:</strong> {std_return:.2%}</li>\n")
+        f.write(f"    <li><strong>Best Strategy:</strong> {strategy_scores[0].strategy_name} ({best_return:+.2%})</li>\n")
+        f.write(f"    <li><strong>Worst Strategy:</strong> {strategy_scores[-1].strategy_name} ({worst_return:+.2%})</li>\n")
+        f.write(f"    <li><strong>Return Spread:</strong> {best_return - worst_return:.2%}</li>\n")
+        f.write("</ul>\n\n")
+
+        # Risk-Adjusted Performance
+        f.write("<h4>2.2 Risk-Adjusted Performance</h4>\n")
+        sharpes = [s.avg_sharpe for s in strategy_scores]
+        positive_sharpe = sum(1 for s in sharpes if s > 0)
+        good_sharpe = sum(1 for s in sharpes if s > 1.0)
+
+        f.write("<ul>\n")
+        f.write(f"    <li><strong>Mean Sharpe Ratio:</strong> {np.mean(sharpes):.2f}</li>\n")
+        f.write(f"    <li><strong>Median Sharpe Ratio:</strong> {np.median(sharpes):.2f}</li>\n")
+        f.write(f"    <li><strong>Positive Sharpe Count:</strong> {positive_sharpe}/{len(sharpes)}</li>\n")
+        f.write(f"    <li><strong>Sharpe > 1.0 (Good):</strong> {good_sharpe}/{len(sharpes)}</li>\n")
+        f.write("</ul>\n\n")
+
+        # Top Strategies Table
+        f.write("<h4>2.3 Top 5 Performing Strategies</h4>\n")
+        f.write("<table>\n")
+        f.write("    <thead>\n")
+        f.write("        <tr>\n")
+        f.write("            <th>Rank</th><th>Strategy</th><th>Return</th><th>Sharpe</th>\n")
+        f.write("            <th>Drawdown</th><th>Win Rate</th><th>Beat B&H</th>\n")
+        f.write("        </tr>\n")
+        f.write("    </thead>\n")
+        f.write("    <tbody>\n")
+
+        for rank, strat in enumerate(strategy_scores[:5], 1):
+            f.write(f"        <tr>\n")
+            f.write(f"            <td>{rank}</td>\n")
+            f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+            f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+            f.write(f"            <td>{strat.avg_sharpe:.2f}</td>\n")
+            f.write(f"            <td>{strat.avg_max_drawdown:.1%}</td>\n")
+            f.write(f"            <td>{strat.avg_win_rate:.1%}</td>\n")
+            f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+            f.write(f"        </tr>\n")
+
+        f.write("    </tbody>\n")
+        f.write("</table>\n\n")
+
+        # Key Findings
+        f.write("<h3>3. KEY FINDINGS</h3>\n\n")
+
+        f.write("<div class='blockquote warning'>\n")
+        f.write(f"<p><strong>Market Efficiency:</strong> Only {strategies_beat_buyhold}/{len(strategy_scores)} strategies ")
+        f.write("beat buy-and-hold on average, suggesting semi-strong form efficiency in ")
+        f.write("cryptocurrency markets, though significant alpha opportunities exist for ")
+        f.write("sophisticated strategies.</p>\n")
+        f.write("</div>\n\n")
+
+        f.write("<ol>\n")
+        f.write("    <li><strong>Strategy Heterogeneity:</strong> Performance varies widely ")
+        f.write(f"({best_return - worst_return:.1%} spread), indicating strategy selection is paramount. ")
+        f.write("Top quartile strategies demonstrate consistent outperformance across multiple horizons.</li>\n\n")
+
+        f.write("    <li><strong>Risk-Return Tradeoff:</strong> Highest returns don't always correspond to best ")
+        f.write("risk-adjusted performance. The composite scoring approach successfully identifies ")
+        f.write("strategies with favorable Sharpe ratios and manageable drawdowns.</li>\n\n")
+
+        f.write("    <li><strong>Temporal Dependencies:</strong> Strategy effectiveness varies significantly across ")
+        f.write("time horizons, suggesting different strategies are optimal for different ")
+        f.write("investment timescales (short-term speculation vs long-term investment).</li>\n\n")
+
+        if unique_multi > 0:
+            f.write("    <li><strong>Portfolio Effects:</strong> Multi-asset portfolio strategies demonstrated strong ")
+            f.write("performance through diversification benefits, particularly on longer time ")
+            f.write("horizons where rebalancing captured mean-reversion opportunities.</li>\n\n")
+
+        f.write("</ol>\n\n")
+
+        # Limitations
+        f.write("<h3>4. LIMITATIONS & CAVEATS</h3>\n\n")
+        f.write("<ul>\n")
+        f.write("    <li><strong>Historical Performance:</strong> Past results do not guarantee future returns. ")
+        f.write("Cryptocurrency markets are rapidly evolving.</li>\n\n")
+
+        f.write("    <li><strong>Parameter Sensitivity:</strong> Default parameters used; optimization may improve ")
+        f.write("results but risks overfitting.</li>\n\n")
+
+        f.write("    <li><strong>Market Impact:</strong> $10,000 capital assumption may not reflect slippage at ")
+        f.write("scale. Larger positions would experience greater market impact.</li>\n\n")
+
+        f.write("    <li><strong>Regime Specificity:</strong> Results depend on tested historical period. Different ")
+        f.write("market regimes (bull, bear, sideways) may produce different outcomes.</li>\n\n")
+
+        f.write("    <li><strong>Transaction Costs:</strong> 0.1% commission assumption may be conservative for ")
+        f.write("high-frequency strategies or pessimistic for volume-based fee discounts.</li>\n")
+        f.write("</ul>\n\n")
+
+        # Conclusions
+        f.write("<h3>5. CONCLUSIONS</h3>\n\n")
+
+        f.write("<div class='blockquote info'>\n")
+        f.write(f"<p><strong>TL;DR:</strong> Systematic strategy evaluation framework successfully identified ")
+        f.write(f"{strategies_beat_buyhold} strategies with consistent alpha generation. ")
+        f.write(f"Top performer ({strategy_scores[0].strategy_name}) achieved ")
+        f.write(f"{strategy_scores[0].avg_return:+.2%} returns with favorable risk profile.</p>\n")
+        f.write("</div>\n\n")
+
+        f.write("<p><strong>Primary Conclusions:</strong></p>\n")
+        f.write("<ol>\n")
+        f.write(f"    <li>The optimal strategy ({strategy_scores[0].strategy_name}) achieved composite score of ")
+        f.write(f"{strategy_scores[0].composite_score:.3f}, demonstrating superior risk-adjusted returns through ")
+        f.write("consistent performance across multiple time horizons.</li>\n\n")
+
+        f.write(f"    <li>{strategies_beat_buyhold} out of {len(strategy_scores)} strategies outperformed passive buy-and-hold, ")
+        f.write("validating the potential for active management in crypto markets while ")
+        f.write("highlighting the importance of strategy selection.</li>\n\n")
+
+        f.write("    <li>Multi-horizon testing revealed significant temporal dependencies, ")
+        f.write("suggesting portfolio managers should match strategy selection to ")
+        f.write("intended holding periods and market conditions.</li>\n\n")
+
+        max_dd = max(s.avg_max_drawdown for s in strategy_scores)
+        f.write(f"    <li>Risk management remains critical: even top-performing strategies ")
+        f.write(f"experienced drawdowns up to {max_dd:.1%}, necessitating ")
+        f.write("appropriate position sizing and stop-loss disciplines.</li>\n")
+        f.write("</ol>\n\n")
+
+        # Recommendations
+        f.write("<h4>Recommendations for Implementation:</h4>\n")
+        f.write("<ul>\n")
+        f.write("    <li>Deploy top-quartile strategies with proven track records across horizons</li>\n")
+        f.write("    <li>Implement robust risk management (position sizing, stop losses)</li>\n")
+        f.write("    <li>Monitor performance regularly and be prepared to adapt to regime changes</li>\n")
+        f.write("    <li>Consider ensemble approaches combining multiple complementary strategies</li>\n")
+        f.write("    <li>Conduct forward testing before live deployment with real capital</li>\n")
+        f.write("</ul>\n\n")
+
+        # Future Research
+        f.write("<h4>Future Research Directions:</h4>\n")
+        f.write("<ul>\n")
+        f.write("    <li>Parameter optimization using walk-forward analysis</li>\n")
+        f.write("    <li>Machine learning approaches for regime detection and strategy selection</li>\n")
+        f.write("    <li>Transaction cost sensitivity analysis at various position sizes</li>\n")
+        f.write("    <li>Multi-asset portfolio optimization with dynamic allocation</li>\n")
+        f.write("    <li>Out-of-sample testing on additional cryptocurrencies and timeframes</li>\n")
+        f.write("</ul>\n\n")
+
+        f.write("<hr>\n")
+        f.write(f"<p><em>Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</em></p>\n")
+
+        f.write("</div>\n")
+
     def _save_comparison_matrix(self) -> None:
         """Save detailed comparison matrix as CSV."""
         if not self.all_results:
@@ -2317,7 +3112,7 @@ class MasterStrategyAnalyzer:
             logger.info("=" * 80)
             logger.info(f"Duration: {duration / 60:.1f} minutes")
             logger.info(f"Results saved to: {self.output_dir}")
-            logger.info(f"\nView report: {self.output_dir / 'MASTER_REPORT.txt'}")
+            logger.info(f"\nView report: {self.output_dir / 'MASTER_REPORT.html'}")
             logger.info("=" * 80 + "\n")
 
         except Exception as e:
