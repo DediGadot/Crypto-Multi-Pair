@@ -20,6 +20,18 @@ common technical analysis approaches for crypto markets.
 7. Ichimoku Cloud - Multi-dimensional Japanese indicator system for trend and momentum
 8. VWAP Mean Reversion - Volume-weighted price action with mean reversion around VWAP
 
+**Advanced Strategies**:
+9. Statistical Arbitrage - Regime-aware pairs trading with cointegration and HMM
+
+**SOTA 2025 Portfolio Strategies (Phase 1)**:
+10. Hierarchical Risk Parity (HRP) - Hierarchical clustering portfolio without covariance inversion
+11. Black-Litterman - Bayesian asset allocation combining market equilibrium with views
+12. Risk Parity - Equal risk contribution with optional kurtosis minimization
+
+**SOTA 2025 Advanced Strategies (Phase 2)**:
+13. Copula Pairs Trading - Tail dependency modeling for pairs trading
+14. Deep RL Portfolio - Deep reinforcement learning with PPO for portfolio management
+
 **Usage Example**:
 ```python
 from crypto_trader.strategies.library import (
@@ -56,6 +68,12 @@ from crypto_trader.strategies.library.supertrend_atr import SupertrendATRStrateg
 from crypto_trader.strategies.library.ichimoku_cloud import IchimokuCloudStrategy
 from crypto_trader.strategies.library.vwap_mean_reversion import VWAPMeanReversionStrategy
 from crypto_trader.strategies.library.portfolio_rebalancer import PortfolioRebalancerStrategy
+from crypto_trader.strategies.library.statistical_arbitrage_pairs import StatisticalArbitrageStrategy
+from crypto_trader.strategies.library.hierarchical_risk_parity import HierarchicalRiskParityStrategy
+from crypto_trader.strategies.library.black_litterman import BlackLittermanStrategy
+from crypto_trader.strategies.library.risk_parity import RiskParityStrategy
+from crypto_trader.strategies.library.copula_pairs_trading import CopulaPairsTradingStrategy
+from crypto_trader.strategies.library.deep_rl_portfolio import DeepRLPortfolioStrategy
 
 __all__ = [
     "SMACrossoverStrategy",
@@ -67,6 +85,12 @@ __all__ = [
     "IchimokuCloudStrategy",
     "VWAPMeanReversionStrategy",
     "PortfolioRebalancerStrategy",
+    "StatisticalArbitrageStrategy",
+    "HierarchicalRiskParityStrategy",
+    "BlackLittermanStrategy",
+    "RiskParityStrategy",
+    "CopulaPairsTradingStrategy",
+    "DeepRLPortfolioStrategy",
 ]
 
 # Version information

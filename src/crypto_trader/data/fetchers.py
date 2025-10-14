@@ -126,20 +126,30 @@ class BinanceDataFetcher(DataProvider):
             self._timeframes = list(self.exchange.timeframes.keys())
             logger.info(f"Loaded {len(self._symbols)} symbols and {len(self._timeframes)} timeframes")
         except Exception as e:
-            logger.error(f"Failed to load markets: {e}")
-            self._symbols = []
-            self._timeframes = []
+            logger.warning(
+                f"Failed to load markets from exchange (offline mode enabled): {e}"
+            )
+            # Keep symbols/timeframes unset so validation can fall back to cached data
+            self._symbols = None
+            self._timeframes = None
 
     def get_available_symbols(self) -> List[str]:
         """Get list of available trading pairs."""
+        if not self._symbols:
+            return []
         return self._symbols.copy()
 
     def validate_symbol(self, symbol: str) -> bool:
         """Check if symbol is valid and tradeable."""
+        # If symbols are unknown (offline) allow the call to proceed
+        if not self._symbols:
+            return True
         return symbol in self._symbols
 
     def validate_timeframe(self, timeframe: str) -> bool:
         """Check if timeframe is supported."""
+        if not self._timeframes:
+            return True
         return timeframe in self._timeframes
 
     def _fetch_with_retry(
@@ -594,18 +604,28 @@ class BinanceDataFetcher(DataProvider):
         if self.use_storage and self.storage:
             existing_df = self.storage.load_ohlcv(symbol, timeframe)
 
-        # If we have data and just need to filter it
-        if existing_df is not None and not existing_df.empty and not fetch_all and limit and limit != -1:
-            # Check if we have enough cached data
-            if len(existing_df) >= limit:
-                logger.info(f"Using {len(existing_df)} cached candles for {symbol} {timeframe}")
-                result_df = existing_df.tail(limit)
+        if existing_df is not None and not existing_df.empty and not fetch_all:
+            # Apply optional date filters to cached data
+            cached_df = existing_df
+            if start_date is not None:
+                cached_df = cached_df[cached_df.index >= start_date]
+            if end_date is not None:
+                cached_df = cached_df[cached_df.index <= end_date]
 
-                # Cache it
+            cached_len = len(cached_df)
+
+            if limit and limit > 0:
+                cached_df = cached_df.tail(limit)
+
+            # If limit is None we can serve the filtered cache directly.
+            # If limit is set, only return cached data when we have enough rows.
+            if not cached_df.empty and (limit is None or cached_len >= limit):
+                logger.info(
+                    f"Serving {len(cached_df)} cached candles for {symbol} {timeframe}"
+                )
                 if self.use_cache and self.cache:
-                    self.cache.set_ohlcv(symbol, timeframe, result_df)
-
-                return result_df
+                    self.cache.set_ohlcv(symbol, timeframe, cached_df)
+                return cached_df
 
         # Handle fetch_all or limit=-1 (fetch all available data)
         if fetch_all or limit == -1:

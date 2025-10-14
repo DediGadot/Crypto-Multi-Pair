@@ -1,0 +1,49 @@
+======================================================================
+PORTFOLIO REBALANCING - SUMMARY REPORT
+======================================================================
+
+Run Name: optimized_20251013_1344
+Description: Research-grade optimized portfolio (test outperformance: 28.73%)
+Generated: 2025-10-13 18:48:29
+
+======================================================================
+PORTFOLIO CONFIGURATION
+======================================================================
+
+Assets:
+  BTC/USDT: 25.0%
+  ETH/USDT: 25.0%
+  SOL/USDT: 25.0%
+  BNB/USDT: 25.0%
+
+Rebalancing:
+  Method: threshold
+  Threshold: 10.0%
+  Min Interval: 24 hours
+
+======================================================================
+PERFORMANCE COMPARISON
+======================================================================
+
+Initial Capital: $10,000.00
+
+REBALANCED PORTFOLIO:
+  Final Value: $13,571.01
+  Total Return: 35.71%
+  Rebalance Events: 1
+
+BUY & HOLD (No Rebalancing):
+  Final Value: $13,736.90
+  Total Return: 37.37%
+
+RESULT: Portfolio UNDERPERFORMED by 1.66%
+Status: ❌ Underperformed buy-and-hold
+
+======================================================================
+OUTPUT FILES
+======================================================================
+
+Data Directory: results_optimized/data
+  - portfolio_equity_curve.csv
+  - buy_hold_benchmark.csv
+  - rebalance_events.csv

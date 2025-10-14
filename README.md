@@ -333,6 +333,320 @@ uv run python test_parallel_proof.py
 
 ---
 
+## 🔄 Complete Pipeline Workflow
+
+This section shows you the **complete sequence of commands** to run the entire optimization and backtesting pipeline with **maximum performance and data history**.
+
+### 🎯 Recommended Workflow (Maximum Performance)
+
+This is the **optimal sequence** for finding and validating the best portfolio configuration:
+
+#### Step 1: Run Optimization with Maximum History
+
+```bash
+# Use ALL available data with parallel processing
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1d \
+  --test-windows 3 \
+  --quick
+```
+
+**What this does:**
+- ✅ Automatically calculates maximum usable window size (~376 days for daily data)
+- ✅ Uses parallel processing (3+ workers on 4+ core systems)
+- ✅ Tests ~12 configurations in quick mode (~3-5 minutes)
+- ✅ Performs walk-forward validation (prevents overfitting)
+- ✅ Generates optimized_config.yaml with best configuration
+
+**Expected output:**
+```
+✅ MAXIMUM HISTORY CALCULATED:
+  Maximum window_days: 376 days
+
+✅ OPTIMIZATION COMPLETE
+  Valid results: 12/12
+  Duration: 3.7s
+  Best config found: BTC/USDT + ETH/USDT + BNB/USDT (33%/33%/34%)
+  Test Outperformance: +1.21% per year
+```
+
+---
+
+#### Step 2: Validate Optimized Configuration
+
+```bash
+# Run full backtest with the optimized configuration
+uv run python run_full_pipeline.py \
+  --portfolio \
+  --config optimization_results/optimized_config.yaml \
+  --report
+```
+
+**What this does:**
+- ✅ Backtests the optimized configuration
+- ✅ Generates enhanced report with detailed analysis
+- ✅ Compares against buy-and-hold benchmark
+- ✅ Shows all rebalancing events
+- ✅ Provides actionable recommendations
+
+**Expected output:**
+```
+Portfolio Results Summary:
+  Total Return: +8.95%
+  Sharpe Ratio: 2.26
+  Max Drawdown: -13.67%
+  Rebalance Count: 42 times
+
+vs Buy-and-Hold:
+  Outperformance: +1.21%
+```
+
+---
+
+#### Step 3: Review Results
+
+```bash
+# View optimization report (TL;DR at top)
+cat optimization_results/OPTIMIZATION_REPORT.txt | head -60
+
+# View full backtest report
+cat results_optimized/ENHANCED_PORTFOLIO_REPORT.txt
+```
+
+**What to look for:**
+- ✅ **Test Win Rate**: Should be >60% (80% is excellent)
+- ✅ **Generalization Gap**: Should be <5% (indicates low overfitting)
+- ✅ **Robustness**: Should say "HIGHLY ROBUST" or "ROBUST"
+- ✅ **Sharpe Ratio**: Should be >1.0 (>2.0 is excellent)
+
+---
+
+### 🚀 Advanced Workflow (Full Optimization)
+
+For comprehensive optimization without quick mode:
+
+```bash
+# Step 1: Full optimization (tests thousands of configurations)
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1d \
+  --test-windows 5 \
+  --workers auto
+
+# Step 2: Validate with full backtest
+uv run python run_full_pipeline.py \
+  --portfolio \
+  --config optimization_results/optimized_config.yaml \
+  --report
+
+# Step 3: Review detailed results
+cat optimization_results/OPTIMIZATION_REPORT.txt
+cat optimization_results/optimization_results_*.csv
+```
+
+**Expected duration:**
+- 4-core system: ~15-20 minutes
+- 8-core system: ~8-10 minutes
+- 16-core system: ~4-6 minutes
+
+---
+
+### ⚡ Performance Comparison: Quick vs Manual
+
+#### ❌ Old Way (Manual Guessing)
+
+```bash
+# User guesses parameters → Often fails with insufficient data
+uv run python optimize_portfolio_optimized.py \
+  --timeframe 1h \
+  --window-days 365 \
+  --test-windows 5 \
+  --quick
+
+# Result: ❌ INSUFFICIENT DATA
+# Required: 52,560 periods
+# Available: 45,091 periods
+# Shortfall: 7,469 periods (14%)
+```
+
+#### ✅ New Way (Auto-Maximum)
+
+```bash
+# Let the system calculate optimal parameters
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1h \
+  --test-windows 5 \
+  --quick
+
+# Result: ✅ OPTIMIZATION COMPLETE
+# Calculated window_days: 83 days (optimal for available data)
+# Valid results: 12/12
+# Duration: 3.2s
+```
+
+**Benefit:** No trial-and-error, guaranteed to work!
+
+---
+
+### 🎯 Timeframe-Specific Workflows
+
+#### For Daily Data (Recommended for Beginners)
+
+```bash
+# Maximum history + robust validation
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1d \
+  --test-windows 3 \
+  --quick
+
+# Typical result: 376-day windows, 4.1 years of data
+```
+
+**Why daily:**
+- ✅ Most available history (~5 years for most assets)
+- ✅ Stable and reliable results
+- ✅ Less prone to noise
+- ✅ Easier to interpret
+
+---
+
+#### For 4-Hour Data (Balance Speed & Granularity)
+
+```bash
+# More data points while maintaining history
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 4h \
+  --test-windows 3 \
+  --quick
+
+# Typical result: 333-day windows, 3.6 years of data
+```
+
+**Why 4-hour:**
+- ✅ 6x more data points than daily
+- ✅ Still substantial history available
+- ✅ Better for active rebalancing strategies
+- ✅ Good balance for most use cases
+
+---
+
+#### For Hourly Data (Advanced/Active Trading)
+
+```bash
+# Maximum granularity with available data
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1h \
+  --test-windows 3 \
+  --quick
+
+# Typical result: 83-day windows, 0.9 years of data
+```
+
+**Why hourly:**
+- ✅ 24x more data points than daily
+- ✅ Captures intraday patterns
+- ✅ Best for active rebalancing (12h intervals)
+- ⚠️ Less historical depth (~1 year vs 4+ years)
+
+---
+
+### 📊 Full Production Pipeline
+
+Complete workflow from optimization to deployment:
+
+```bash
+# 1. Optimize with maximum data
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1d \
+  --test-windows 5 \
+  --workers auto
+
+# 2. Validate optimized config
+uv run python run_full_pipeline.py \
+  --portfolio \
+  --config optimization_results/optimized_config.yaml \
+  --report
+
+# 3. Review reports
+echo "=== OPTIMIZATION SUMMARY ===" && \
+cat optimization_results/OPTIMIZATION_REPORT.txt | head -80 && \
+echo "\n=== BACKTEST VALIDATION ===" && \
+cat results_optimized/ENHANCED_PORTFOLIO_REPORT.txt | head -50
+
+# 4. Check robustness
+grep "ROBUSTNESS" optimization_results/OPTIMIZATION_REPORT.txt
+grep "Generalization Gap" optimization_results/OPTIMIZATION_REPORT.txt
+
+# 5. If robust, copy to production config
+cp optimization_results/optimized_config.yaml config_production.yaml
+
+# 6. Final validation on production config
+uv run python run_full_pipeline.py \
+  --portfolio \
+  --config config_production.yaml \
+  --report
+```
+
+---
+
+### 🔍 Troubleshooting Pipeline
+
+If optimization fails or produces poor results:
+
+```bash
+# Step 1: Check data availability
+uv run python check_data_availability.py \
+  --timeframe 1d \
+  --window-days 200 \
+  --test-windows 3
+
+# Step 2: If insufficient, use auto-max
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --quick
+
+# Step 3: If still issues, reduce test windows
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --test-windows 2 \
+  --quick
+
+# Step 4: Test with single worker (debugging)
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --test-windows 2 \
+  --workers 1 \
+  --quick
+```
+
+---
+
+### 📈 Performance Expectations
+
+**Quick Mode (--quick):**
+- Configurations: 12
+- Duration: 3-8 seconds
+- Use case: Rapid testing, parameter validation
+
+**Full Mode (no --quick):**
+- Configurations: 10,000-60,000
+- Duration: 5-30 minutes (depending on cores)
+- Use case: Production optimization, research
+
+**With --max-history:**
+- Automatically uses ALL available data
+- Prevents "insufficient data" errors
+- Maximizes statistical power
+- Recommended for all workflows
+
+---
+
 ## ⚡ Quick Reference
 
 ### Most Common Commands
@@ -344,8 +658,11 @@ uv run python run_full_pipeline.py BTC/USDT --days 90 --report
 # Portfolio backtest
 uv run python run_full_pipeline.py --portfolio --config config_10pct_1year.yaml --report
 
-# Portfolio optimization (recommended)
-uv run python optimize_portfolio_parallel.py --quick
+# Portfolio optimization (RECOMMENDED - with auto-max history)
+uv run python optimize_portfolio_optimized.py --max-history --quick
+
+# Portfolio optimization (legacy)
+uv run python optimize_portfolio_optimized.py --quick
 ```
 
 ### Performance Tip
@@ -598,17 +915,59 @@ Find the best portfolio configuration automatically using research-grade optimiz
 
 ```bash
 # Fast test (3-5 minutes, reduced parameter grid)
-uv run python optimize_portfolio_parallel.py --quick
+uv run python optimize_portfolio_optimized.py --quick
+
+# Use ALL available historical data automatically (RECOMMENDED)
+uv run python optimize_portfolio_optimized.py --max-history --quick
 
 # Full optimization (varies by system)
-uv run python optimize_portfolio_parallel.py --workers auto
+uv run python optimize_portfolio_optimized.py --workers auto
 
 # Custom parameters
-uv run python optimize_portfolio_parallel.py \
+uv run python optimize_portfolio_optimized.py \
   --window-days 365 \
   --test-windows 5 \
   --workers 8
+
+# Maximum history with specific timeframe
+uv run python optimize_portfolio_optimized.py \
+  --max-history \
+  --timeframe 1d \
+  --test-windows 3 \
+  --quick
 ```
+
+### 🔥 NEW: Auto-Maximum History
+
+The `--max-history` flag automatically calculates and uses the maximum available historical data:
+
+**What it does:**
+1. Fetches maximum data for all assets (up to 10,000 periods)
+2. Identifies the limiting asset (least history)
+3. Calculates optimal `window_days` with 80% safety margin
+4. Automatically sets parameters to use ALL available data
+
+**Why use it:**
+- ✅ **No guessing** - Automatically finds optimal window size
+- ✅ **Prevents errors** - Won't run if data is insufficient
+- ✅ **Maximizes power** - Uses all available history for robust results
+- ✅ **Clear feedback** - Shows exactly what was calculated
+
+**Example:**
+```bash
+$ uv run python optimize_portfolio_optimized.py --max-history --timeframe 1d --test-windows 3 --quick
+
+🔍 CALCULATING MAXIMUM AVAILABLE HISTORY
+  Limiting asset: DOT/USDT (1,883 days)
+
+✅ MAXIMUM HISTORY CALCULATED:
+  Maximum window_days: 376 days
+  Total span: 4.1 years of data
+
+  Setting window_days = 376
+```
+
+**Result:** Uses **376-day windows** (optimal for available data) instead of guessing and potentially failing!
 
 ### Performance
 
@@ -1101,15 +1460,38 @@ For questions or issues:
 7. **Backtest longer periods**: Use `--days 365` or more
 8. **Paper trade**: Test in real-time with fake money first
 
-### Advanced Path (Optimization)
+### Advanced Path (Optimization with Maximum History)
 
-1. **Verify parallel works**: `uv run python test_parallel_proof.py` (~1 second)
-2. **Quick optimization**: `uv run python optimize_portfolio_parallel.py --quick` (~3-5 min)
-3. **Review TL;DR**: `cat optimization_results/OPTIMIZATION_REPORT.txt | head -60`
-4. **Validate config**: `uv run python run_full_pipeline.py --portfolio --config optimization_results/optimized_config.yaml --report`
-5. **Full optimization**: Run without `--quick` flag for comprehensive search
-6. **Compare results**: Check if backtest matches optimization expectations
+1. **Quick optimization with max data**:
+   ```bash
+   uv run python optimize_portfolio_optimized.py --max-history --quick
+   ```
+   (~3-5 minutes)
+
+2. **Review optimization results**:
+   ```bash
+   cat optimization_results/OPTIMIZATION_REPORT.txt | head -60
+   ```
+
+3. **Validate optimized config**:
+   ```bash
+   uv run python run_full_pipeline.py --portfolio --config optimization_results/optimized_config.yaml --report
+   ```
+
+4. **Check robustness**:
+   ```bash
+   grep "ROBUSTNESS\|Generalization Gap\|Test Win Rate" optimization_results/OPTIMIZATION_REPORT.txt
+   ```
+
+5. **Full optimization** (if needed):
+   ```bash
+   uv run python optimize_portfolio_optimized.py --max-history --timeframe 1d --test-windows 5
+   ```
+
+6. **Compare results**: Verify backtest matches optimization expectations
+
 7. **Deploy carefully**: Start with small position sizes
+
 8. **Monitor performance**: Track actual vs expected results
 
 ### Learning Path

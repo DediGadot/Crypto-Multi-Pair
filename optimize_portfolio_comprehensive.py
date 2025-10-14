@@ -824,11 +824,16 @@ class ComprehensiveOptimizer:
             f.write("WALK-FORWARD VALIDATION PERIODS:\n")
             f.write("-" * 100 + "\n")
             for i, (train_start, train_end, test_end) in enumerate(splits, 1):
-                train_days = (train_end - train_start).days
-                test_days = (test_end - train_end).days
+                # Handle both pandas Timestamp and numpy datetime64
+                train_days = int((train_end - train_start) / np.timedelta64(1, 'D'))
+                test_days = int((test_end - train_end) / np.timedelta64(1, 'D'))
+                # Convert to Python date for .date() method
+                train_start_date = pd.Timestamp(train_start).date()
+                train_end_date = pd.Timestamp(train_end).date()
+                test_end_date = pd.Timestamp(test_end).date()
                 f.write(f"Split {i}:\n")
-                f.write(f"  Training: {train_start.date()} to {train_end.date()} ({train_days} days)\n")
-                f.write(f"  Testing:  {train_end.date()} to {test_end.date()} ({test_days} days)\n\n")
+                f.write(f"  Training: {train_start_date} to {train_end_date} ({train_days} days)\n")
+                f.write(f"  Testing:  {train_end_date} to {test_end_date} ({test_days} days)\n\n")
 
             # Top 5 configurations
             f.write("\n" + "=" * 100 + "\n")

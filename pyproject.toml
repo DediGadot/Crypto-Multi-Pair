@@ -52,6 +52,23 @@ dependencies = [
     "python-dateutil>=2.8.2",
     "aiohttp>=3.9.0",
     "tqdm>=4.66.0",
+    "numba>=0.58.0",  # JIT compilation for performance optimization
+
+    # Statistical arbitrage (added for ARASA strategy)
+    "statsmodels>=0.14.0",  # VECM, Johansen, ADF cointegration tests
+    "arch>=6.0.0",          # GARCH models for volatility
+    "hmmlearn>=0.3.0",      # Hidden Markov Models for regime detection
+    "scipy>=1.11.0",        # Statistical functions and copulas
+
+    # Advanced portfolio optimization (Phase 1 & 2 strategies)
+    "pyportfolioopt>=1.5.5",     # HRP, Black-Litterman, Risk Parity
+    "cvxpy>=1.4.0",              # Convex optimization for portfolio
+    "copulas>=0.11.0",           # Copula modeling for pairs trading
+
+    # Deep reinforcement learning for portfolio optimization
+    "stable-baselines3>=2.3.0",  # PPO, A2C, SAC agents
+    "gymnasium>=0.29.0",         # RL environments
+    "torch>=2.0.0",              # PyTorch for neural networks
 ]
 
 [project.optional-dependencies]

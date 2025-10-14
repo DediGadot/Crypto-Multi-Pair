@@ -1,0 +1,48 @@
+run:
+  name: optimized_20251013_1344
+  description: 'Research-grade optimized portfolio (test outperformance: 28.73%)'
+  mode: portfolio
+data:
+  timeframe: 1d
+  days: 329
+portfolio:
+  assets:
+  - symbol: BTC/USDT
+    weight: 0.25
+  - symbol: ETH/USDT
+    weight: 0.25
+  - symbol: SOL/USDT
+    weight: 0.25
+  - symbol: BNB/USDT
+    weight: 0.25
+  rebalancing:
+    enabled: true
+    threshold: 0.1
+    rebalance_method: threshold
+    calendar_period_days: 30
+    min_rebalance_interval_hours: 24
+    use_momentum_filter: false
+capital:
+  initial_capital: 10000.0
+costs:
+  commission: 0.001
+  slippage: 0.0005
+output:
+  directory: results_optimized
+  save_trades: true
+  save_equity_curve: true
+logging:
+  level: INFO
+  save_to_file: true
+optimization_metadata:
+  optimization_date: '2025-10-13T13:44:33.697274'
+  method: walk_forward_grid_search
+  metric: out_of_sample_outperformance
+  window_days: 329
+  splits_tested: 1
+  config_id: 9
+  test_avg_outperformance: 0.2873337608087192
+  test_avg_return: 0.22740171700534306
+  test_avg_sharpe: 0.7399588989241949
+  test_win_rate: 1.0
+  generalization_gap: 2.893842206094118

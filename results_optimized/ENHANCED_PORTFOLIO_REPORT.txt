@@ -1,0 +1,113 @@
+====================================================================================================
+ENHANCED PORTFOLIO REBALANCING REPORT
+====================================================================================================
+
+Portfolio Name: optimized_20251013_1344
+Description: Research-grade optimized portfolio (test outperformance: 28.73%)
+Initial Capital: $10,000.00
+Period: 2024-11-19 00:00:00 to 2025-10-13 00:00:00
+Duration: 328 days
+Generated: 2025-10-13 18:48:29
+
+====================================================================================================
+PORTFOLIO METRICS EXPLAINED
+====================================================================================================
+
+Portfolio Return: Total percentage gain/loss from rebalancing strategy
+Buy-and-Hold Return: Baseline return with no rebalancing (maintain initial allocation)
+Outperformance: Additional return gained from rebalancing vs buy-and-hold
+Rebalance Events: Number of times portfolio was rebalanced to target weights
+Rebalance Threshold: Maximum weight deviation allowed before triggering rebalance
+Asset Weight: Percentage of portfolio allocated to each cryptocurrency
+Weight Deviation: How far current weight has drifted from target weight
+
+====================================================================================================
+PERFORMANCE SUMMARY
+====================================================================================================
+
+Metric                         Rebalanced Portfolio      Buy & Hold                Difference          
+----------------------------------------------------------------------------------------------------
+Final Value                    $              13,571.01 $              13,736.90 $           -165.88
+Total Return                                    35.71%                  37.37%             -1.66%
+Rebalance Events                                     1                       0                  1
+
+✗ RESULT: Rebalancing UNDERPERFORMED buy-and-hold by 1.66%
+  Value lost from rebalancing: $165.88
+
+====================================================================================================
+INDIVIDUAL ASSET PERFORMANCE
+====================================================================================================
+
+Asset           Target Weight   Initial Price   Final Price     Return          Contribution   
+----------------------------------------------------------------------------------------------------
+BTC/USDT        25.0%          $    92,310.79 $   114,599.99        24.15%          6.04%
+ETH/USDT        25.0%          $     3,107.44 $     4,133.70        33.03%          8.26%
+SOL/USDT        25.0%          $       237.63 $       193.95       -18.38%         -4.60%
+BNB/USDT        25.0%          $       615.50 $     1,296.77       110.69%         27.67%
+
+ASSET PERFORMANCE RANKING (Best to Worst):
+🥇 1. BNB/USDT        110.69%
+🥈 2. ETH/USDT         33.03%
+🥉 3. BTC/USDT         24.15%
+   4. SOL/USDT        -18.38%
+
+====================================================================================================
+DETAILED REBALANCING EVENT ANALYSIS
+====================================================================================================
+
+Total Rebalancing Events: 1
+Average Days Between Rebalances: 328.0
+
+REBALANCING EVENTS (Chronological):
+
+Event #1 - 2025-10-07 00:00
+Portfolio Value: $14,476.72
+Max Weight Deviation: 11.60%
+Trigger: Threshold exceeded
+
+Weight Changes:
+  BTC/USDT      22.70% →  25.00% ( +2.30%)  [BUY]
+  ETH/USDT      24.72% →  25.00% ( +0.28%)  [BUY]
+  SOL/USDT      15.99% →  25.00% ( +9.01%)  [BUY]
+  BNB/USDT      36.60% →  25.00% (-11.60%)  [SELL]
+
+----------------------------------------------------------------------------------------------------
+
+====================================================================================================
+REBALANCING STRATEGY ANALYSIS
+====================================================================================================
+
+STRATEGY CONFIGURATION:
+- Method: THRESHOLD
+- Threshold: 10.0%
+- Min Interval: 24 hours
+- Momentum Filter: DISABLED
+
+HOW REBALANCING WORKS:
+- THRESHOLD METHOD: Rebalances when any asset weight deviates from target by more than threshold
+- Your threshold: 10.0%
+- Lower threshold = More frequent rebalancing (more mean reversion)
+- Higher threshold = Less frequent rebalancing (more trend following)
+
+====================================================================================================
+RECOMMENDATIONS
+====================================================================================================
+
+✗ Rebalancing underperformed buy-and-hold by 1.66%
+
+POTENTIAL IMPROVEMENTS:
+1. Adjust rebalancing threshold - Current may not suit market conditions
+   - Try: 5.0%, 15.0%, or 20.0%
+2. Enable momentum filter to avoid rebalancing during strong trends
+3. Try hybrid method (calendar + threshold)
+4. Consider different asset allocations
+5. Extend backtest period - Longer periods better demonstrate rebalancing benefits
+
+RISK ANALYSIS:
+- Portfolio Volatility (annualized): 45.91%
+- Buy-and-Hold Volatility (annualized): 45.96%
+✓ Rebalancing reduced volatility by 0.11%
+
+====================================================================================================
+END OF ENHANCED PORTFOLIO REPORT
+====================================================================================================

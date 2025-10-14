@@ -156,6 +156,14 @@ class FullPipelineRunner:
                 "medium_period": 21,
                 "slow_period": 55,
             },
+            "StatisticalArbitrage": {
+                "pair1_symbol": "BTC/USDT",
+                "pair2_symbol": "ETH/USDT",
+                "lookback_period": 180,
+                "entry_threshold": 2.0,
+                "exit_threshold": 0.5,
+                "z_score_window": 90,
+            },
         }
 
         self.results: List[BacktestResult] = []

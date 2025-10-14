@@ -281,6 +281,21 @@ class BacktestEngine:
         entries = entries.reindex(close_series.index, fill_value=False)
         exits = exits.reindex(close_series.index, fill_value=False)
 
+        # Map timeframe to pandas frequency string for metrics annualization
+        freq_map: Dict[Timeframe, str] = {
+            Timeframe.MINUTE_1: "1T",
+            Timeframe.MINUTE_5: "5T",
+            Timeframe.MINUTE_15: "15T",
+            Timeframe.HOUR_1: "1H",
+            Timeframe.HOUR_4: "4H",
+            Timeframe.DAY_1: "1D",
+            Timeframe.WEEK_1: "1W",
+        }
+        freq_value = freq_map.get(timeframe, "1H")
+
+        # Clamp position size percent to valid range
+        position_size_percent = max(0.0, min(config.max_position_size, 1.0))
+
         # Create VectorBT portfolio
         portfolio = vbt.Portfolio.from_signals(
             close=close_series,
@@ -289,9 +304,11 @@ class BacktestEngine:
             init_cash=config.initial_capital,
             fees=config.trading_fee_percent,
             slippage=config.slippage_percent,
-            size=np.inf,  # Use all available cash for each trade
-            size_type='value',  # Size in value terms (VectorBT SizeType.Value)
-            freq='1h'  # Adjust based on timeframe
+            size=position_size_percent,
+            size_type="percent",
+            cash_sharing=True,
+            direction="longonly",
+            freq=freq_value
         )
 
         # Extract trade records
@@ -300,10 +317,16 @@ class BacktestEngine:
             vbt_trades = portfolio.trades.records_readable
 
             if len(vbt_trades) > 0:
+                trade_rows = []
                 for _, trade_row in vbt_trades.iterrows():
                     # Convert VectorBT trade to our Trade type
                     entry_time = trade_row['Entry Timestamp']
                     exit_time = trade_row['Exit Timestamp']
+
+                    # Skip open trades without exit timestamp
+                    if pd.isna(exit_time):
+                        continue
+
                     entry_price = trade_row['Avg Entry Price']  # VectorBT uses 'Avg Entry Price'
                     exit_price = trade_row['Avg Exit Price']    # VectorBT uses 'Avg Exit Price'
                     size = trade_row['Size']
@@ -313,9 +336,12 @@ class BacktestEngine:
                     # Calculate duration
                     duration = (exit_time - entry_time).total_seconds() / 60
 
-                    # Estimate fees (VectorBT includes them in PnL)
-                    trade_value = size * entry_price
-                    fees = trade_value * config.trading_fee_percent * 2  # Entry + exit
+                    entry_fees = float(trade_row.get('Entry Fees', 0.0))
+                    exit_fees = float(trade_row.get('Exit Fees', 0.0))
+                    total_fees = float(trade_row.get('Total Fees', entry_fees + exit_fees))
+
+                    direction = trade_row.get('Direction', 'Long')
+                    side = OrderSide.BUY if str(direction).lower().startswith("long") else OrderSide.SELL
 
                     trade = Trade(
                         symbol=symbol,
@@ -323,20 +349,20 @@ class BacktestEngine:
                         exit_time=exit_time,
                         entry_price=entry_price,
                         exit_price=exit_price,
-                        side=OrderSide.BUY,  # VectorBT default is long
+                        side=side,
                         quantity=size,
                         pnl=pnl,
                         pnl_percent=return_pct,
-                        fees=fees
+                        fees=total_fees
                     )
                     trades_list.append(trade)
 
-                    # Create DataFrame for metrics calculation
-                    trades_df = pd.DataFrame([{
-                        'pnl': t.pnl,
-                        'fees': t.fees,
-                        'duration_minutes': t.duration_minutes
-                    } for t in trades_list])
+                    trade_rows.append({
+                        'pnl': pnl,
+                        'fees': total_fees,
+                        'duration_minutes': duration
+                    })
+                trades_df = pd.DataFrame(trade_rows)
             else:
                 trades_df = pd.DataFrame()
         except Exception as e:

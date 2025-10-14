@@ -1,0 +1,13 @@
+================================================================================
+CRYPTO TRADING MASTER STRATEGY ANALYSIS
+================================================================================
+Asset: BTC/USDT
+Timeframe: 1h
+Strategies Tested: 0
+Time Horizons: ['30d', '90d', '180d']
+Total Backtests: 0
+Parallel Workers: 2
+Generated: 2025-10-13 19:04:52
+================================================================================
+
+❌ No results available

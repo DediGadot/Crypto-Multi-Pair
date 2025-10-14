@@ -1,0 +1,81 @@
+================================================================================
+CRYPTO TRADING MASTER STRATEGY ANALYSIS
+================================================================================
+Asset: BTC/USDT
+Timeframe: 1h
+Strategies Tested: 8
+Time Horizons: ['30d', '90d', '180d']
+Total Backtests: 24
+Parallel Workers: 4
+Generated: 2025-10-13 20:23:47
+================================================================================
+
+🏆 OVERALL BEST STRATEGY
+================================================================================
+Strategy: SMA_Crossover
+Composite Score: 0.750 / 1.000
+Rank: #1 out of 8
+
+Performance Summary:
+  • Average Return:   +7.7%
+  • Buy-and-Hold Avg:   +7.0%
+  • Outperformance:   +0.7%
+  • Sharpe Ratio: 1.69
+  • Max Drawdown: 9.0%
+  • Win Rate: 58.2%
+  • Horizons Won: 2/3
+
+================================================================================
+STRATEGY RANKINGS (by Composite Score)
+================================================================================
+Rank   Strategy                  Score    Return     Sharpe   MaxDD      WinRate    Won     
+--------------------------------------------------------------------------------
+1      SMA_Crossover             0.750    +7.7%     1.69     9.0%      58.2%     2/3
+2      Ichimoku_Cloud            0.625    +6.4%     -0.21    13.0%     33.3%     1/3
+3      TripleEMA                 0.616    -0.6%     0.74     13.0%     27.2%     1/3
+4      BollingerBreakout         0.519    -6.8%     -0.94    16.5%     28.4%     1/3
+5      Supertrend_ATR            0.488    -6.9%     -1.78    16.5%     25.9%     1/3
+6      VWAP_MeanReversion        0.426    -9.8%     -3.18    16.1%     22.2%     0/3
+7      RSI_MeanReversion         0.421    -10.3%    -3.26    16.5%     23.3%     0/3
+8      MACD_Momentum             0.213    -26.7%    -5.71    28.4%     25.6%     0/3
+
+       Buy-and-Hold Baseline              +7.0%    
+
+================================================================================
+TIME HORIZON ANALYSIS
+================================================================================
+
+Best Strategy by Horizon:
+  30d        TripleEMA                 (  +5.9% vs buy-hold   -3.2%)
+  90d        SMA_Crossover             (  +1.0% vs buy-hold   -6.6%)
+  180d       Ichimoku_Cloud            ( +30.9% vs buy-hold  +30.9%)
+
+================================================================================
+DETAILED ANALYSIS: SMA_Crossover (Best Overall)
+================================================================================
+
+Performance Across Horizons:
+Horizon    Return     vs B&H     Sharpe   MaxDD      WinRate    Trades  
+--------------------------------------------------------------------------------
+30d        +5.5%     +8.6%     3.31     4.9%      100.0%    1       
+90d        +1.0%     +7.6%     0.30     9.1%      28.6%     7       
+180d       +16.6%    -14.3%    1.46     12.9%     46.2%     13      
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. IMMEDIATE ACTIONS:
+   • Review detailed SMA_Crossover analysis
+   • Validate with forward testing before live deployment
+   • Check comparison matrix: comparison_matrix.csv
+
+2. OPTIMIZATION:
+   • Run parameter optimization on SMA_Crossover
+   • Test on multiple assets (ETH, SOL, BNB)
+   • Consider portfolio diversification
+
+3. RISK MANAGEMENT:
+   • Set stop loss at 2× max drawdown (17.9%)
+   • Use conservative position sizing initially
+   • Monitor actual vs expected performance weekly

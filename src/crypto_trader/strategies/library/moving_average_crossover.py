@@ -60,7 +60,7 @@ class MovingAverageCrossover(BaseStrategy):
         ma_type (str): Type of moving average - 'SMA' or 'EMA' (default: 'SMA')
     """
 
-    def __init__(self, name: str, config: Dict[str, Any] | None = None):
+    def __init__(self, name: str = "MovingAverageCrossover", config: Dict[str, Any] | None = None):
         """Initialize the Moving Average Crossover strategy."""
         super().__init__(name, config)
         self.fast_period = 10
