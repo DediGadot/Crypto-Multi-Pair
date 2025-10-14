@@ -441,16 +441,23 @@ def _calculate_sharpe_ratio_safe(returns: pd.Series, periods_per_year: float) ->
     return max(min(sharpe, 100.0), -100.0)
 
 
-def _calculate_data_limit(timeframe: str, horizon_days: int) -> int:
+def _calculate_data_limit(
+    timeframe: str,
+    horizon_days: int,
+    warmup_multiplier: float = 1.0
+) -> int:
     """
     Calculate the number of candles needed for a given timeframe and horizon.
 
     Args:
         timeframe: Timeframe string (e.g., '1h', '1d')
         horizon_days: Number of days in the horizon
+        warmup_multiplier: Multiplier for warmup period (default 1.0 = no warmup)
+                          Use 3.0 for multi-pair strategies (2x warmup + 1x test)
+                          Use 4.0 for advanced strategies (HRP, Statistical Arbitrage)
 
     Returns:
-        Number of candles needed
+        Number of candles needed (includes warmup period)
     """
     timeframe_to_periods = {
         "1m": 24 * 60,
@@ -462,7 +469,10 @@ def _calculate_data_limit(timeframe: str, horizon_days: int) -> int:
         "1w": 1 / 7
     }
     periods_per_day = timeframe_to_periods.get(timeframe, 24)  # Default to hourly
-    return int(horizon_days * periods_per_day)
+
+    # Apply warmup multiplier for strategies that need historical context
+    total_days = int(horizon_days * warmup_multiplier)
+    return int(total_days * periods_per_day)
 
 
 def _format_error_message(error: Exception, context: str = "", max_length: int = 500) -> str:
@@ -871,8 +881,13 @@ def run_multipair_backtest_worker(
 
                 fetcher = BinanceDataFetcher()
 
-                # Calculate limit based on timeframe
-                limit = _calculate_data_limit(timeframe, horizon_days)
+                # Calculate limit based on timeframe WITH WARMUP for multi-pair strategies
+                # Statistical Arbitrage needs more historical data for stable cointegration tests
+                limit = _calculate_data_limit(
+                    timeframe,
+                    horizon_days,
+                    warmup_multiplier=1.5  # 1.5x data (50% warmup) - reduced for memory efficiency
+                )
 
                 # Fetch data for both assets
                 asset1_data = fetcher.get_ohlcv(pair[0], timeframe, limit=limit)
@@ -1100,8 +1115,13 @@ def run_multipair_backtest_worker(
 
                 fetcher = BinanceDataFetcher()
 
-                # Calculate limit based on timeframe
-                limit = _calculate_data_limit(timeframe, horizon_days)
+                # Calculate limit based on timeframe WITH WARMUP for advanced portfolio strategies
+                # HRP, Black-Litterman, etc. need long history for stable covariance matrices
+                limit = _calculate_data_limit(
+                    timeframe,
+                    horizon_days,
+                    warmup_multiplier=1.5  # 1.5x data (50% warmup) - reduced for memory efficiency
+                )
 
                 # Fetch data for all assets
                 asset_data = {}
@@ -1394,7 +1414,8 @@ class MasterStrategyAnalyzer:
         """
         self.symbol = symbol
         self.timeframe = timeframe
-        self.workers = workers
+        # Limit workers for multi-pair mode to reduce memory usage
+        self.workers = min(workers, 2) if multi_pair else workers
         self.quick_mode = quick_mode
         self.multi_pair = multi_pair
 
@@ -1585,8 +1606,22 @@ class MasterStrategyAnalyzer:
 
     def run_parallel_analysis(self) -> None:
         """Run parallel backtests for all strategies and horizons."""
+        # Memory monitoring
+        try:
+            import psutil
+            import os
+            process = psutil.Process(os.getpid())
+            initial_memory_mb = process.memory_info().rss / 1024 / 1024
+            memory_monitoring = True
+        except ImportError:
+            logger.warning("psutil not installed - memory monitoring disabled. Install with: pip install psutil")
+            memory_monitoring = False
+            initial_memory_mb = 0
+
         logger.info("\n" + "=" * 80)
         logger.info("RUNNING PARALLEL STRATEGY ANALYSIS")
+        if memory_monitoring:
+            logger.info(f"Initial memory usage: {initial_memory_mb:.1f} MB")
         logger.info("=" * 80)
 
         # Discover strategies
@@ -1618,6 +1653,14 @@ class MasterStrategyAnalyzer:
                 self.buy_hold_results[horizon.name] = self.calculate_buy_hold(data, horizon)
             except Exception as e:
                 logger.error(f"  ✗ {horizon.name}: {e}")
+
+        # Clear cached data for multi-pair mode (workers fetch their own)
+        if self.multi_pair:
+            logger.info("Clearing horizon data cache for multi-pair mode to reduce memory usage")
+            horizon_data.clear()
+            import gc
+            gc.collect()
+            logger.success(f"✓ Cache cleared, workers will fetch data independently")
 
         # Run backtests in parallel
         logger.info("\nRunning parallel backtests...")
@@ -1692,6 +1735,15 @@ class MasterStrategyAnalyzer:
 
                     completed += 1
                     pbar.update(1)
+
+        # Final memory report
+        if memory_monitoring:
+            final_memory_mb = process.memory_info().rss / 1024 / 1024
+            memory_used_mb = final_memory_mb - initial_memory_mb
+            logger.info(f"\n📊 Memory Usage Report:")
+            logger.info(f"  Initial: {initial_memory_mb:.1f} MB")
+            logger.info(f"  Final: {final_memory_mb:.1f} MB")
+            logger.info(f"  Used: {memory_used_mb:+.1f} MB")
 
         logger.success(f"\n✓ Completed {len(self.all_results)} successful backtests out of {total_jobs}")
 
@@ -2198,6 +2250,18 @@ class MasterStrategyAnalyzer:
             f.write(f"    <p><strong>Timeframe:</strong> {self.timeframe}</p>\n")
             f.write(f"    <p><strong>Strategies Tested:</strong> {len(strategy_scores)}</p>\n")
             f.write(f"    <p><strong>Time Horizons:</strong> {', '.join([h.name for h in self.horizons])}</p>\n")
+
+            # Get date range from the longest horizon data
+            try:
+                longest_horizon = max(self.horizons, key=lambda h: h.days)
+                data = self.fetch_data(longest_horizon.days)
+                if hasattr(data, 'index') and len(data) > 0:
+                    start_date = data.index[0].strftime('%Y-%m-%d')
+                    end_date = data.index[-1].strftime('%Y-%m-%d')
+                    f.write(f"    <p><strong>Data Period:</strong> {start_date} to {end_date} ({len(data):,} candles)</p>\n")
+            except Exception as e:
+                logger.debug(f"Could not extract date range: {e}")
+
             f.write(f"    <p><strong>Total Backtests:</strong> {len(self.all_results)}</p>\n")
             f.write(f"    <p><strong>Parallel Workers:</strong> {self.workers}</p>\n")
             f.write(f"    <p><strong>Generated:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n")
