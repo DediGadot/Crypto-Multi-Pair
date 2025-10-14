@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Trading Strategies Documentation - Crypto Trading System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.2);
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-box .number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .section-header .description {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .strategy-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .strategy-title {
+            font-size: 1.6em;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .strategy-type {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .strategy-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+
+        .info-section {
+            margin: 20px 0;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label::before {
+            content: "▸";
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .info-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+        }
+
+        .info-content ul {
+            list-style-position: inside;
+            margin-left: 10px;
+        }
+
+        .info-content li {
+            margin: 8px 0;
+        }
+
+        .parameters-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .parameters-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .parameters-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .parameters-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .tag.trend {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tag.mean-reversion {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .tag.momentum {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tag.volatility {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tag.portfolio {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .tag.sota {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            font-weight: 700;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .pros h4 {
+            color: #155724;
+        }
+
+        .cons h4 {
+            color: #721c24;
+        }
+
+        .best-for {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .best-for h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: #343a40;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        .comparison-table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 72px;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table .strategy-name {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Trading Strategies Documentation</h1>
+            <div class="subtitle">Comprehensive Guide to All Cryptocurrency Trading Strategies</div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number">14+</div>
+                    <div class="label">Total Strategies</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">5</div>
+                    <div class="label">Strategy Categories</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">3</div>
+                    <div class="label">SOTA 2024/2025</div>
+                </div>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#core">Core Strategies</a></li>
+                <li><a href="#sota-2024">SOTA 2024</a></li>
+                <li><a href="#portfolio">Portfolio Strategies</a></li>
+                <li><a href="#advanced">Advanced Strategies</a></li>
+                <li><a href="#comparison">Comparison Table</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- OVERVIEW SECTION -->
+            <section id="overview" class="section">
+                <div class="section-header">
+                    <h2>Strategy Overview</h2>
+                    <div class="description">Understanding the complete trading strategy ecosystem</div>
+                </div>
+
+                <div class="info-content">
+                    <p><strong>This system implements 14+ battle-tested trading strategies</strong> organized into five main categories:</p>
+                    <ul>
+                        <li><strong>Core Strategies (5):</strong> Fundamental technical analysis approaches suitable for all markets</li>
+                        <li><strong>SOTA 2024 (3):</strong> State-of-the-art strategies optimized for modern cryptocurrency markets</li>
+                        <li><strong>Portfolio Strategies (4):</strong> Multi-asset allocation and rebalancing approaches</li>
+                        <li><strong>Advanced Strategies (3+):</strong> Sophisticated quantitative and machine learning methods</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Each strategy includes:</strong></p>
+                    <ul>
+                        <li>Detailed parameter descriptions with optimal defaults</li>
+                        <li>Entry and exit signal logic</li>
+                        <li>Real-world validation with live market data</li>
+                        <li>Pros, cons, and best use cases</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- CORE STRATEGIES SECTION -->
+            <section id="core" class="section">
+                <div class="section-header">
+                    <h2>Core Strategies</h2>
+                    <div class="description">Fundamental technical analysis strategies for single-pair trading</div>
+                </div>
+
+                <div class="strategy-grid">
+                    <!-- SMA Crossover -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">1. SMA Crossover</h3>
+                            <span class="strategy-type">Trend Following</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Classic trend-following strategy using Simple Moving Average crossovers. Generates buy signals on Golden Cross (fast SMA crosses above slow SMA) and sell signals on Death Cross.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>SMA(50)</strong> - Fast moving average<br>
+                                <strong>SMA(200)</strong> - Slow moving average
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>fast_period</td>
+                                    <td>50</td>
+                                    <td>Short-term trend period</td>
+                                </tr>
+                                <tr>
+                                    <td>slow_period</td>
+                                    <td>200</td>
+                                    <td>Long-term trend period</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Fast SMA crosses above Slow SMA (Golden Cross)<br>
+                                <strong>SELL:</strong> Fast SMA crosses below Slow SMA (Death Cross)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Simple and reliable</li>
+                                    <li>Catches major trends</li>
+                                    <li>Easy to understand</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Lags at trend reversals</li>
+                                    <li>False signals in sideways markets</li>
+                                    <li>Late entries/exits</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Trending markets (bull or bear)</li>
+                                <li>Clear directional moves</li>
+                                <li>Beginners learning technical analysis</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag trend">Trend Following</span>
+                            <span class="tag">Moving Average</span>
+                            <span class="tag">Crossover</span>
+                        </div>
+                    </div>
+
+                    <!-- RSI Mean Reversion -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">2. RSI Mean Reversion</h3>
+                            <span class="strategy-type">Mean Reversion</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Mean reversion strategy using RSI to identify overbought/oversold conditions. Buys when RSI drops below 30 (oversold) and sells when RSI rises above 70 (overbought).
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>RSI(14)</strong> - Relative Strength Index (0-100 scale)
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>rsi_period</td>
+                                    <td>14</td>
+                                    <td>Lookback period for RSI</td>
+                                </tr>
+                                <tr>
+                                    <td>oversold</td>
+                                    <td>30</td>
+                                    <td>Buy threshold</td>
+                                </tr>
+                                <tr>
+                                    <td>overbought</td>
+                                    <td>70</td>
+                                    <td>Sell threshold</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> RSI crosses below 30 (oversold - price likely to bounce)<br>
+                                <strong>SELL:</strong> RSI crosses above 70 (overbought - price likely to correct)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Catches reversals early</li>
+                                    <li>Works well in ranging markets</li>
+                                    <li>High win rate potential</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Fails in strong trends</li>
+                                    <li>Can stay overbought/oversold for long periods</li>
+                                    <li>Requires good timing</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Range-bound markets</li>
+                                <li>Clear support/resistance levels</li>
+                                <li>High volatility with frequent reversals</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag mean-reversion">Mean Reversion</span>
+                            <span class="tag">RSI</span>
+                            <span class="tag">Oscillator</span>
+                        </div>
+                    </div>
+
+                    <!-- MACD Momentum -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">3. MACD Momentum</h3>
+                            <span class="strategy-type">Momentum</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Momentum strategy using MACD signal line crossovers. Combines trend direction with momentum strength through MACD line, signal line, and histogram analysis.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>MACD Line:</strong> EMA(12) - EMA(26)<br>
+                                <strong>Signal Line:</strong> EMA(9) of MACD<br>
+                                <strong>Histogram:</strong> MACD - Signal
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>fast</td>
+                                    <td>12</td>
+                                    <td>Fast EMA for MACD</td>
+                                </tr>
+                                <tr>
+                                    <td>slow</td>
+                                    <td>26</td>
+                                    <td>Slow EMA for MACD</td>
+                                </tr>
+                                <tr>
+                                    <td>signal</td>
+                                    <td>9</td>
+                                    <td>Signal line smoothing</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> MACD line crosses above signal line (bullish momentum)<br>
+                                <strong>SELL:</strong> MACD line crosses below signal line (bearish momentum)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Combines trend and momentum</li>
+                                    <li>Histogram shows strength</li>
+                                    <li>Widely used and reliable</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Lags at reversals</li>
+                                    <li>Can whipsaw in consolidation</li>
+                                    <li>Multiple components to interpret</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Medium to long-term trends</li>
+                                <li>Confirming trend strength</li>
+                                <li>Identifying momentum shifts</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag momentum">Momentum</span>
+                            <span class="tag">MACD</span>
+                            <span class="tag">Crossover</span>
+                        </div>
+                    </div>
+
+                    <!-- Bollinger Breakout -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">4. Bollinger Breakout</h3>
+                            <span class="strategy-type">Volatility</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Volatility breakout strategy using Bollinger Bands. Captures explosive price moves when price breaks above upper band (bullish) or below lower band (bearish).
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>Middle Band:</strong> SMA(20)<br>
+                                <strong>Upper Band:</strong> Middle + 2×StdDev<br>
+                                <strong>Lower Band:</strong> Middle - 2×StdDev
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>bb_period</td>
+                                    <td>20</td>
+                                    <td>Moving average period</td>
+                                </tr>
+                                <tr>
+                                    <td>bb_std</td>
+                                    <td>2.0</td>
+                                    <td>Standard deviations for bands</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Price breaks above upper Bollinger Band (bullish breakout)<br>
+                                <strong>SELL:</strong> Price breaks below lower Bollinger Band (bearish breakout)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Adapts to volatility</li>
+                                    <li>Identifies breakouts early</li>
+                                    <li>Visual and intuitive</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>False breakouts common</li>
+                                    <li>Can be whipsawed</li>
+                                    <li>Requires confirmation</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Volatile markets</li>
+                                <li>Breakouts from consolidation</li>
+                                <li>Trending markets with momentum</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag volatility">Volatility</span>
+                            <span class="tag">Bollinger Bands</span>
+                            <span class="tag">Breakout</span>
+                        </div>
+                    </div>
+
+                    <!-- Triple EMA -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">5. Triple EMA</h3>
+                            <span class="strategy-type">Trend Following</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Advanced trend-following using three EMAs with reduced lag. Requires bullish/bearish alignment (8>21>55 or 8<21<55) plus price crossover for high-probability signals.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>Fast EMA(8)</strong> - Very short-term<br>
+                                <strong>Medium EMA(21)</strong> - Short-term<br>
+                                <strong>Slow EMA(55)</strong> - Medium-term
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>fast</td>
+                                    <td>8</td>
+                                    <td>Very short-term EMA</td>
+                                </tr>
+                                <tr>
+                                    <td>medium</td>
+                                    <td>21</td>
+                                    <td>Short-term EMA</td>
+                                </tr>
+                                <tr>
+                                    <td>slow</td>
+                                    <td>55</td>
+                                    <td>Medium-term EMA</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Bullish alignment (8>21>55) AND price crosses above EMA(8)<br>
+                                <strong>SELL:</strong> Bearish alignment (8<21<55) AND price crosses below EMA(8)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>High probability signals</li>
+                                    <li>Strong trend confirmation</li>
+                                    <li>Fewer false signals than simple crossovers</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Fewer trade opportunities</li>
+                                    <li>Late entries in fast moves</li>
+                                    <li>Requires patience</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Strong trending markets</li>
+                                <li>Need high-probability signals</li>
+                                <li>Avoiding false signals</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag trend">Trend Following</span>
+                            <span class="tag">EMA</span>
+                            <span class="tag">Trend Filter</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SOTA 2024 SECTION -->
+            <section id="sota-2024" class="section">
+                <div class="section-header">
+                    <h2>State-of-the-Art 2024 Strategies</h2>
+                    <div class="description">Advanced strategies optimized for modern cryptocurrency markets</div>
+                </div>
+
+                <div class="strategy-grid">
+                    <!-- Supertrend ATR -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">6. Supertrend ATR</h3>
+                            <span class="strategy-type">SOTA 2024</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            State-of-the-art trend-following using Supertrend indicator with ATR-based volatility stops and RSI confirmation to filter false signals.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>Supertrend:</strong> ATR(10) × 3.0 multiplier<br>
+                                <strong>RSI(14):</strong> Momentum confirmation<br>
+                                <strong>ATR(14):</strong> Volatility measurement
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>atr_period</td>
+                                    <td>10</td>
+                                    <td>ATR calculation period</td>
+                                </tr>
+                                <tr>
+                                    <td>atr_multiplier</td>
+                                    <td>3.0</td>
+                                    <td>Supertrend band multiplier (optimized for crypto)</td>
+                                </tr>
+                                <tr>
+                                    <td>rsi_period</td>
+                                    <td>14</td>
+                                    <td>RSI confirmation period</td>
+                                </tr>
+                                <tr>
+                                    <td>rsi_long_threshold</td>
+                                    <td>50</td>
+                                    <td>RSI threshold for long entries</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Supertrend flips to bullish (green) AND RSI > 50<br>
+                                <strong>SELL:</strong> Supertrend flips to bearish (red) OR ATR trailing stop hit
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Adapts to market volatility</li>
+                                    <li>Built-in trailing stops</li>
+                                    <li>RSI filter reduces whipsaws</li>
+                                    <li>Optimized for crypto markets</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>May exit too early in strong trends</li>
+                                    <li>Requires proper parameter tuning</li>
+                                    <li>Less effective in ranging markets</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Volatile cryptocurrency markets</li>
+                                <li>Catching strong trending moves</li>
+                                <li>Traders wanting automatic stop-loss management</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2024</span>
+                            <span class="tag trend">Trend Following</span>
+                            <span class="tag volatility">Supertrend</span>
+                            <span class="tag">RSI</span>
+                        </div>
+                    </div>
+
+                    <!-- Ichimoku Cloud -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">7. Ichimoku Cloud</h3>
+                            <span class="strategy-type">SOTA 2024</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Comprehensive Japanese indicator system combining trend, momentum, and support/resistance. Provides multiple confirmation layers for high-probability signals.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>Conversion Line (Tenkan-sen):</strong> 9-period<br>
+                                <strong>Base Line (Kijun-sen):</strong> 26-period<br>
+                                <strong>Leading Span A:</strong> (Conv + Base) / 2<br>
+                                <strong>Leading Span B:</strong> 52-period<br>
+                                <strong>Lagging Span (Chikou):</strong> 26-period displaced
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>conversion_period</td>
+                                    <td>9</td>
+                                    <td>Tenkan-sen period</td>
+                                </tr>
+                                <tr>
+                                    <td>base_period</td>
+                                    <td>26</td>
+                                    <td>Kijun-sen period</td>
+                                </tr>
+                                <tr>
+                                    <td>span_b_period</td>
+                                    <td>52</td>
+                                    <td>Senkou Span B period</td>
+                                </tr>
+                                <tr>
+                                    <td>displacement</td>
+                                    <td>26</td>
+                                    <td>Chikou Span displacement</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Price > Cloud AND Conversion > Base AND Lagging Span confirms<br>
+                                <strong>SELL:</strong> Price < Cloud AND Conversion < Base AND Lagging Span confirms
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Multi-dimensional confirmation</li>
+                                    <li>Cloud provides dynamic support/resistance</li>
+                                    <li>Excellent risk management</li>
+                                    <li>Visual trend clarity</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Complex to understand initially</li>
+                                    <li>Multiple components to interpret</li>
+                                    <li>Lagging indicator</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Identifying strong trends</li>
+                                <li>Multi-timeframe analysis</li>
+                                <li>Traders wanting comprehensive market view</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2024</span>
+                            <span class="tag trend">Trend Following</span>
+                            <span class="tag">Ichimoku</span>
+                            <span class="tag">Multi-Timeframe</span>
+                        </div>
+                    </div>
+
+                    <!-- VWAP Mean Reversion -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">8. VWAP Mean Reversion</h3>
+                            <span class="strategy-type">SOTA 2024</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Volume-weighted price action strategy that trades mean reversion around VWAP with RSI confirmation. Incorporates volume analysis for institutional-level insights.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Indicators</div>
+                            <div class="info-content">
+                                <strong>VWAP:</strong> Volume-Weighted Average Price<br>
+                                <strong>VWAP Bands:</strong> VWAP ± (StdDev × multiplier)<br>
+                                <strong>RSI(14):</strong> Momentum confirmation
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>vwap_period</td>
+                                    <td>Session</td>
+                                    <td>VWAP calculation period</td>
+                                </tr>
+                                <tr>
+                                    <td>band_multiplier</td>
+                                    <td>2.0</td>
+                                    <td>Standard deviation multiplier</td>
+                                </tr>
+                                <tr>
+                                    <td>rsi_period</td>
+                                    <td>14</td>
+                                    <td>RSI confirmation period</td>
+                                </tr>
+                                <tr>
+                                    <td>rsi_oversold</td>
+                                    <td>30</td>
+                                    <td>Oversold threshold</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Entry/Exit Signals</div>
+                            <div class="info-content">
+                                <strong>BUY:</strong> Price touches lower VWAP band AND RSI < 30 (oversold)<br>
+                                <strong>SELL:</strong> Price touches upper VWAP band AND RSI > 70 (overbought)
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Incorporates volume data</li>
+                                    <li>Institutional-level insights</li>
+                                    <li>Dynamic support/resistance</li>
+                                    <li>Works well intraday</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Resets each session</li>
+                                    <li>Requires high volume data</li>
+                                    <li>Less effective in low-volume periods</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Intraday trading</li>
+                                <li>High-volume cryptocurrency pairs</li>
+                                <li>Mean reversion in liquid markets</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2024</span>
+                            <span class="tag mean-reversion">Mean Reversion</span>
+                            <span class="tag">VWAP</span>
+                            <span class="tag">Volume</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PORTFOLIO STRATEGIES SECTION -->
+            <section id="portfolio" class="section">
+                <div class="section-header">
+                    <h2>Portfolio Strategies</h2>
+                    <div class="description">Multi-asset allocation and rebalancing approaches</div>
+                </div>
+
+                <div class="strategy-grid">
+                    <!-- Portfolio Rebalancer -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">9. Portfolio Rebalancer</h3>
+                            <span class="strategy-type">Portfolio</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Multi-asset portfolio with systematic threshold-based rebalancing. Research-backed approach that outperforms buy-and-hold by forcing "buy low, sell high" discipline.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Maintains target asset allocations and rebalances when weights drift beyond threshold. Supports three rebalancing methods:
+                                <ul>
+                                    <li><strong>Threshold:</strong> Rebalance when deviation > threshold (e.g., 15%)</li>
+                                    <li><strong>Calendar:</strong> Rebalance on fixed schedule (e.g., monthly)</li>
+                                    <li><strong>Hybrid:</strong> Rebalance when either condition is met</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>assets</td>
+                                    <td>-</td>
+                                    <td>List of (symbol, weight) tuples</td>
+                                </tr>
+                                <tr>
+                                    <td>rebalance_threshold</td>
+                                    <td>0.15</td>
+                                    <td>15% deviation triggers rebalance</td>
+                                </tr>
+                                <tr>
+                                    <td>rebalance_method</td>
+                                    <td>threshold</td>
+                                    <td>threshold/calendar/hybrid</td>
+                                </tr>
+                                <tr>
+                                    <td>min_rebalance_interval_hours</td>
+                                    <td>24</td>
+                                    <td>Minimum hours between rebalances</td>
+                                </tr>
+                                <tr>
+                                    <td>calendar_period_days</td>
+                                    <td>30</td>
+                                    <td>Days for calendar rebalancing</td>
+                                </tr>
+                                <tr>
+                                    <td>use_momentum_filter</td>
+                                    <td>false</td>
+                                    <td>Skip rebalancing in strong trends</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Rebalancing Logic</div>
+                            <div class="info-content">
+                                <strong>REBALANCE:</strong> When asset weight deviates > threshold from target<br>
+                                <strong>Action:</strong> Sell overweight assets, buy underweight assets<br>
+                                <strong>Result:</strong> Systematically "sell high, buy low"
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Research-backed (77% outperformance)</li>
+                                    <li>Automatic "buy low, sell high"</li>
+                                    <li>Diversification benefits</li>
+                                    <li>Lower volatility than single-asset</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Requires multiple assets</li>
+                                    <li>Transaction costs from frequent rebalancing</li>
+                                    <li>May underperform in strong bull markets</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="best-for">
+                            <h4>🎯 Best For</h4>
+                            <ul>
+                                <li>Long-term investing (1+ years)</li>
+                                <li>Diversification seekers</li>
+                                <li>Mean reversion believers</li>
+                                <li>Lower risk tolerance</li>
+                            </ul>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag portfolio">Portfolio</span>
+                            <span class="tag">Rebalancing</span>
+                            <span class="tag">Multi-Asset</span>
+                            <span class="tag mean-reversion">Mean Reversion</span>
+                        </div>
+                    </div>
+
+                    <!-- Risk Parity -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">10. Risk Parity</h3>
+                            <span class="strategy-type">SOTA 2025</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Advanced portfolio construction allocating capital such that each asset contributes equally to portfolio risk. Includes optional kurtosis minimization for tail risk management.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Equal Risk Contribution (ERC) approach ensures each asset contributes the same amount of risk to the portfolio. Higher allocation to lower-volatility assets, lower allocation to higher-volatility assets.
+                            </div>
+                        </div>
+
+                        <div class="info-section">
+                            <div class="info-label">Parameters</div>
+                            <table class="parameters-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>asset_symbols</td>
+                                    <td>-</td>
+                                    <td>List of assets to include</td>
+                                </tr>
+                                <tr>
+                                    <td>lookback_period</td>
+                                    <td>90</td>
+                                    <td>Days for covariance estimation</td>
+                                </tr>
+                                <tr>
+                                    <td>rebalance_freq</td>
+                                    <td>7</td>
+                                    <td>Days between rebalances</td>
+                                </tr>
+                                <tr>
+                                    <td>minimize_kurtosis</td>
+                                    <td>true</td>
+                                    <td>Enable tail risk minimization</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Better diversification than market-cap</li>
+                                    <li>Robust to regime changes</li>
+                                    <li>Tail risk management</li>
+                                    <li>Research-backed approach</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Requires covariance estimation</li>
+                                    <li>Computationally intensive</li>
+                                    <li>May concentrate in low-vol assets</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2025</span>
+                            <span class="tag portfolio">Portfolio</span>
+                            <span class="tag">Risk Parity</span>
+                            <span class="tag">Equal Risk</span>
+                        </div>
+                    </div>
+
+                    <!-- Hierarchical Risk Parity -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">11. Hierarchical Risk Parity (HRP)</h3>
+                            <span class="strategy-type">SOTA 2025</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Machine learning-based portfolio using hierarchical clustering. Avoids covariance matrix inversion, making it more stable than traditional mean-variance optimization.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Uses hierarchical clustering to group similar assets, then allocates within and across clusters. This graph-theoretic approach is robust to estimation errors.
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>No covariance inversion needed</li>
+                                    <li>Stable allocations</li>
+                                    <li>Handles large universes well</li>
+                                    <li>Clustering reveals structure</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Complex methodology</li>
+                                    <li>Requires many assets (5+)</li>
+                                    <li>Clustering can be unstable</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2025</span>
+                            <span class="tag portfolio">Portfolio</span>
+                            <span class="tag">ML</span>
+                            <span class="tag">Clustering</span>
+                        </div>
+                    </div>
+
+                    <!-- Black-Litterman -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">12. Black-Litterman</h3>
+                            <span class="strategy-type">SOTA 2025</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Bayesian asset allocation combining market equilibrium with investor views. Starts with market-implied returns and adjusts based on specific beliefs about asset performance.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Combines market equilibrium (reverse-optimized from market caps) with investor views using Bayesian inference. Produces more stable and intuitive allocations than traditional mean-variance.
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Incorporates investor views</li>
+                                    <li>Stable allocations</li>
+                                    <li>Theoretically sound</li>
+                                    <li>Intuitive framework</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Requires market equilibrium data</li>
+                                    <li>View specification is subjective</li>
+                                    <li>Complex implementation</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2025</span>
+                            <span class="tag portfolio">Portfolio</span>
+                            <span class="tag">Bayesian</span>
+                            <span class="tag">Views</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADVANCED STRATEGIES SECTION -->
+            <section id="advanced" class="section">
+                <div class="section-header">
+                    <h2>Advanced Strategies</h2>
+                    <div class="description">Sophisticated quantitative and machine learning approaches</div>
+                </div>
+
+                <div class="strategy-grid">
+                    <!-- Statistical Arbitrage -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">13. Statistical Arbitrage</h3>
+                            <span class="strategy-type">Advanced</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Regime-aware pairs trading using cointegration and Hidden Markov Models. Trades mean reversion in cointegrated pairs while adapting to market regime changes.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                <ul>
+                                    <li>Identifies cointegrated pairs using statistical tests</li>
+                                    <li>Detects market regimes using HMM (high volatility vs low volatility)</li>
+                                    <li>Trades spread mean reversion when in favorable regime</li>
+                                    <li>Dynamically adjusts position sizing based on regime</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Market-neutral (hedged)</li>
+                                    <li>Regime adaptation</li>
+                                    <li>Statistical rigor</li>
+                                    <li>Lower directional risk</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Requires multiple correlated pairs</li>
+                                    <li>Cointegration can break down</li>
+                                    <li>Complex implementation</li>
+                                    <li>Higher transaction costs</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag">Advanced</span>
+                            <span class="tag">Pairs Trading</span>
+                            <span class="tag">Cointegration</span>
+                            <span class="tag">HMM</span>
+                        </div>
+                    </div>
+
+                    <!-- Copula Pairs Trading -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">14. Copula Pairs Trading</h3>
+                            <span class="strategy-type">SOTA 2025</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Advanced pairs trading using copulas to model tail dependencies between assets. Superior to correlation-based approaches for capturing extreme event behavior.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Uses copula functions (Clayton, Gumbel, etc.) to model the joint distribution of asset pairs, capturing tail dependencies that correlation misses. Particularly useful for crypto markets with fat tails.
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Captures tail dependencies</li>
+                                    <li>Better extreme event modeling</li>
+                                    <li>Non-parametric flexibility</li>
+                                    <li>Suitable for crypto volatility</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Complex mathematics</li>
+                                    <li>Requires substantial data</li>
+                                    <li>Copula selection is critical</li>
+                                    <li>Computationally intensive</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2025</span>
+                            <span class="tag">Pairs Trading</span>
+                            <span class="tag">Copula</span>
+                            <span class="tag">Tail Risk</span>
+                        </div>
+                    </div>
+
+                    <!-- Deep RL Portfolio -->
+                    <div class="strategy-card">
+                        <div class="strategy-header">
+                            <h3 class="strategy-title">15. Deep RL Portfolio</h3>
+                            <span class="strategy-type">SOTA 2025</span>
+                        </div>
+
+                        <p class="strategy-description">
+                            Deep reinforcement learning portfolio using PPO (Proximal Policy Optimization). Agent learns optimal allocation policy through trial and error in simulated environments.
+                        </p>
+
+                        <div class="info-section">
+                            <div class="info-label">Strategy Logic</div>
+                            <div class="info-content">
+                                Neural network agent observes market state (prices, volumes, technical indicators) and takes actions (portfolio weights). Learns through reward function (Sharpe ratio, returns, etc.) using PPO algorithm.
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>✓ Pros</h4>
+                                <ul>
+                                    <li>Learns complex patterns</li>
+                                    <li>Adaptive to market changes</li>
+                                    <li>No explicit feature engineering</li>
+                                    <li>End-to-end optimization</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>✗ Cons</h4>
+                                <ul>
+                                    <li>Requires extensive training</li>
+                                    <li>Black box nature</li>
+                                    <li>Overfitting risk</li>
+                                    <li>High computational cost</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="tags">
+                            <span class="tag sota">SOTA 2025</span>
+                            <span class="tag portfolio">Portfolio</span>
+                            <span class="tag">Deep RL</span>
+                            <span class="tag">Neural Network</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMPARISON TABLE SECTION -->
+            <section id="comparison" class="section">
+                <div class="section-header">
+                    <h2>Strategy Comparison Table</h2>
+                    <div class="description">Quick reference guide for strategy selection</div>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Type</th>
+                            <th>Complexity</th>
+                            <th>Best Market</th>
+                            <th>Frequency</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="strategy-name">SMA Crossover</td>
+                            <td>Trend Following</td>
+                            <td>Low</td>
+                            <td>Trending</td>
+                            <td>Low</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">RSI Mean Reversion</td>
+                            <td>Mean Reversion</td>
+                            <td>Low</td>
+                            <td>Range-bound</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">MACD Momentum</td>
+                            <td>Momentum</td>
+                            <td>Low</td>
+                            <td>Trending</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Bollinger Breakout</td>
+                            <td>Volatility</td>
+                            <td>Low</td>
+                            <td>Volatile</td>
+                            <td>Medium</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Triple EMA</td>
+                            <td>Trend Following</td>
+                            <td>Medium</td>
+                            <td>Strong Trends</td>
+                            <td>Low</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Supertrend ATR</td>
+                            <td>Trend + Volatility</td>
+                            <td>Medium</td>
+                            <td>Volatile Trends</td>
+                            <td>Medium</td>
+                            <td>Medium-Low</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Ichimoku Cloud</td>
+                            <td>Multi-Dimensional</td>
+                            <td>High</td>
+                            <td>All Markets</td>
+                            <td>Low-Medium</td>
+                            <td>Low-Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">VWAP Mean Reversion</td>
+                            <td>Volume + Mean Reversion</td>
+                            <td>Medium</td>
+                            <td>Intraday</td>
+                            <td>High</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Portfolio Rebalancer</td>
+                            <td>Portfolio</td>
+                            <td>Low</td>
+                            <td>All Markets</td>
+                            <td>Very Low</td>
+                            <td>Low</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Risk Parity</td>
+                            <td>Portfolio</td>
+                            <td>High</td>
+                            <td>All Markets</td>
+                            <td>Low</td>
+                            <td>Low</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Hierarchical Risk Parity</td>
+                            <td>Portfolio + ML</td>
+                            <td>Very High</td>
+                            <td>All Markets</td>
+                            <td>Low</td>
+                            <td>Low</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Black-Litterman</td>
+                            <td>Portfolio + Bayesian</td>
+                            <td>Very High</td>
+                            <td>All Markets</td>
+                            <td>Low</td>
+                            <td>Low-Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Statistical Arbitrage</td>
+                            <td>Pairs + HMM</td>
+                            <td>Very High</td>
+                            <td>Mean Reverting</td>
+                            <td>High</td>
+                            <td>Low (Hedged)</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Copula Pairs Trading</td>
+                            <td>Pairs + Copula</td>
+                            <td>Very High</td>
+                            <td>Mean Reverting</td>
+                            <td>High</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td class="strategy-name">Deep RL Portfolio</td>
+                            <td>Portfolio + ML</td>
+                            <td>Very High</td>
+                            <td>Adaptive</td>
+                            <td>Medium-High</td>
+                            <td>Variable</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-content" style="margin-top: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Strategy Selection Guide</h3>
+                    <p><strong>For Beginners:</strong> Start with SMA Crossover or RSI Mean Reversion</p>
+                    <p><strong>For Bull Markets:</strong> Use Trend Following (SMA, Triple EMA, Supertrend ATR)</p>
+                    <p><strong>For Sideways Markets:</strong> Use Mean Reversion (RSI, VWAP)</p>
+                    <p><strong>For Volatility:</strong> Use Bollinger Breakout or Supertrend ATR</p>
+                    <p><strong>For Diversification:</strong> Use Portfolio Strategies (Rebalancer, Risk Parity)</p>
+                    <p><strong>For Advanced Users:</strong> Explore Statistical Arbitrage or Deep RL</p>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p><strong>Crypto Trading System - Strategy Documentation</strong></p>
+            <p>All strategies are fully implemented, validated, and ready for backtesting</p>
+            <p style="opacity: 0.8; margin-top: 10px;">Generated on: October 14, 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
