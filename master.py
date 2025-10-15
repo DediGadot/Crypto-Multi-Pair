@@ -59,6 +59,12 @@ import numpy as np
 import pandas_ta as ta
 from loguru import logger
 from tqdm import tqdm
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend for server use
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from io import BytesIO
+import base64
 
 from crypto_trader.core.config import BacktestConfig
 from crypto_trader.core.types import BacktestResult, Timeframe
@@ -389,6 +395,94 @@ class HTMLReportWriter:
         formatted = f"{value:+.1%}" if with_sign else f"{value:.1%}"
         css_class = "positive" if value >= 0 else "negative"
         return f'<span class="{css_class}">{formatted}</span>'
+
+    @staticmethod
+    def create_performance_heatmap(strategy_scores: List, horizons: List) -> str:
+        """Create performance heatmap showing strategy returns across horizons using Plotly."""
+        try:
+            import plotly.graph_objects as go
+
+            # Build matrix: rows=strategies, cols=horizons
+            strategy_names = [s.strategy_name for s in strategy_scores]
+            horizon_names = [h.name for h in horizons]
+
+            # Create return matrix
+            returns_matrix = []
+            for strat in strategy_scores:
+                row = []
+                for horizon in horizons:
+                    if horizon.name in strat.horizon_results:
+                        ret = strat.horizon_results[horizon.name]['return'] * 100  # Convert to percentage
+                        row.append(ret)
+                    else:
+                        row.append(None)
+                returns_matrix.append(row)
+
+            # Create heatmap
+            fig = go.Figure(data=go.Heatmap(
+                z=returns_matrix,
+                x=horizon_names,
+                y=strategy_names,
+                colorscale='RdYlGn',
+                zmid=0,
+                text=[[f"{v:.1f}%" if v is not None else "N/A" for v in row] for row in returns_matrix],
+                texttemplate='%{text}',
+                textfont={"size": 10},
+                colorbar=dict(title="Return (%)")
+            ))
+
+            fig.update_layout(
+                title="Strategy Performance Heatmap (Returns % by Time Horizon)",
+                xaxis_title="Time Horizon",
+                yaxis_title="Strategy",
+                height=400 + len(strategy_scores) * 30,
+                font=dict(size=11)
+            )
+
+            return fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+        except Exception as e:
+            logger.warning(f"Failed to create performance heatmap: {e}")
+            return f"<p>⚠️ Heatmap visualization failed: {str(e)}</p>"
+
+    @staticmethod
+    def create_sharpe_comparison_chart(strategy_scores: List) -> str:
+        """Create bar chart comparing Sharpe ratios across strategies."""
+        try:
+            import plotly.graph_objects as go
+
+            strategy_names = [s.strategy_name for s in strategy_scores]
+            sharpe_ratios = [s.avg_sharpe for s in strategy_scores]
+            colors = ['green' if sr > 1.0 else 'orange' if sr > 0 else 'red' for sr in sharpe_ratios]
+
+            fig = go.Figure(data=[
+                go.Bar(
+                    x=strategy_names,
+                    y=sharpe_ratios,
+                    marker_color=colors,
+                    text=[f"{sr:.2f}" for sr in sharpe_ratios],
+                    textposition='outside'
+                )
+            ])
+
+            fig.update_layout(
+                title="Sharpe Ratio Comparison (Higher is Better)",
+                xaxis_title="Strategy",
+                yaxis_title="Sharpe Ratio",
+                height=500,
+                xaxis={'tickangle': -45},
+                font=dict(size=11)
+            )
+
+            fig.add_hline(y=1.0, line_dash="dash", line_color="green",
+                         annotation_text="Good (>1.0)", annotation_position="right")
+            fig.add_hline(y=0, line_dash="dash", line_color="gray")
+
+            return fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+        except Exception as e:
+            logger.warning(f"Failed to create Sharpe comparison chart: {e}")
+            return f"<p>⚠️ Sharpe chart visualization failed: {str(e)}</p>"
 
 
 def _periods_per_year_from_timeframe(timeframe: str) -> float:
@@ -2326,6 +2420,319 @@ class MasterStrategyAnalyzer:
 
         f.write("</ul>\n\n")
 
+    def _generate_deep_dive_analysis(self, winning_strategy: StrategyScore, horizon: HorizonConfig) -> str:
+        """
+        Generate deep dive analysis with visualizations for the winning strategy.
+
+        Args:
+            winning_strategy: The best performing strategy
+            horizon: The time horizon to analyze (typically the longest or best performing)
+
+        Returns:
+            HTML content with embedded visualizations
+        """
+        logger.info(f"Generating deep dive analysis for {winning_strategy.strategy_name} on {horizon.name}...")
+
+        try:
+            # Re-run the winning strategy to get full BacktestResult
+            data = self.fetch_data(horizon.days)
+
+            # Get strategy instance
+            registry = get_registry()
+            strategy_dict = registry.list_strategies()
+            strategy_entries = [(name, metadata['class']) for name, metadata in strategy_dict.items()
+                              if name == winning_strategy.strategy_name]
+
+            if not strategy_entries:
+                return "<p>⚠️ Could not load strategy for deep dive analysis</p>"
+
+            strategy_name, strategy_class = strategy_entries[0]
+
+            # Check if this is a multi-pair strategy
+            if hasattr(strategy_class, 'REQUIRES_MULTI_PAIR') and strategy_class.REQUIRES_MULTI_PAIR:
+                return "<p>⚠️ Deep dive analysis not yet supported for multi-pair strategies</p>"
+
+            # Initialize strategy with default parameters
+            default_params = strategy_class.get_default_params() if hasattr(strategy_class, 'get_default_params') else {}
+            strategy = strategy_class(name=strategy_name, config=default_params)
+            strategy.initialize(strategy.config)
+
+            # Augment data with features
+            try:
+                data = augment_with_features(data, DEFAULT_JOIN_CONFIG)
+            except Exception as e:
+                logger.warning(f"Feature augmentation failed: {e}")
+
+            # Run backtest
+            config = BacktestConfig(
+                initial_capital=10000.0,
+                trading_fee_percent=0.001,
+                slippage_percent=0.0005,
+                max_position_size=0.95
+            )
+
+            engine = BacktestEngine()
+            timeframe_enum = self._convert_timeframe_to_enum()
+            result = engine.run_backtest(strategy, data, config, self.symbol, timeframe_enum)
+
+            # Calculate buy-and-hold equity curve
+            initial_price = data['close'].iloc[0]
+            buyhold_equity = []
+            for i in range(len(data)):
+                current_price = data['close'].iloc[i]
+                buyhold_value = config.initial_capital * (current_price / initial_price)
+                timestamp = data['timestamp'].iloc[i] if 'timestamp' in data.columns else data.index[i]
+                buyhold_equity.append((pd.to_datetime(timestamp), buyhold_value))
+
+            # Generate visualizations
+            html_content = self._create_deep_dive_html(result, buyhold_equity, data, winning_strategy)
+
+            return html_content
+
+        except Exception as e:
+            logger.error(f"Deep dive analysis failed: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            return f"<p>⚠️ Deep dive analysis failed: {str(e)}</p>"
+
+    def _create_deep_dive_html(self, result: BacktestResult, buyhold_equity: List[Tuple],
+                                data: pd.DataFrame, winning_strategy: StrategyScore) -> str:
+        """
+        Create HTML content with embedded visualizations for deep dive analysis.
+
+        Args:
+            result: BacktestResult from the winning strategy
+            buyhold_equity: List of (datetime, value) tuples for buy-and-hold
+            data: Market data DataFrame
+            winning_strategy: StrategyScore object
+
+        Returns:
+            HTML content string with embedded base64 images
+        """
+        html_parts = []
+
+        html_parts.append("<h2>🔬 DEEP DIVE: WINNING STRATEGY ANALYSIS</h2>\n")
+        html_parts.append(f"<h3>{result.strategy_name}</h3>\n")
+        html_parts.append("<p><em>Detailed analysis of trading decisions vs buy-and-hold benchmark</em></p>\n")
+        html_parts.append("<hr>\n\n")
+
+        # Extract equity curves as DataFrames
+        strategy_times = [t for t, v in result.equity_curve]
+        strategy_values = [v for t, v in result.equity_curve]
+        buyhold_times = [t for t, v in buyhold_equity]
+        buyhold_values = [v for t, v in buyhold_equity]
+
+        strategy_df = pd.DataFrame({'time': strategy_times, 'value': strategy_values})
+        buyhold_df = pd.DataFrame({'time': buyhold_times, 'value': buyhold_values})
+
+        # === CHART 1: Equity Curve Comparison ===
+        try:
+            fig, ax = plt.subplots(figsize=(14, 6))
+            ax.plot(strategy_df['time'], strategy_df['value'], label=f'{result.strategy_name}',
+                   linewidth=2, color='#2E86DE')
+            ax.plot(buyhold_df['time'], buyhold_df['value'], label='Buy & Hold',
+                   linewidth=2, color='#EE5A6F', linestyle='--')
+
+            ax.set_xlabel('Date', fontsize=12)
+            ax.set_ylabel('Portfolio Value ($)', fontsize=12)
+            ax.set_title('Portfolio Value: Strategy vs Buy-and-Hold', fontsize=14, fontweight='bold')
+            ax.legend(loc='best', fontsize=11)
+            ax.grid(True, alpha=0.3)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            fig.autofmt_xdate()
+
+            img_data = self._fig_to_base64(fig)
+            html_parts.append(f'<img src="data:image/png;base64,{img_data}" style="width:100%; max-width:1000px;">\n\n')
+            plt.close(fig)
+        except Exception as e:
+            logger.warning(f"Failed to create equity curve chart: {e}")
+
+        # === CHART 2: Cumulative Returns ===
+        try:
+            strategy_returns = [(v / strategy_values[0] - 1) * 100 for v in strategy_values]
+            buyhold_returns = [(v / buyhold_values[0] - 1) * 100 for v in buyhold_values]
+
+            fig, ax = plt.subplots(figsize=(14, 6))
+            ax.plot(strategy_times, strategy_returns, label=f'{result.strategy_name}',
+                   linewidth=2, color='#2E86DE')
+            ax.plot(buyhold_times, buyhold_returns, label='Buy & Hold',
+                   linewidth=2, color='#EE5A6F', linestyle='--')
+            ax.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+
+            # Highlight outperformance periods
+            for i in range(min(len(strategy_returns), len(buyhold_returns))):
+                if strategy_returns[i] > buyhold_returns[i]:
+                    ax.axvspan(strategy_times[i], strategy_times[min(i+1, len(strategy_times)-1)],
+                              alpha=0.1, color='green')
+
+            ax.set_xlabel('Date', fontsize=12)
+            ax.set_ylabel('Cumulative Return (%)', fontsize=12)
+            ax.set_title('Cumulative Returns Comparison', fontsize=14, fontweight='bold')
+            ax.legend(loc='best', fontsize=11)
+            ax.grid(True, alpha=0.3)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            fig.autofmt_xdate()
+
+            img_data = self._fig_to_base64(fig)
+            html_parts.append(f'<img src="data:image/png;base64,{img_data}" style="width:100%; max-width:1000px;">\n\n')
+            plt.close(fig)
+        except Exception as e:
+            logger.warning(f"Failed to create returns chart: {e}")
+
+        # === CHART 3: Price Chart with Trade Markers ===
+        if result.trades and len(result.trades) > 0:
+            try:
+                fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), height_ratios=[3, 1])
+
+                # Price chart
+                times = data['timestamp'] if 'timestamp' in data.columns else data.index
+                times = pd.to_datetime(times)
+                ax1.plot(times, data['close'], label='Price', linewidth=1.5, color='#34495e')
+
+                # Buy signals
+                buy_trades = [t for t in result.trades if t.side.value == 'buy']
+                if buy_trades:
+                    buy_times = [t.entry_time for t in buy_trades]
+                    buy_prices = [t.entry_price for t in buy_trades]
+                    ax1.scatter(buy_times, buy_prices, marker='^', s=100, c='green',
+                               label='Buy', zorder=5, edgecolors='darkgreen')
+
+                # Sell signals
+                sell_trades = [t for t in result.trades]
+                if sell_trades:
+                    sell_times = [t.exit_time for t in sell_trades]
+                    sell_prices = [t.exit_price for t in sell_trades]
+                    ax1.scatter(sell_times, sell_prices, marker='v', s=100, c='red',
+                               label='Sell', zorder=5, edgecolors='darkred')
+
+                ax1.set_ylabel('Price ($)', fontsize=12)
+                ax1.set_title(f'Trading Signals: {result.strategy_name}', fontsize=14, fontweight='bold')
+                ax1.legend(loc='best', fontsize=11)
+                ax1.grid(True, alpha=0.3)
+
+                # Trade PnL distribution
+                pnls = [t.pnl_percent for t in result.trades]
+                colors = ['green' if pnl > 0 else 'red' for pnl in pnls]
+                ax2.bar(range(len(pnls)), pnls, color=colors, alpha=0.6)
+                ax2.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+                ax2.set_xlabel('Trade Number', fontsize=12)
+                ax2.set_ylabel('PnL (%)', fontsize=12)
+                ax2.set_title('Individual Trade Performance', fontsize=12, fontweight='bold')
+                ax2.grid(True, alpha=0.3, axis='y')
+
+                plt.tight_layout()
+                img_data = self._fig_to_base64(fig)
+                html_parts.append(f'<img src="data:image/png;base64,{img_data}" style="width:100%; max-width:1000px;">\n\n')
+                plt.close(fig)
+            except Exception as e:
+                logger.warning(f"Failed to create trade signals chart: {e}")
+
+        # === CHART 4: Drawdown Comparison ===
+        try:
+            # Calculate drawdowns
+            strategy_peak = pd.Series(strategy_values).cummax()
+            strategy_dd = [(strategy_values[i] - strategy_peak.iloc[i]) / strategy_peak.iloc[i] * 100
+                          for i in range(len(strategy_values))]
+
+            buyhold_peak = pd.Series(buyhold_values).cummax()
+            buyhold_dd = [(buyhold_values[i] - buyhold_peak.iloc[i]) / buyhold_peak.iloc[i] * 100
+                         for i in range(len(buyhold_values))]
+
+            fig, ax = plt.subplots(figsize=(14, 6))
+            ax.fill_between(strategy_times, strategy_dd, 0, alpha=0.3, color='#2E86DE',
+                           label=f'{result.strategy_name}')
+            ax.fill_between(buyhold_times, buyhold_dd, 0, alpha=0.3, color='#EE5A6F',
+                           label='Buy & Hold')
+            ax.plot(strategy_times, strategy_dd, linewidth=1, color='#2E86DE')
+            ax.plot(buyhold_times, buyhold_dd, linewidth=1, color='#EE5A6F')
+
+            ax.set_xlabel('Date', fontsize=12)
+            ax.set_ylabel('Drawdown (%)', fontsize=12)
+            ax.set_title('Drawdown Comparison', fontsize=14, fontweight='bold')
+            ax.legend(loc='best', fontsize=11)
+            ax.grid(True, alpha=0.3)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            fig.autofmt_xdate()
+
+            img_data = self._fig_to_base64(fig)
+            html_parts.append(f'<img src="data:image/png;base64,{img_data}" style="width:100%; max-width:1000px;">\n\n')
+            plt.close(fig)
+        except Exception as e:
+            logger.warning(f"Failed to create drawdown chart: {e}")
+
+        # === Trade Statistics Table ===
+        if result.trades and len(result.trades) > 0:
+            html_parts.append("<h4>📊 Trade Statistics</h4>\n")
+            html_parts.append("<table>\n")
+            html_parts.append("    <thead>\n")
+            html_parts.append("        <tr>\n")
+            html_parts.append("            <th>Metric</th><th>Value</th><th>Description</th>\n")
+            html_parts.append("        </tr>\n")
+            html_parts.append("    </thead>\n")
+            html_parts.append("    <tbody>\n")
+
+            winning_trades = [t for t in result.trades if t.pnl > 0]
+            losing_trades = [t for t in result.trades if t.pnl <= 0]
+
+            avg_win = sum(t.pnl_percent for t in winning_trades) / len(winning_trades) if winning_trades else 0
+            avg_loss = sum(t.pnl_percent for t in losing_trades) / len(losing_trades) if losing_trades else 0
+
+            stats = [
+                ("Total Trades", f"{len(result.trades)}", "Number of completed round trips"),
+                ("Winning Trades", f"{len(winning_trades)}", "Trades that closed with profit"),
+                ("Losing Trades", f"{len(losing_trades)}", "Trades that closed with loss"),
+                ("Win Rate", f"{len(winning_trades)/len(result.trades)*100:.1f}%", "Percentage of profitable trades"),
+                ("Avg Win", f"{avg_win:+.2f}%", "Average profit per winning trade"),
+                ("Avg Loss", f"{avg_loss:+.2f}%", "Average loss per losing trade"),
+                ("Best Trade", f"{max(t.pnl_percent for t in result.trades):+.2f}%", "Largest single trade gain"),
+                ("Worst Trade", f"{min(t.pnl_percent for t in result.trades):+.2f}%", "Largest single trade loss"),
+                ("Avg Trade Duration", f"{result.metrics.avg_trade_duration/60:.1f} hours", "Average time in position"),
+            ]
+
+            for metric, value, desc in stats:
+                html_parts.append(f"        <tr>\n")
+                html_parts.append(f"            <td><strong>{metric}</strong></td>\n")
+                html_parts.append(f"            <td>{value}</td>\n")
+                html_parts.append(f"            <td><em>{desc}</em></td>\n")
+                html_parts.append(f"        </tr>\n")
+
+            html_parts.append("    </tbody>\n")
+            html_parts.append("</table>\n\n")
+
+        # === Key Insights ===
+        html_parts.append("<h4>💡 Key Insights</h4>\n")
+        html_parts.append("<ul>\n")
+
+        final_strategy = result.equity_curve[-1][1]
+        final_buyhold = buyhold_equity[-1][1]
+        outperformance = (final_strategy - final_buyhold) / final_buyhold * 100
+
+        html_parts.append(f"    <li><strong>Total Return:</strong> Strategy returned {result.metrics.total_return*100:.1f}% "
+                         f"vs Buy-and-Hold {(final_buyhold/result.initial_capital - 1)*100:.1f}%</li>\n")
+        html_parts.append(f"    <li><strong>Outperformance:</strong> Strategy outperformed buy-and-hold by "
+                         f"{outperformance:+.1f}%</li>\n")
+        html_parts.append(f"    <li><strong>Risk-Adjusted Returns:</strong> Sharpe ratio of {result.metrics.sharpe_ratio:.2f} "
+                         f"indicates {'excellent' if result.metrics.sharpe_ratio > 2 else 'good' if result.metrics.sharpe_ratio > 1 else 'moderate'} risk-adjusted performance</li>\n")
+        html_parts.append(f"    <li><strong>Drawdown Management:</strong> Maximum drawdown of {result.metrics.max_drawdown*100:.1f}% "
+                         f"{'is well-controlled' if result.metrics.max_drawdown < 0.2 else 'requires careful risk management'}</li>\n")
+
+        if result.trades:
+            html_parts.append(f"    <li><strong>Trading Frequency:</strong> Executed {len(result.trades)} trades over "
+                             f"{result.duration_days} days ({len(result.trades)/result.duration_days*30:.1f} trades/month)</li>\n")
+
+        html_parts.append("</ul>\n\n")
+
+        return "".join(html_parts)
+
+    def _fig_to_base64(self, fig) -> str:
+        """Convert matplotlib figure to base64 string for HTML embedding."""
+        buffer = BytesIO()
+        fig.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+        buffer.seek(0)
+        img_str = base64.b64encode(buffer.read()).decode()
+        buffer.close()
+        return img_str
+
     def generate_master_report(self, strategy_scores: List[StrategyScore]) -> None:
         """Generate comprehensive master report in HTML format."""
         logger.info("\nGenerating master report...")
@@ -2464,6 +2871,23 @@ class MasterStrategyAnalyzer:
 
             f.write("</ul>\n\n")
 
+            # === ADD VISUALIZATIONS ===
+            f.write("<h2>📊 INTERACTIVE VISUALIZATIONS</h2>\n\n")
+
+            # Performance Heatmap
+            f.write("<h3>Strategy Performance Heatmap</h3>\n")
+            f.write("<p><em>Color-coded returns across all strategies and time horizons. Green = positive, Red = negative.</em></p>\n")
+            heatmap_html = HTMLReportWriter.create_performance_heatmap(strategy_scores, self.horizons)
+            f.write(heatmap_html)
+            f.write("\n\n")
+
+            # Sharpe Ratio Comparison
+            f.write("<h3>Sharpe Ratio Comparison</h3>\n")
+            f.write("<p><em>Risk-adjusted performance metric. Green (>1.0) = Good, Orange (>0) = Acceptable, Red (<0) = Poor.</em></p>\n")
+            sharpe_chart_html = HTMLReportWriter.create_sharpe_comparison_chart(strategy_scores)
+            f.write(sharpe_chart_html)
+            f.write("\n\n")
+
             # Detailed analysis of best strategy
             f.write(f"<h2>🔍 DETAILED ANALYSIS: {best.strategy_name} (Best Overall)</h2>\n")
             f.write("<h4>Performance Across Horizons:</h4>\n")
@@ -2561,6 +2985,32 @@ class MasterStrategyAnalyzer:
             f.write("    <li><strong>Detailed results:</strong> <code>detailed_results/</code> directory</li>\n")
             f.write("    <li>See <strong>PRACTICAL STRATEGY RECOMMENDATIONS</strong> section above</li>\n")
             f.write("</ul>\n\n")
+
+            # Add deep dive analysis for winning strategy
+            if practical_winners:
+                # Use the best performing horizon for deep dive
+                winning_strategy = practical_winners[0]
+                best_horizon = None
+                best_horizon_return = -float('inf')
+
+                # Find the horizon where the strategy performed best
+                for horizon_name, result in winning_strategy.horizon_results.items():
+                    if result['return'] > best_horizon_return:
+                        best_horizon_return = result['return']
+                        # Find the corresponding HorizonConfig
+                        for h in self.horizons:
+                            if h.name == horizon_name:
+                                best_horizon = h
+                                break
+
+                # If we found a good horizon, generate deep dive
+                if best_horizon:
+                    try:
+                        deep_dive_html = self._generate_deep_dive_analysis(winning_strategy, best_horizon)
+                        f.write(deep_dive_html)
+                        f.write("<hr>\n\n")
+                    except Exception as e:
+                        logger.warning(f"Could not generate deep dive analysis: {e}")
 
             # Add academic research section
             self._write_academic_section_html(f, strategy_scores, avg_buyhold)

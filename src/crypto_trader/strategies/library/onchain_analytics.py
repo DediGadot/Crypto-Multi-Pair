@@ -26,6 +26,10 @@ from crypto_trader.strategies.registry import register_strategy
 class OnChainAnalytics(BaseStrategy):
     """On-chain rules strategy using MVRV, SOPR, and flow metrics when available."""
 
+    def __init__(self, name: str = "OnChainAnalytics", config: Dict[str, Any] = None):
+        """Initialize OnChainAnalytics strategy."""
+        super().__init__(name, config)
+
     def initialize(self, config: Dict[str, Any]) -> None:
         # Thresholds are configurable; defaults chosen conservatively
         self.config = {
