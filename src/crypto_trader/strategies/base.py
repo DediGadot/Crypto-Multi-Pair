@@ -143,6 +143,24 @@ class BaseStrategy(ABC):
         """
         return []
 
+    def get_required_features(self) -> List[str]:
+        """
+        Get list of required alternative-data features for this strategy.
+
+        Return fully-qualified feature names if applicable, e.g.,
+        ['onchain.mvrv_z', 'sent.pos_24h']. Default: [] for backward compatibility.
+        """
+        return []
+
+    def get_feature_lags(self) -> Dict[str, str]:
+        """
+        Optional per-feature lag to avoid look-ahead (e.g., {'onchain.*': '1d'}).
+
+        Strings should be pandas Timedelta-parseable (e.g., '1d', '4h').
+        Default: {} (no special lagging applied by the factory).
+        """
+        return {}
+
     def validate_data(self, data: pd.DataFrame) -> bool:
         """
         Validate that input data contains required columns and indicators.

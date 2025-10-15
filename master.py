@@ -65,6 +65,7 @@ from crypto_trader.core.types import BacktestResult, Timeframe
 from crypto_trader.data.fetchers import BinanceDataFetcher
 from crypto_trader.strategies import get_registry
 from crypto_trader.backtesting.engine import BacktestEngine
+from crypto_trader.features.factory import augment_with_features, DEFAULT_JOIN_CONFIG
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -612,9 +613,20 @@ def run_backtest_worker(
         # Normalize configuration parameters
         config_params = default_params or {}
 
-        # Instantiate strategy with explicit name to satisfy BaseStrategy constructor
-        strategy = strategy_class(name=strategy_name, config=config_params)
-        strategy.initialize(config_params)
+        # Check strategy __init__ signature to instantiate correctly
+        import inspect
+        init_signature = inspect.signature(strategy_class.__init__)
+        params = list(init_signature.parameters.keys())
+
+        # If __init__ accepts name/config, pass them (e.g., old-style strategies)
+        if 'name' in params and 'config' in params:
+            strategy = strategy_class(name=strategy_name, config=config_params)
+        else:
+            # SOTA 2025 strategies: instantiate without args, then initialize
+            strategy = strategy_class()
+            # Only call initialize for strategies that have it
+            if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                strategy.initialize(config_params)
 
         # Prepare data
         data_with_timestamp = data.reset_index(drop=True)
@@ -677,11 +689,15 @@ def run_backtest_worker(
         }
 
     except Exception as e:
-        # Return error info instead of raising
+        # Return error info with traceback for debugging
+        import traceback
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        error_trace = traceback.format_exc()
+        logger.debug(f"Worker error for {strategy_name} on {horizon_name}:\n{error_trace}")
         return {
             'strategy_name': strategy_name,
             'horizon': horizon_name,
-            'error': str(e)
+            'error': error_msg
         }
 
 
@@ -928,17 +944,30 @@ def run_multipair_backtest_worker(
                 strategy_class = registry.get_strategy(strategy_name)
                 config_params = default_params or {}
 
-                strategy = strategy_class(name=strategy_name, config=config_params)
+                # Check strategy __init__ signature to instantiate correctly
+                import inspect
+                init_signature = inspect.signature(strategy_class.__init__)
+                params = list(init_signature.parameters.keys())
+
+                # If __init__ accepts name/config, pass them (e.g., StatisticalArbitrage)
+                if 'name' in params and 'config' in params:
+                    strategy = strategy_class(name=strategy_name, config=config_params)
+                    # Old-style strategies already configured via __init__
+                else:
+                    # SOTA 2025 strategies: instantiate without args
+                    strategy = strategy_class()
 
                 # Initialize with parameters (ensure minimums: lookback >= 50, z_score_window >= 20)
-                strategy.initialize({
-                    'pair1_symbol': pair[0],
-                    'pair2_symbol': pair[1],
-                    'lookback_period': max(50, min(180, horizon_days)),
-                    'entry_threshold': config_params.get('entry_threshold', 2.0),
-                    'exit_threshold': config_params.get('exit_threshold', 0.5),
-                    'z_score_window': max(20, min(90, horizon_days // 2))
-                })
+                # Only call initialize for strategies that have it
+                if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                    strategy.initialize({
+                        'pair1_symbol': pair[0],
+                        'pair2_symbol': pair[1],
+                        'lookback_period': max(50, min(180, horizon_days)),
+                        'entry_threshold': config_params.get('entry_threshold', 2.0),
+                        'exit_threshold': config_params.get('exit_threshold', 0.5),
+                        'z_score_window': max(20, min(90, horizon_days // 2))
+                    })
 
                 # Generate signals
                 signals = strategy.generate_signals(combined_data)
@@ -977,7 +1006,15 @@ def run_multipair_backtest_worker(
                 commission = 0.001  # 0.1%
                 slippage = 0.0005  # 0.05%
 
-                for i in range(len(signals)):
+                # Ensure signals and combined_data are aligned
+                min_length = min(len(signals), len(combined_data))
+                if len(signals) != len(combined_data):
+                    logger.warning(
+                        f"StatisticalArbitrage: signals length ({len(signals)}) != "
+                        f"data length ({len(combined_data)}). Using min length {min_length}."
+                    )
+
+                for i in range(min_length):
                     signal = signals['signal'].iloc[i]
                     price1 = combined_data.iloc[i][f'{pair[0].replace("/", "_")}_close']
                     price2 = combined_data.iloc[i][f'{pair[1].replace("/", "_")}_close']
@@ -1174,22 +1211,26 @@ def run_multipair_backtest_worker(
                     strategy = strategy_class()
 
                 # Initialize with appropriate parameters
-                if strategy_name == "CopulaPairsTrading":
-                    # Copula pairs trading uses first two assets
-                    strategy.initialize({
-                        'asset_pairs': [(asset_symbols[0], asset_symbols[1])],
-                        'lookback_period': min(90, horizon_days),
-                        'entry_threshold': config_params.get('entry_threshold', 2.0),
-                        'exit_threshold': config_params.get('exit_threshold', 0.5),
-                        'position_size': 0.5
-                    })
-                else:
-                    # Portfolio strategies (HRP, Black-Litterman, Risk Parity, Deep RL)
-                    strategy.initialize({
-                        'asset_symbols': asset_symbols,
-                        'lookback_period': min(90, horizon_days),
-                        'rebalance_freq': 7
-                    })
+                # Only call initialize for strategies that have it
+                if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                    if strategy_name == "CopulaPairsTrading":
+                        # Copula pairs trading uses first two assets
+                        # Ensure minimum lookback of 30 for stable copula estimation
+                        strategy.initialize({
+                            'asset_pairs': [(asset_symbols[0], asset_symbols[1])],
+                            'lookback_period': max(30, min(90, horizon_days)),
+                            'entry_threshold': config_params.get('entry_threshold', 2.0),
+                            'exit_threshold': config_params.get('exit_threshold', 0.5),
+                            'position_size': 0.5
+                        })
+                    else:
+                        # Portfolio strategies (HRP, Black-Litterman, Risk Parity, Deep RL)
+                        # Ensure minimum lookback of 30 for stable covariance estimation
+                        strategy.initialize({
+                            'asset_symbols': asset_symbols,
+                            'lookback_period': max(30, min(90, horizon_days)),
+                            'rebalance_freq': 7
+                        })
 
                 # Generate signals (returns weights or positions)
                 signals = strategy.generate_signals(combined_data)
@@ -1214,7 +1255,15 @@ def run_multipair_backtest_worker(
                     commission = 0.001
                     previous_positions = {col: 0.0 for col in position_cols}
 
-                    for i in range(1, len(signals)):
+                    # Ensure signals and combined_data are aligned
+                    min_length = min(len(signals), len(combined_data))
+                    if len(signals) != len(combined_data):
+                        logger.warning(
+                            f"CopulaPairsTrading: signals length ({len(signals)}) != "
+                            f"data length ({len(combined_data)}). Using min length {min_length}."
+                        )
+
+                    for i in range(1, min_length):
                         period_commission = 0.0
 
                         # Calculate P&L from positions
@@ -1223,6 +1272,11 @@ def run_multipair_backtest_worker(
                             if asset_col in combined_data.columns:
                                 price_curr = combined_data.iloc[i][asset_col]
                                 price_prev = combined_data.iloc[i-1][asset_col]
+
+                                # Check for NaN or invalid prices
+                                if pd.isna(price_curr) or pd.isna(price_prev) or price_prev <= 0:
+                                    continue
+
                                 position = signals.iloc[i][pos_col]
                                 prev_position = previous_positions[pos_col]
 
@@ -1258,7 +1312,15 @@ def run_multipair_backtest_worker(
                     commission = 0.001  # 0.1%
                     previous_weights = {col: signals.iloc[0][col] for col in weight_cols}
 
-                    for i in range(1, len(signals)):
+                    # Ensure signals and combined_data are aligned
+                    min_length = min(len(signals), len(combined_data))
+                    if len(signals) != len(combined_data):
+                        logger.warning(
+                            f"{strategy_name}: signals length ({len(signals)}) != "
+                            f"data length ({len(combined_data)}). Using min length {min_length}."
+                        )
+
+                    for i in range(1, min_length):
                         # Calculate weighted portfolio return
                         portfolio_return = 0.0
                         for weight_col in weight_cols:
@@ -1266,6 +1328,11 @@ def run_multipair_backtest_worker(
                             if asset_col in combined_data.columns:
                                 price_curr = combined_data.iloc[i][asset_col]
                                 price_prev = combined_data.iloc[i-1][asset_col]
+
+                                # Check for NaN or invalid prices
+                                if pd.isna(price_curr) or pd.isna(price_prev) or price_prev <= 0:
+                                    continue
+
                                 weight = signals.iloc[i][weight_col]
                                 asset_return = (price_curr - price_prev) / price_prev
                                 portfolio_return += weight * asset_return
@@ -1351,10 +1418,15 @@ def run_multipair_backtest_worker(
             }
 
     except Exception as e:
+        # Return error info with traceback for debugging
+        import traceback
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        error_trace = traceback.format_exc()
+        logger.debug(f"Multi-pair worker error for {strategy_name} on {horizon_name}:\n{error_trace}")
         return {
             'strategy_name': strategy_name,
             'horizon': horizon_name,
-            'error': str(e)
+            'error': error_msg
         }
 
 
@@ -1533,13 +1605,39 @@ class MasterStrategyAnalyzer:
         # Calculate limit based on timeframe
         limit = _calculate_data_limit(self.timeframe, days)
 
-        data = self.fetcher.get_ohlcv(self.symbol, self.timeframe, limit=limit)
+        data = None
+        try:
+            data = self.fetcher.get_ohlcv(self.symbol, self.timeframe, limit=limit)
+        except Exception as e:
+            # Fallback to mock data provider if exchange is unavailable (offline)
+            logger.warning(f"Primary data fetch failed ({e}); falling back to MockDataProvider")
+            try:
+                from crypto_trader.data.providers import MockDataProvider
+                mock = MockDataProvider()
+                data = mock.get_ohlcv(self.symbol, self.timeframe, limit=limit)
+            except Exception as e2:
+                raise ValueError(f"No data fetched for {self.symbol}: {e2}")
 
         if data is None or len(data) == 0:
             raise ValueError(f"No data fetched for {self.symbol}")
 
         logger.debug(f"Fetched {len(data)} candles for {days} days")
-        return data
+
+        # Join alternative data features (safe no-op if none available)
+        try:
+            with_features = augment_with_features(
+                market_df=data,
+                symbol=self.symbol,
+                timeframe=self.timeframe,
+                config=DEFAULT_JOIN_CONFIG,
+            )
+            logger.info(
+                f"Joined features: added {len([c for c in with_features.columns if c not in data.columns])} cols"
+            )
+            return with_features
+        except Exception as fe:
+            logger.warning(f"Feature join failed; continuing with OHLCV only: {fe}")
+            return data
 
 
     def _get_default_params(self, strategy_name: str) -> Dict[str, Any]:
@@ -1784,6 +1882,12 @@ class MasterStrategyAnalyzer:
             # Group by horizon first to handle multiple configurations
             for horizon_name in strategy_df['horizon'].unique():
                 horizon_rows = strategy_df[strategy_df['horizon'] == horizon_name]
+
+                # Skip empty horizons (shouldn't happen but be safe)
+                if horizon_rows.empty:
+                    logger.warning(f"No results for {strategy_name} on {horizon_name}, skipping")
+                    continue
+
                 buyhold_return = self.buy_hold_results.get(horizon_name, {}).get('total_return', 0)
 
                 # Get best result for this horizon (across all configurations)
@@ -3207,6 +3311,26 @@ def analyze(
         python master.py --workers 8 --horizons 30 90 180 365
         python master.py --multi-pair --quick  # Test portfolio strategies
     """
+    # Input validation
+    valid_timeframes = ["1m", "5m", "15m", "1h", "4h", "1d", "1w"]
+    if timeframe not in valid_timeframes:
+        logger.error(f"Invalid timeframe: {timeframe}. Must be one of: {valid_timeframes}")
+        raise typer.Exit(1)
+
+    if workers < 1 or workers > 32:
+        logger.error(f"Invalid workers: {workers}. Must be between 1 and 32.")
+        raise typer.Exit(1)
+
+    if horizons:
+        for h in horizons:
+            if h < 7 or h > 3650:
+                logger.error(f"Invalid horizon: {h} days. Must be between 7 and 3650.")
+                raise typer.Exit(1)
+
+    if not symbol or '/' not in symbol:
+        logger.error(f"Invalid symbol: {symbol}. Must be in format BASE/QUOTE (e.g., BTC/USDT)")
+        raise typer.Exit(1)
+
     analyzer = MasterStrategyAnalyzer(
         symbol=symbol,
         timeframe=timeframe,

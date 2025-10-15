@@ -50,6 +50,7 @@ from rich.panel import Panel
 from crypto_trader.data.fetchers import BinanceDataFetcher
 from crypto_trader.data.storage import OHLCVStorage
 from crypto_trader.data.providers import MockDataProvider
+from crypto_trader.data.alt.onchain_ingestor import ingest_onchain
 
 console = Console()
 
@@ -402,6 +403,30 @@ def validate(
         raise typer.Exit(1)
 
 
+def ingest_on_chain(
+    symbol: str = typer.Argument(..., help="Trading pair symbol (e.g., BTC/USDT)"),
+    timeframe: str = typer.Option("1h", "--timeframe", "-t", help="Timeframe for proxy generation if no CSV is present"),
+    prefer_local_csv: bool = typer.Option(True, "--prefer-local-csv/--no-local-csv", help="Use data/onchain CSV if available"),
+):
+    """
+    Ingest on-chain features into the local FeatureStore.
+
+    This tries data/onchain/{symbol}.csv first. If not found, it generates
+    proxy_* features from OHLCV to validate the pipeline end-to-end.
+    """
+    try:
+        console.print(f"\n[bold blue]On-Chain Ingestion[/bold blue] - {symbol}")
+        ok = ingest_onchain(symbol=symbol, timeframe=timeframe, prefer_local_csv=prefer_local_csv)
+        if ok:
+            console.print(f"[green]✓[/green] Features written to FeatureStore for {symbol}")
+        else:
+            console.print(f"[yellow]⚠[/yellow] No features created for {symbol}")
+    except Exception as e:
+        console.print(f"\n[red]✗ Ingestion failed: {e}[/red]\n")
+        logger.exception("On-chain ingestion failed")
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     """
     Validation block for data CLI commands.
@@ -422,7 +447,7 @@ if __name__ == "__main__":
     total_tests += 1
     print("Test 1: Command functions exist")
     try:
-        commands = [fetch, update, list_data, validate]
+        commands = [fetch, update, list_data, validate, ingest_on_chain]
         for cmd in commands:
             if not callable(cmd):
                 all_validation_failures.append(f"{cmd.__name__} is not callable")
@@ -439,7 +464,7 @@ if __name__ == "__main__":
     total_tests += 1
     print("\nTest 2: Command documentation")
     try:
-        for cmd in [fetch, update, list_data, validate]:
+        for cmd in [fetch, update, list_data, validate, ingest_on_chain]:
             if not cmd.__doc__:
                 all_validation_failures.append(f"{cmd.__name__} missing docstring")
 

@@ -74,6 +74,7 @@ from crypto_trader.strategies.library.black_litterman import BlackLittermanStrat
 from crypto_trader.strategies.library.risk_parity import RiskParityStrategy
 from crypto_trader.strategies.library.copula_pairs_trading import CopulaPairsTradingStrategy
 from crypto_trader.strategies.library.deep_rl_portfolio import DeepRLPortfolioStrategy
+from crypto_trader.strategies.library.onchain_analytics import OnChainAnalytics  # ensure registration
 
 __all__ = [
     "SMACrossoverStrategy",
@@ -91,6 +92,7 @@ __all__ = [
     "RiskParityStrategy",
     "CopulaPairsTradingStrategy",
     "DeepRLPortfolioStrategy",
+    "OnChainAnalytics",
 ]
 
 # Version information

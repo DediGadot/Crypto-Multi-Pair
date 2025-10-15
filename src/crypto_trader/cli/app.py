@@ -81,6 +81,7 @@ data_app.command("fetch")(data.fetch)
 data_app.command("update")(data.update)
 data_app.command("list")(data.list_data)
 data_app.command("validate")(data.validate)
+data_app.command("ingest-onchain")(data.ingest_on_chain)
 
 strategy_app.command("list")(strategy.list_strategies)
 strategy_app.command("info")(strategy.info)
