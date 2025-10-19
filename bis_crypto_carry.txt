@@ -1,0 +1,36 @@
+Title: Crypto carry
+
+URL Source: https://www.bis.org/publ/work1087.htm
+
+Published Time: Thu, 16 Oct 2025 09:26:16 GMT
+
+Markdown Content:
+BIS Working Papers| No 1087 |
+
+04 April 2023
+
+### Summary
+
+#### Focus
+
+The cryptoassets ecosystem has matured to a point where cash and derivative instruments are now actively traded both on native crypto exchanges as well as on traditional exchanges. We study one of the most salient features of these instruments in recent years: the large difference between spot and futures prices, the so-called futures basis or "crypto carry". The crypto carry encapsulates the return on a simple "cash and carry" strategy: going long in the spot market, while selling short in the futures contract. We analyse the crypto carry observed for the two major digital assets, Bitcoin and Ethereum, shed light on its economic drivers, and study how these are connected to the boom-and-bust dynamics often seen in crypto markets.
+
+#### Contribution
+
+Our paper provides stylised facts about crypto carry, characterising its variation over time and across various crypto platforms and traditional exchanges. A striking feature of crypto carry is its size, averaging above 10% annually, which is much larger than the carry of other financial assets such as equities, fixed income, currencies and commodities. Our rich data set allows us to study the determinants of crypto carry and the predictive power of crypto carry for future crashes in crypto prices. We show that crypto futures share similarities with futures on precious metals, which might shed light on the discussion of crypto assets like Bitcoin being a "digital gold".
+
+#### Findings
+
+Our paper reveals several distinct features about crypto carry. First, we find some evidence for market segmentation between crypto exchanges and the traditional financial system. Second, we show that traditional determinants of carry like interest rate differentials explain very little of the variation in crypto carry. Third, we find that variation in carry is driven mainly by fluctuations in convenience yields, which stem from two main forces. The first one is trend-chasing and attention by smaller investors seeking leveraged upside exposure to crypto assets in boom periods, and the second is the relative scarcity of "arbitrage" capital taking the other side through a cash and carry position. Fourth, we find that there is "excess volatility" of crypto futures relative to spot prices. Finally, we show that a high crypto carry predicts future price crashes and that a rise in carry typically goes hand in hand with a rise in the price of crash risk insurance.
+
+* * *
+
+#### Abstract
+
+We analyze the dynamics of carry in crypto markets - the difference between futures and spot prices - and document that it can reach exceptionally high levels, sometimes exceeding 40% per annum, with significant variation over time. This phenomenon reflects a substantial and volatile inconvenience yield associated with holding spot cryptocurrencies relative to futures. We trace the large and volatile crypto carry to the interplay of two main forces: (i) demand from smaller, trend-chasing investors seeking leveraged exposure, and (ii) the limited deployment of arbitrage capital due to regulatory and margin frictions. Our findings highlight how structural limits to arbitrage - especially severe in the case of crypto - can amplify price inefficiencies across financial markets, offering lessons for understanding asset pricing and market behavior more generally.
+
+JEL Classification: G12, G13, G15
+
+Keywords: crypto, carry, futures basis, bitcoin, ether
+
+The views expressed in this publication are those of the authors and not necessarily those of the BIS.

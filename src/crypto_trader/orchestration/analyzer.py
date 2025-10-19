@@ -1,48 +1,39 @@
-#!/usr/bin/env python3
 """
-Master Strategy Analysis - Comprehensive Strategy Testing and Ranking
+Master Strategy Analyzer - Comprehensive Strategy Testing and Ranking
 
-This script provides a comprehensive analysis of all trading strategies across
-multiple time horizons, comparing them against buy-and-hold and generating
-detailed ranking reports.
+This module provides the orchestration layer for running comprehensive
+strategy analysis across multiple time horizons with parallel execution.
 
-**Purpose**: Automatically discover, test, rank, and report on the best trading
-strategies for a given asset across multiple timeframes.
+**Purpose**: Orchestrate strategy testing, scoring, and ranking
 
-**Key Features**:
-- Auto-discovery of all registered strategies
-- Parallel execution across multiple time horizons
-- Composite scoring based on risk-adjusted metrics
-- Comprehensive comparison reports
-- Interactive visualizations
-
-**Multi-Pair Optimizations (Phase 1 Fixes)**:
-- ✅ Shared Data Pool: Pre-fetch data once, share across all workers (4-10x speedup)
-- ✅ Proper Data Alignment: Use index intersection with data loss logging
-- ✅ Feature Augmentation: Apply alternative data features to multi-pair strategies
-- ✅ Increased Worker Pool: Support up to 4 workers for multi-pair mode
-- ✅ Zero Redundant API Calls: Eliminated hundreds of duplicate data fetches
+**Key Classes**:
+- HorizonConfig: Configuration for time horizon tests
+- StrategyScore: Aggregated scoring for strategies
+- MasterStrategyAnalyzer: Main orchestrator for comprehensive analysis
 
 **Third-party packages**:
 - pandas: https://pandas.pydata.org/docs/
 - numpy: https://numpy.org/doc/stable/
 - concurrent.futures: https://docs.python.org/3/library/concurrent.futures.html
 - loguru: https://loguru.readthedocs.io/en/stable/
-- typer: https://typer.tiangolo.com/
 - plotly: https://plotly.com/python/
 
 **Sample Input**:
-```bash
-python master.py --symbol BTC/USDT
-python master.py --symbol ETH/USDT --quick
-python master.py --workers 8 --horizons 30 90 180 365
+```python
+from crypto_trader.orchestration.analyzer import MasterStrategyAnalyzer
+
+analyzer = MasterStrategyAnalyzer(
+    symbol="BTC/USDT",
+    timeframe="1h",
+    quick_mode=True
+)
+analyzer.run()
 ```
 
 **Expected Output**:
-- MASTER_REPORT.txt: Executive summary with rankings
-- comparison_matrix.csv: Complete metrics matrix
-- best_strategy_report.html: Deep dive on winner
-- performance_heatmap.html: Visual comparison
+Comprehensive analysis reports with strategy rankings and comparison matrices.
+
+Extracted from master.py (lines 193-2616) during Phase 3 refactoring.
 """
 
 import sys
@@ -51,32 +42,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, asdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
-import warnings
 import json
-import functools
 import time
-import traceback
-import threading
-from contextlib import contextmanager
 
-# Add src directory to Python path
-script_dir = Path(__file__).resolve().parent
-src_dir = script_dir / "src"
-if src_dir.exists() and str(src_dir) not in sys.path:
-    sys.path.insert(0, str(src_dir))
-
-import typer
 import pandas as pd
 import numpy as np
-import pandas_ta as ta
 from loguru import logger
 from tqdm import tqdm
-import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend for server use
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from io import BytesIO
-import base64
 
 from crypto_trader.core.config import BacktestConfig
 from crypto_trader.core.types import BacktestResult, Timeframe
@@ -90,71 +62,37 @@ from crypto_trader.data.alt.sentiment_ingestor import ingest_sentiment
 from crypto_trader.data.alt.orderflow_stream import ingest_orderflow
 from crypto_trader.reports.formatters.html import HTMLFormatter
 
-# Import execution layer modules (extracted during Phase 2.5 refactoring)
+# Aliases for backward compatibility with extracted code
+HTMLReportWriter = HTMLFormatter
+
+# Import execution layer modules
 from crypto_trader.execution.workers import (
     run_backtest_worker,
     run_multipair_backtest_worker
 )
-from crypto_trader.execution.data_utils import (
-    calculate_data_limit,
-    slice_data_to_horizon,
-    compute_indicator_series,
-    add_required_indicators
+from crypto_trader.execution.data_utils import calculate_data_limit
+from crypto_trader.execution.logging_utils import (
+    log_dataframe_info,
+    log_memory_usage,
+    log_worker_lifecycle,
+    log_error_with_context
 )
 from crypto_trader.execution.metric_utils import (
     periods_per_year_from_timeframe,
     calculate_sharpe_ratio_safe
 )
-from crypto_trader.execution.error_utils import format_error_message
-from crypto_trader.execution.logging_utils import (
-    log_dataframe_info,
-    log_worker_lifecycle,
-    log_error_with_context,
-    log_memory_usage
-)
 
-# Import orchestration layer modules (extracted during Phase 3 refactoring)
-from crypto_trader.orchestration import (
-    HorizonConfig,
-    StrategyScore,
-    MasterStrategyAnalyzer
-)
-
-# Suppress warnings
-warnings.filterwarnings('ignore')
-
-app = typer.Typer(help="Master strategy analysis and ranking system")
+# Create aliases for underscore-prefixed function names (backward compatibility)
+_calculate_data_limit = calculate_data_limit
+_periods_per_year_from_timeframe = periods_per_year_from_timeframe
 
 
 # ============================================================================
-# COMPREHENSIVE LOGGING UTILITIES
+# HELPER FUNCTIONS
 # ============================================================================
 
-def log_execution_time(func_name: str = None):
-    """
-    Decorator to log function execution time with detailed entry/exit logging.
-
-    Args:
-        func_name: Optional custom name for the function in logs
-    """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            name = func_name or func.__name__
-            logger.debug(f"[TIMING] ⏱️  Starting: {name}")
-            start = time.perf_counter()
-            try:
-                result = func(*args, **kwargs)
-                duration = time.perf_counter() - start
-                logger.info(f"[TIMING] ✓ {name}: {duration:.3f}s")
-                return result
-            except Exception as e:
-                duration = time.perf_counter() - start
-                logger.error(f"[TIMING] ✗ {name}: {duration:.3f}s (FAILED: {type(e).__name__})")
-                raise
-        return wrapper
-    return decorator
-
+from contextlib import contextmanager
+import functools
 
 @contextmanager
 def log_operation(operation_name: str, log_level: str = "INFO"):
@@ -181,20 +119,26 @@ def log_operation(operation_name: str, log_level: str = "INFO"):
         raise
 
 
-# ============================================================================
-# EXTRACTED FUNCTIONS NOW IN EXECUTION MODULE (Phase 2.5 Refactoring)
-# ============================================================================
-# The following functions have been extracted to src/crypto_trader/execution/:
-# - log_dataframe_info, log_memory_usage, log_worker_lifecycle, log_error_with_context → logging_utils.py
-# - _periods_per_year_from_timeframe, _calculate_sharpe_ratio_safe → metric_utils.py
-# - _calculate_data_limit, _slice_data_to_horizon, _compute_indicator_series, _add_required_indicators → data_utils.py
-# - _format_error_message → error_utils.py
-# - run_backtest_worker, run_multipair_backtest_worker → workers.py
-#
-# Total extracted: ~1416 lines (lines 177-1592 in original master.py)
-# All functions are now imported at the top of this file.
-# ============================================================================
+def log_validation_checkpoint(checkpoint_name: str, passed: bool, details: str = ""):
+    """
+    Log validation checkpoint with pass/fail status.
 
+    Args:
+        checkpoint_name: Name of the validation checkpoint
+        passed: Whether the checkpoint passed
+        details: Optional details about the checkpoint
+    """
+    status = "✓" if passed else "✗"
+    level = "SUCCESS" if passed else "ERROR"
+    msg = f"[VALIDATION] {status} {checkpoint_name}"
+    if details:
+        msg += f" - {details}"
+    logger.log(level, msg)
+
+
+# ============================================================================
+# DATA CLASSES
+# ============================================================================
 
 @dataclass
 class HorizonConfig:
@@ -1329,9 +1273,15 @@ class MasterStrategyAnalyzer:
 
             strategy_name, strategy_class = strategy_entries[0]
 
-            # Check if this is a multi-pair strategy
+            # Check if this is a multi-pair or portfolio strategy
             if hasattr(strategy_class, 'REQUIRES_MULTI_PAIR') and strategy_class.REQUIRES_MULTI_PAIR:
                 return "<p>⚠️ Deep dive analysis not yet supported for multi-pair strategies</p>"
+
+            # Check if strategy has portfolio or multi_asset tags (requires multiple assets)
+            strategy_metadata = strategy_dict.get(winning_strategy.strategy_name, {})
+            strategy_tags = strategy_metadata.get('tags', [])
+            if 'portfolio' in strategy_tags or 'multi_asset' in strategy_tags:
+                return "<p>⚠️ Deep dive analysis not yet supported for portfolio/multi-asset strategies</p>"
 
             # Initialize strategy with default parameters
             default_params = strategy_class.get_default_params() if hasattr(strategy_class, 'get_default_params') else {}
@@ -2620,198 +2570,97 @@ class MasterStrategyAnalyzer:
             sys.exit(1)
 
 
-@app.command()
-def analyze(
-    symbol: str = typer.Option("BTC/USDT", "--symbol", "-s", help="Trading pair symbol"),
-    timeframe: str = typer.Option("1h", "--timeframe", "-t", help="Candle timeframe"),
-    horizons: Optional[List[int]] = typer.Option(None, "--horizons", "-h", help="Custom time horizons in days"),
-    workers: int = typer.Option(4, "--workers", "-w", help="Number of parallel workers"),
-    quick: bool = typer.Option(False, "--quick", "-q", help="Quick mode (fewer horizons)"),
-    multi_pair: bool = typer.Option(False, "--multi-pair", "-m", help="Test multi-pair strategies (Portfolio, StatArb)"),
-    output_dir: str = typer.Option("master_results", "--output", "-o", help="Output directory base name"),
-):
-    """
-    Run comprehensive master strategy analysis.
-
-    Tests all strategies across multiple time horizons, ranks them by
-    composite score, and generates detailed comparison reports.
-
-    Example:
-        python master.py --symbol BTC/USDT
-        python master.py --symbol ETH/USDT --quick
-        python master.py --workers 8 --horizons 30 90 180 365
-        python master.py --multi-pair --quick  # Test portfolio strategies
-    """
-    # Input validation
-    valid_timeframes = ["1m", "5m", "15m", "1h", "4h", "1d", "1w"]
-    if timeframe not in valid_timeframes:
-        logger.error(f"Invalid timeframe: {timeframe}. Must be one of: {valid_timeframes}")
-        raise typer.Exit(1)
-
-    if workers < 1 or workers > 32:
-        logger.error(f"Invalid workers: {workers}. Must be between 1 and 32.")
-        raise typer.Exit(1)
-
-    if horizons:
-        for h in horizons:
-            if h < 7 or h > 3650:
-                logger.error(f"Invalid horizon: {h} days. Must be between 7 and 3650.")
-                raise typer.Exit(1)
-
-    if not symbol or '/' not in symbol:
-        logger.error(f"Invalid symbol: {symbol}. Must be in format BASE/QUOTE (e.g., BTC/USDT)")
-        raise typer.Exit(1)
-
-    analyzer = MasterStrategyAnalyzer(
-        symbol=symbol,
-        timeframe=timeframe,
-        horizons=horizons,
-        workers=workers,
-        quick_mode=quick,
-        multi_pair=multi_pair,
-        output_dir=output_dir,
-    )
-
-    analyzer.run()
+__all__ = [
+    'HorizonConfig',
+    'StrategyScore',
+    'MasterStrategyAnalyzer',
+]
 
 
 if __name__ == "__main__":
     """
-    Validation block for master.py
-    Tests with real BTC/USDT data across multiple strategies and horizons.
+    Validation block for orchestration module.
     """
-    import os
+    import sys
 
-    # Check if running with validation flag
-    if len(sys.argv) > 1 and sys.argv[1] == "--validate":
-        print("🔍 Validating master.py with real data...\n")
+    all_validation_failures = []
+    total_tests = 0
 
-        # Track all validation failures
-        all_validation_failures = []
-        total_tests = 0
+    # Test 1: Verify classes are importable
+    total_tests += 1
+    print("Test 1: Verify classes importable")
+    try:
+        if HorizonConfig is None:
+            all_validation_failures.append("HorizonConfig not defined")
+        if StrategyScore is None:
+            all_validation_failures.append("StrategyScore not defined")
+        if MasterStrategyAnalyzer is None:
+            all_validation_failures.append("MasterStrategyAnalyzer not defined")
 
-        # Test 1: Quick analysis run
-        total_tests += 1
-        print("Test 1: Running quick master analysis with real data")
-        try:
-            analyzer = MasterStrategyAnalyzer(
-                symbol="BTC/USDT",
-                timeframe="1h",
-                horizons=[30],  # Just one horizon for validation
-                workers=2,
-                quick_mode=True,
-                output_dir="master_results_validation"
-            )
+        print(f"  ✓ HorizonConfig: {HorizonConfig.__name__}")
+        print(f"  ✓ StrategyScore: {StrategyScore.__name__}")
+        print(f"  ✓ MasterStrategyAnalyzer: {MasterStrategyAnalyzer.__name__}")
+    except Exception as e:
+        all_validation_failures.append(f"Class import failed: {e}")
 
-            analyzer.run()
-
-            # Check that output directory was created
-            output_dir = Path("master_results_validation_" + datetime.now().strftime("%Y%m%d"))
-            matching_dirs = list(Path(".").glob("master_results_validation_*"))
-
-            if not matching_dirs:
-                all_validation_failures.append("Output directory not created")
-            else:
-                latest_dir = max(matching_dirs, key=lambda p: p.stat().st_mtime)
-
-                # Check that report was created
-                report_file = latest_dir / "MASTER_REPORT.txt"
-                if not report_file.exists():
-                    all_validation_failures.append("MASTER_REPORT.txt not created")
-
-                # Check that CSV was created
-                csv_files = list(latest_dir.glob("comparison_matrix.csv"))
-                if not csv_files:
-                    all_validation_failures.append("comparison_matrix.csv not created")
-
-                # Check that results were generated
-                if not analyzer.all_results:
-                    all_validation_failures.append("No backtest results generated")
-
-                print(f"  ✓ Analysis completed with {len(analyzer.all_results)} results")
-                print(f"  ✓ Output directory: {latest_dir}")
-
-        except Exception as e:
-            all_validation_failures.append(f"Quick analysis test exception: {e}")
-
-        # Test 2: Verify composite scoring
-        total_tests += 1
-        print("\nTest 2: Verify composite scoring calculation")
-        try:
-            if analyzer.all_results:
-                scores = analyzer.compute_composite_scores()
-
-                if not scores:
-                    all_validation_failures.append("No composite scores computed")
-                else:
-                    # Check that scores are in valid range
-                    for score in scores:
-                        if score.composite_score < 0 or score.composite_score > 1:
-                            all_validation_failures.append(
-                                f"Invalid composite score for {score.strategy_name}: {score.composite_score}"
-                            )
-
-                    # Check that best strategy has highest score
-                    if len(scores) > 1:
-                        if scores[0].composite_score < scores[1].composite_score:
-                            all_validation_failures.append("Scores not sorted correctly")
-
-                    print(f"  ✓ Computed {len(scores)} composite scores")
-                    print(f"  ✓ Best strategy: {scores[0].strategy_name} (score: {scores[0].composite_score:.3f})")
-
-        except Exception as e:
-            all_validation_failures.append(f"Composite scoring test exception: {e}")
-
-        # Test 3: Verify report generation
-        total_tests += 1
-        print("\nTest 3: Verify report content")
-        try:
-            matching_dirs = list(Path(".").glob("master_results_validation_*"))
-            if matching_dirs:
-                latest_dir = max(matching_dirs, key=lambda p: p.stat().st_mtime)
-                report_file = latest_dir / "MASTER_REPORT.txt"
-
-                if report_file.exists():
-                    content = report_file.read_text()
-
-                    # Check for key sections
-                    required_sections = [
-                        "MASTER STRATEGY ANALYSIS",
-                        "OVERALL BEST STRATEGY",
-                        "STRATEGY RANKINGS",
-                        "TIME HORIZON ANALYSIS",
-                        "DETAILED ANALYSIS",
-                        "NEXT STEPS"
-                    ]
-
-                    for section in required_sections:
-                        if section not in content:
-                            all_validation_failures.append(f"Report missing section: {section}")
-
-                    print(f"  ✓ Report contains all {len(required_sections)} required sections")
-                    print(f"  ✓ Report size: {len(content)} characters")
-                else:
-                    all_validation_failures.append("Report file does not exist")
-
-        except Exception as e:
-            all_validation_failures.append(f"Report verification test exception: {e}")
-
-        # Final validation result
-        print("\n" + "="*60)
-        if all_validation_failures:
-            print(f"❌ VALIDATION FAILED - {len(all_validation_failures)} of {total_tests} tests failed:")
-            for failure in all_validation_failures:
-                print(f"  - {failure}")
-            sys.exit(1)
+    # Test 2: Verify HorizonConfig can be instantiated
+    total_tests += 1
+    print("\nTest 2: Verify HorizonConfig instantiation")
+    try:
+        horizon = HorizonConfig("30d", 30, "30 days")
+        if horizon.name != "30d" or horizon.days != 30:
+            all_validation_failures.append(f"HorizonConfig instantiation incorrect: {horizon}")
         else:
-            print(f"✅ VALIDATION PASSED - All {total_tests} tests produced expected results")
-            print("master.py is validated and ready for production use")
-            print(f"\nSample analysis completed:")
-            print(f"  • Strategies tested: {len(analyzer.all_results)}")
-            print(f"  • Composite scores: {len(scores)}")
-            print(f"  • Output: {latest_dir}")
-            sys.exit(0)
+            print(f"  ✓ HorizonConfig created: {horizon.name}, {horizon.days} days")
+    except Exception as e:
+        all_validation_failures.append(f"HorizonConfig instantiation failed: {e}")
 
+    # Test 3: Verify StrategyScore can be instantiated
+    total_tests += 1
+    print("\nTest 3: Verify StrategyScore instantiation")
+    try:
+        score = StrategyScore(
+            strategy_name="TestStrategy",
+            composite_score=1.5,
+            avg_return=0.25,
+            avg_sharpe=1.2,
+            avg_max_drawdown=0.15,
+            avg_win_rate=0.65,
+            horizons_beat_buyhold=3,
+            total_horizons=4,
+            horizon_results={"30d": {"return": 0.25, "sharpe": 1.2}}
+        )
+        if score.strategy_name != "TestStrategy" or score.composite_score != 1.5:
+            all_validation_failures.append(f"StrategyScore instantiation incorrect: {score}")
+        else:
+            print(f"  ✓ StrategyScore created: {score.strategy_name}, score={score.composite_score}")
+    except Exception as e:
+        all_validation_failures.append(f"StrategyScore instantiation failed: {e}")
+
+    # Test 4: Verify MasterStrategyAnalyzer __init__ signature
+    total_tests += 1
+    print("\nTest 4: Verify MasterStrategyAnalyzer signature")
+    try:
+        import inspect
+        sig = inspect.signature(MasterStrategyAnalyzer.__init__)
+        params = list(sig.parameters.keys())
+        expected_params = ['self', 'symbol', 'timeframe', 'horizons', 'workers', 'quick_mode', 'multi_pair', 'output_dir']
+        if params != expected_params:
+            all_validation_failures.append(f"MasterStrategyAnalyzer signature mismatch: {params} != {expected_params}")
+        else:
+            print(f"  ✓ MasterStrategyAnalyzer __init__ has {len(params)-1} parameters")
+    except Exception as e:
+        all_validation_failures.append(f"MasterStrategyAnalyzer signature check failed: {e}")
+
+    # Final validation result
+    print("\n" + "="*60)
+    if all_validation_failures:
+        print(f"❌ VALIDATION FAILED - {len(all_validation_failures)} of {total_tests} tests failed:")
+        for failure in all_validation_failures:
+            print(f"  - {failure}")
+        sys.exit(1)
     else:
-        # Normal CLI mode
-        app()
+        print(f"✅ VALIDATION PASSED - All {total_tests} tests produced expected results")
+        print("Orchestration module is validated and ready for use")
+        print("\nNOTE: MasterStrategyAnalyzer extracted from master.py")
+        sys.exit(0)

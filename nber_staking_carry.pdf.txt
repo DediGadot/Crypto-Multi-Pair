@@ -1,0 +1,1398 @@
+Title: Entrepreneurship in China's Structural Transitions: Network Expansion and Overhang
+
+URL Source: https://www.nber.org/system/files/working_papers/w31477/w31477.pdf
+
+Published Time: Mon, 06 Oct 2025 02:19:00 GMT
+
+Markdown Content:
+NBER WORKING PAPER SERIES ENTREPRENEURSHIP IN CHINA'S STRUCTURAL TRANSITIONS: NETWORK EXPANSION AND OVERHANG Ruochen Dai Dilip Mookherjee Kaivan Munshi Xiaobo Zhang Working Paper 31477 http://www.nber.org/papers/w31477 NATIONAL BUREAU OF ECONOMIC RESEARCH 1050 Massachusetts Avenue Cambridge, MA 02138 July 2023 Research support from the Economic Development and Institutions (EDI) RA4 program, Cambridge-INET, China National Science Foundation (project number 71874008,72192844, and 72203252) and the Agence Nationale de la Recherche (ANR) under the EUR Project ANR-17-EURE-0010 is gratefully acknowledged. The views expressed herein are those of the authors and do not necessarily reflect the views of the National Bureau of Economic Research. NBER working papers are circulated for discussion and comment purposes. They have not been peer-reviewed or been subject to the review by the NBER Board of Directors that accompanies official NBER publications. © 2023 by Ruochen Dai, Dilip Mookherjee, Kaivan Munshi, and Xiaobo Zhang. All rights reserved. Short sections of text, not to exceed two paragraphs, may be quoted without explicit permission provided that full credit, including © notice, is given to the source. Entrepreneurship in China's Structural Transitions: Network Expansion and Overhang Ruochen Dai, Dilip Mookherjee, Kaivan Munshi, and Xiaobo Zhang NBER Working Paper No. 31477 July 2023 JEL No. O11,O12,O14 
+
+ABSTRACT 
+
+This research examines the determinants of entrepreneurship in the initial transition from agriculture to industrial production and the subsequent transition to higher value exporting in China. Using data covering the universe of registered firms over the 1994-2009 period, we find that individuals born in rural counties with higher agricultural productivity and population density had a greater propensity to enter domestic production in the first transition, but that this association was reversed in the second transition to exporting. This is despite the fact that revenues (and productivity) were increasing more steeply over time for firms drawn from denser birth counties in both activities. The model that we develop to reconcile these facts incorporates a productivity enhancing role for hometown (birth county) networks. We provide causal evidence, using shift-share instruments, that these networks of firms were active and that more densely populated rural counties gave rise to networks that were more effective at increasing the revenues of their members, both in domestic production and exporting. While this generated faster transition in the first stage, the incumbent (more successful) domestic networks drawn from denser counties created a disincentive to subsequently enter exporting. Our analysis identifies anovel dynamic inefficiency that could arise in any developing economy where (overlapping) networks are active. Ruochen Dai 
+
+School of Economics 
+
+Central University of Finance and Econom ics 
+
+Shahe, Changping District Beijing, 10026 China 
+
+r.dai@cufe.edu.cn 
+
+Dilip Mookherjee Department of Economics Boston University 270 Bay State Road Boston, MA 02215 and NBER dilipm@bu.edu Kaivan Munshi Department of Economics Yale University 37 Hillhouse Avenue New Haven, CT 06511 and NBER kaivan.munshi@yale.edu Xiaobo Zhang Guanghua School of Management Peking University and International Food Policy Research Institute 
+
+2033 K Street, NW Washington, DC 20006 x.zhang@gsm.pku.edu.cn 1 Introduction 
+
+The process of economic development is often characterized by an initial transition from agricul-ture to industry, followed by a second transition to higher value exporting. It is well known that entrepreneurs plays a critical role in this process. The conventional individual-specific view of en-trepreneurship is that it is determined by talent (Murphy, Shleifer and Vishny, 1991), education (Levine and Rubinstein, 2017) and inherited wealth when credit is constrained (Banerjee and New-man, 1993). These factors have been seen to be relevant in the initial phase of industrialization, as well as in the subsequent shift to exporting (Melitz, 2003; Atkin and Khandelwal, 2020). However, they will not fully explain the patterns of firm entry that we document in China’s structural tran-sitions. Adding a community-level dimension to standard economic models of occupational choice and trade, our analysis identifies the important role played by productivity enhancing hometown networks in supporting (and distorting) the entry of private firms in China. The transition out of agriculture in China commenced in the early 1980’s with the establishment of township-village enterprises (TVE’s) and then accelerated with market reforms and the entry of private firms in the 1990’s. Starting with almost no private firms in 1990, there were eight million registered private firms in 2009, accounting for nearly 90 percent of all registered firms. A decade after privatization commenced, China entered the WTO and soon became the largest exporter in the world (Brandt et al., 2017). However, homegrown private firms were less dominant in this second transition, in part for reasons provided below, accounting for about half of all exporting firms in 2009. 1
+
+A distinguishing feature of Chinese entrepreneurship is that it is relatively broad based, with a large fraction of firms set up by rural-born businessmen. The State Administration of Industry and Commerce (SAIC) registration database, which covers the universe of registered firms in China and which we use for much of the analysis in this paper, provides a list of key individuals in each firm with their citizenship ID (which can be used to recover the county of birth). We designate the firm’s principal as the “entrepreneur” for the purpose of our analysis. Based on this classification, we find that individuals born in rural counties make up two-thirds of all entrepreneurs in China, with their firms (which are usually established outside the birth county) accounting for a comparable share of private registered capital. 2 There were approximately 2000 rural counties in China when market reforms commenced, accounting for 74 percent of its population, and our initial objective is to determine which counties were better positioned to supply entrepreneurs in the first transition into domestic production, as well as in the second transition to exporting. Based on the conventional view, entry into business following the market reforms of the 1990’s would have been determined by pre-industrial economic development or, equivalently, agricultural productivity, which are positively associated with the entrepreneurial traits listed above. For ex-
+
+> 1Homegrown private firms are not just large in numbers, they also accounted for a substantial share of total registered capital (75 percent) and export revenues (38 percent) in 2009, the end point of our analysis on account of the financial crisis.
+> 2Among the county-born entrepreneurs, 41% established their firm in their birth county, 15% in their birth prefecture but outside the birth county, 15% in their birth province but outside the birth prefecture, and 29% outside their birth province.
+
+1ample, counties with higher agricultural productivity would have accumulated greater wealth that could be subsequently channelled into manufacturing (Bustos, Garber and Ponticelli, 2020). The population in these counties might also have had higher levels of education and exposure to non-agricultural occupations. We assess the empirical validity of the conventional view by construct-ing measures of entrepreneurial propensity and pre-industrial economic development in the birth county. The former statistic is measured by the number of registered firms drawn from a given birth county in a given year divided by the number of potential entrepreneurs from that county, obtained from the population census. The latter statistic is measured by county-level population density in 1982, when the Chinese economy, after decades of stalled industrialization, was still largely agrarian. The implicit assumption when constructing this measure of historical economic development is that greater agricultural productivity would have supported a larger population density (Diamond, 1997; Acemoglu, Johnson and Robinson, 2002). We find in Section 2.1 that there is a positive and significant association between entrepreneurial propensity and birth county population density, which is retained when we use only that part of the variation in population density that can be explained by exogenous agricultural productivity (crop suitability). The asso-ciation does weaken, as expected, when we control for county-level characteristics that proxy for wealth, education and occupational experience (relevant for business), but it remains positive and significant [Fact 1]. Having documented that entry into business (domestic production) conforms to the conventional view of entrepreneurship, we turn next to entry into exporting. The export propensity is measured by the number of active exporters from a given birth county in a given year, obtained from the Customs database which includes all shipments out of China, divided by the number of potential entrepreneurs, as above. As with the entrepreneurial propensity, there is a positive and significant association between the export propensity and birth county population density. However, this association turns negative (and marginally significant) when the county-level covariates that proxy for wealth, education and occupational experience are included in the estimating equation [Fact 2]. Conditional on a set of covariates that are associated with entrepreneurial ability, birth county population density has a positive effect on entry into domestic production and a negative effect on entry into exporting. Much of the paper is devoted to explaining these twin facts, which we argue are more broadly informative about occupational mobility in developing countries. One possible explanation for the facts we have uncovered is based on (unobserved) ability heterogeneity not accounted for by the covariates. Departing from the standard assumption that ability has a single dimension, suppose, as in Acemoglu, Aghion and Zilibotti (2006), that ability has one dimension that is relevant for domestic production and another that is relevant for exporting. If the resulting ability heterogeneity gives an advantage to denser counties in domestic production and less dense counties in exporting, then both facts could be explained. Alternatively, if firms from denser counties have preferred access to locations (including their birth county) where domestic production is more profitable for exogenous reasons, whereas the converse is true for exporting, then Facts 1 and 2 could once again be obtained. Finally, it is well known that domestic producers and exporters benefit from government connections in China (Bai et al., 2020; Khandelwal, Schott 2and Wei, 2013). Both facts could be obtained if these connections place domestic producers from denser counties and exporters from less dense counties at an advantage relative to their competitors, within the locations where they are established. To shed further light on these alternative explanations, we proceed to examine firm-level out-comes that underlie the decision to enter domestic production and exporting in Section 2.2. The SAIC inspection database provides revenues and assets for a subset of registered firms and the Cus-toms database provides export revenues for all exporting firms. Net of firm fixed effects, revenues (and productivity) are observed to increase more steeply over time for firms drawn from denser birth counties, both in domestic production and exporting. Moreover, firms from these counties perform better relative to other firms within the sector-locations where they are established. These results would not be generated by the explanations for Facts 1 and 2 listed above: (i) Ability het-erogeneity across birth counties is subsumed in the firm fixed effects and, hence, cannot explain the additional (conditional) variation in firm outcomes across birth counties. 3 (ii) Differential access to more profitable production locations would not explain why firms from denser counties grow faster within sector-locations. (iii) Differential access to government connections is inconsistent with the superior performance of those firms in both domestic production and exporting. The novel mechanism that we propose in this paper, which can explain all our empirical findings, is based on the idea that networks of firms organized around the hometown are active in China and that firms from denser birth counties have access to better functioning networks that increase the productivity of their members, both in domestic production and exporting. This differential increase in productivity, with its accompanying increase in revenues, brings more firms from denser counties into domestic production to explain Fact 1. At the same time, incumbent (more successful) domestic networks drawn from denser counties create a disincentive to subsequently enter exporting, as elucidated in the model described below, to generate Fact 2. The idea that business networks are active in China and that these networks are organized around the birth county (hometown) is not new. Previous research has argued that informal ar-rangements, providing mutual help to their members, must have been at work in China to allow millions of rural-born entrepreneurs to establish and grow their businesses in an environment char-acterized by weak market institutions and property rights (Peng, 2004; Allen, Qian and Qian, 2005; Greif and Tabellini, 2017). There is also good reason to believe that these informal arrangements, based on reputation and trust, are organized around the birth county, in light of a well established sociological literature that takes the position that ethnicity in China is defined by the native place (Honig, 1992, 1996; Goodman, 1995). 4 The mutual help that members of a network provide to each other, such as information and connections, is inherently local. We thus specify the domain of the network as the birth county-destination prefecture; there are 350 prefectures in China and 
+
+> 3One explanation for the results in Section 2.2 posits that entrepreneurs from denser counties are selected with higher ability, both in domestic production and exporting, while also allowing ability to have a differential effect on firm experience over time or, equivalently, with experience, as in Banerjee and Munshi (2004). While this mechanism can explain the superior performance of firms from denser counties, net of fixed effects, it cannot explain Fact 2.
+> 4Chambers of commerce that bring entrepreneurs from the same origin together ( yidi shanghui ) are commonly found in Chinese cities. Based on anecdotal accounts in Chinese media and academic journals, entrepreneurs from a single rural county can, in exceptional cases, dominate an entire industry.
+
+3firms from a given birth county will typically locate in multiple destinations. The key assumption in our analysis is that networks drawn from denser counties function more effectively, regardless of where they are established. Our explanation for the preceding assumption, in Section 2.3, is based on the idea that popu-lation density in rural areas is positively associated with the frequency of local social interactions, which, in turn, gives rise to higher levels of enforceable trust (among neighbors but not strangers). While we verify each element of this argument with nationally representative data from the China Family Panel Survey, our primary interest is in the networks of firms that emerge from the rural counties. If links between firms from denser counties are subjected to higher levels of enforcement by the origin social network, as implied by the trust results, then they can sustain higher levels of cooperation (mutual help) and are thus more valuable. The implication of this argument, which we verify with SAIC registration data is that firms from these counties will be (i) more likely to remain connected to their birth county, even when they are established elsewhere and (ii) be more likely to form business links with firms from the same origin (operating in the same prefecture). Providing an additional reason why networks drawn from denser counties function more effectively, we document that links between firms from such counties are more likely to be “supported” – a measure of cooperation proposed by Jackson, Rodriguez-Barraquer and Tan (2012) – by mutually linked firms from their origin operating in the same prefecture. 5
+
+To reconcile the facts we have uncovered, we next develop a dynamic model of occupational choice in Section 3 that adds a network component and a trade component to the Roy (1951) model. In our model, successive cohorts of agents choose between a traditional occupation and becoming an entrepreneur (serving the domestic market, the export market, or both markets). Firms belonging to a birth county-destination prefecture network provide mutual help to each other that increases their productivity. If mutual help is complementary, then firms will benefit from a larger network, with the domestic network defined by the (lagged) stock of all firms from the birth county operating in that prefecture and the export network defined by the corresponding stock of export firms. The first implication of our model, for firm outcomes, is thus that revenues and productivity, net of entrepreneurial ability and exogenous prefecture-level factors, will be increasing in network size. The additional implication, which is derived from the assumption that networks drawn from denser counties function more effectively, is that network size effects will be increasing in birth county population density. These implications allow us to reconcile the model with the observation in Section 2.2 that revenues are increasing more steeply over time for firms drawn from denser counties, both in domestic production and exporting. To explain Facts 1 and 2 through the lens of the model, we next derive occupational choices in equilibrium. Placing standard restrictions on the production technology, the returns to ability increase more steeply in business (domestic production) than the traditional occupation (agricul-ture, wage labor). This implies that there is an ability threshold above which individuals select   
+
+> 5Two firms are defined as being “linked” if the same individual is listed (among the key personnel) in both of them. Although the recent literature on networks in developing countries has largely focussed on information diffusion and program targeting, a few papers; e.g. Karlan et al. (2009); Jackson, Rodriguez-Barraquer and Tan (2012); Blumenstock, Chi and Tan (2019) examine cooperation in networks, but not between firms.
+
+4into domestic production. In the Melitz (2003) model, there is a higher threshold above which individuals select into exporting. Our model departs from the Melitz model in a number of ways, the most important of which is a scope diseconomy (a fixed cost of setting up a domestic plant and an export plant) that results in the presence of “pure” exporters who specialize in that activity. This implies that there are three ability thresholds in our model: a lower threshold above which in-dividuals select into domestic production, an intermediate threshold above which individuals select into pure exporting, and a higher threshold above which individuals select into “mixed” exporting (operating export and domestic plants). The fraction of individuals who select into business is increasing in domestic network size and its interaction with birth county population density, which improves firm outcomes as described above and thus shifts down the lower threshold, to explain Fact 1. 6 The fraction of individuals who select into exporting, which is determined by the interme-diate threshold, is increasing in the size of the export network (and its interaction with birth county population density) and decreasing in the size of the domestic network (and its interaction with birth county population density). The first effect encourages potential pure exporters to enter that activity, whereas the second effect works in the opposite direction. If the latter effect is sufficiently strong and dominates the first effect, then the export propensity could be declining in population density to explain Fact 2. We begin our empirical examination of the model in Section 4.1 by estimating the structural revenue (and productivity) equations with SAIC inspection data and Customs data. The estimating equations include firm fixed effects, which subsume entrepreneurial ability, network size as specified above, and its interaction with birth county population density. Firm outcomes are measured as a Z-score, relative to other firms in the same prefecture-sector-time period. While this will account for agglomeration effects, government infrastructure and all factors that affect firms in the prefecture equally, it will not control for unobserved birth county-destination prefecture shocks. For example, if entrepreneurs from a birth county have unexpected access to government connections in a particular prefecture, then this will give their revenues (relative to their competitors) a boost and pull firms into that prefecture (with an accompanying increase in network size). The estimated network size effects will be evidently biased, and we address this possibility by constructing an instrument for network size that is based on agricultural shocks in the birth county that push individuals into business. Specifically, the interaction of world crop price shocks, crop shares in the birth county, and the distance from the origin to the destination prefecture are used to construct a shift-share instrument, following Imbert et al. (2022). Consistent with the key assumption of the model, our estimates indicate that firm revenues and productivity within sector-locations are increasing in network size, with the estimated network size effect increasing in birth county population density. These results provide direct evidence that birth county networks are active and that networks drawn from denser counties are more effective. They are obtained for both domestic production and exporting and are robust to the validation tests proposed for shift-share instruments by Goldsmith-Pinkham, Sorkin and Swift (2020). There 
+
+> 6For this result to be obtained, network size also needs to be increasing in birth county population density. We use a recursive argument to establish this result in Section 3.
+
+5is an extant literature on networks of firms in developing countries; e.g. Fafchamps (2000); Fisman (2003); Banerjee and Munshi (2004); Munshi (2011). In parallel, the analysis of networks in the trade literature has examined how connections to foreign buyers can improve firm outcomes; e.g. Rauch and Trindade (2002); Chaney (2014); Burchardi, Chaney and Hassan (2019). However, our analysis is the first to estimate the causal effect of homegrown networks on the outcomes of their members, both in domestic production and exporting, based on the universe of (registered) firms in a developing economy. The final step in the empirical analysis is to estimate the firm entry equations implied by our model, which allow us to reconcile Facts 1 and 2. Pure exporters, who must choose between domestic production and exporting, are key to explaining Fact 2. The presence of such exporters has recently been documented in many developing countries (de Astarloa et al., 2015; Blum et al., 2020) and we show that they also exist in China, accounting for approximately 15 percent of all exporters, in Section 4.2. Next, we estimate the structural propensity equations implied by the model in Section 4.3. We find that the propensity to become an entrepreneur is increasing in domestic network size and in its interaction with birth county population density, net of birth county-destination prefecture effects and prefecture-time effects, to explain Fact 1. Conditional on the same covariates, the propensity to become an exporter is increasing in export network size interacted with birth county population density and decreasing in domestic network size interacted with population density. 7 While this result is consistent with the model, we noted that the domestic network “overhang” must be sufficiently large for the net network effect to be decreasing in population density in order to explain Fact 2. Completing the empirical analysis, we verify in Section 4.4 that this is indeed the case. The recent literature on networks in macroeconomics has focussed on the role played by pro-duction (upstream-downstream) networks in propagating and amplifying aggregate shocks; e.g. Carvalho and Tahbaz-Salehi (2019); Carvalho et al. (2021). Our research breaks new ground by documenting the role played by networks of firms in macroeconomic structural transformation: spanning the initial transition from agriculture to industrial production and the subsequent transi-tion to exporting (international trade). While our counter-factual simulations with the estimated model indicate that the domestic network contributed substantially to the entry of firms in the first transition, they also tell us that it had an important dampening effect on the number of exporters in the second transition. Trade economists have devoted much attention to the factors that constrain the upgrading to exporting in developing countries (Verhoogen, 2021). Our analysis uncovers a new export-network based mechanism that increases export productivity in these countries. At the same time, the successful domestic networks that are already in place discourage the transition to higher  
+
+> 7We cannot use agricultural income shocks as instruments for network size, as we did when estimating the revenue equations because they will now directly determine the dependent variable (entrepreneurial or export propensity). For this component of the analysis, we thus construct an instrument for network size that is based on the initial level of entry in each birth county-destination prefecture network interacted with its duration, separately for domestic production and exporting. As with the shift-share analysis, this instrument survives a number of robustness tests that are discussed in Section 4.3.
+
+6value exporting. The stock of domestic firms does not directly affect an export firm’s revenues or productivity and, hence, the optimal number of export firms is independent of this stock. The domestic network overhang we have uncovered results in too few exporting firms. 8 We conclude in Section 5 by discussing policies, such as timely (and temporary) export subsidies, that could target the dynamic inefficiency we have detected. Whether such interventions are needed at all will depend on whether networks are active in a given economy. The networks that we identify in this paper are not specific to China or to business. However, as discussed in the concluding section, their importance in other settings will depend on the underlying social structure and this will vary across regions of the world. 
+
+# 2 Descriptive Evidence 
+
+2.1 Entrepreneurship in China 
+
+Which rural populations were better positioned to supply entrepreneurs in China, following the market reforms of the early 1990’s? As discussed in the previous section, the conventional view is that entrepreneurship at early stages of industrialization is positively associated with historical economic development, which, in turn, is associated with agricultural productivity. We measure historical (pre-industrial) economic development by county-level population density in 1982, prior to the emergence of private firms, when the Chinese economy was still largely agrarian. En-trepreneurial propensity in a given year is measured by the number of registered private firms from a given birth county divided by the number of potential entrepreneurs. The latter statistic is specified as the number of men aged 25-55 born in that county, obtained from the population census. 9 Our analysis of entrepreneurship (domestic production) runs from 1994, when company registration was made mandatory, up until 2009 and the financial crisis. While entrepreneurial propensity increases over this period with the growth of the Chinese economy, from 0.05% in 1994 to 1.5% in 2009, our focus is on how this statistic varies across counties at each point in time. We thus proceed to estimate the association between entrepreneurial propensity and 1982 birth county population density, separately in each year over the 1994-2009 period. The population density (PD) coefficients are reported in Figure 1a – the blue circles are the point estimates and the blue    
+
+> 8In our model, the domestic network overhang arises because the scope diseconomy creates a nonseparability between domestic production and exporting for the marginal pure exporter who must choose between these activities. A nonseparability also arises in Fan et al. (2020) and Almunia et al. (2021), who extend the Melitz model by allowing for increasing marginal costs; shocks in the domestic market now affect the firm’s export profits and vice versa .However, this nonseparability does not give rise to an inefficiency because firms internalize the tradeoffs with respect to domestic and export profits when they make choices at the intensive margin.
+> 9The SAIC registration database provides the gender and age for a subset of principals. Among those principals who report their gender, 79 percent are men. Among those that report their age, 89 percent are aged 25-55. The number of 25-55 year old men born in a county is derived in each year using a one percent sample from the most recent population census: the 1990 census for the 1994-1999 period and the 2000 census for the 2000-2009 period. Large-scale internal migration only commenced in China in the 1990’s and, hence, the age distribution of county residents in the 1990 census can be used, without modification, to derive the number of 25-55 year olds born in that county in each subsequent year. However, the age distribution obtained from the 2000 census, and used for the years that follow, is adjusted to account for in-migration and out-migration over the preceding five years.
+
+7vertical lines demarcate the 95 percent confidence intervals – and, as can be seen, these coefficients are positive and significant in each year. 10 In line with the conventional view, individuals born in historically developed (higher population density) counties have a greater propensity to become entrepreneurs and this advantage persists over time. 0          
+
+> .1
+> .2
+> .3
+> .4
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008 2010
+> Year
+> OLS 2SLS 2SLS with covariates
+
+(a) Entry into Business -.002           
+
+> 0
+> .002
+> .004
+> .006
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008
+> Year
+> OLS 2SLS 2SLS with covariates
+
+(b) Entry into Exporting 
+
+Figure 1: Entrepreneurial Propensity, Export Propensity, and Population Density 
+
+> Source: Registration database, Customs database and Population Census 1982, 1990, 2000 2SLS estimates use potential crop yields as instruments for population density in 1982. Covariates measure education distribution, occupational structure and industry structure in the birth county in each year.
+
+Agriculture was the dominant activity in our counties as recently as the 1982 population census, with 68 percent of the workforce employed in this sector (this statistic declines to 37 percent in the 2010 census). While it thus seems reasonable to associate population density in these counties with agricultural productivity, this variable could also have been determined (in part) by conflict, famines and other historical events. Agricultural productivity would have been determined by crop suitability, which, in turn, is determined by geoclimatic conditions (Acemoglu, Johnson and Robinson, 2002; Galor and ¨Ozak, 2016). We thus proceed to identify the agricultural productivity channel by using potential crop yields, obtained from the Food and Agricultural Organization Global Agro-Ecological Zones (FAO-GAEZ) database, as “instruments” for population density. 11 
+
+The estimated 2SLS population density coefficients, reported as red diamonds in Figure 1a, are qualitatively similar, albeit smaller in magnitude, than the corresponding benchmark coefficient estimates in blue. Although the 2SLS estimates do not have the standard causal interpretation, since population density is treated as a proxy for historical economic development, they indicate that exogenously greater agricultural productivity in the pre-industrial economy has a positive and significant effect on entrepreneurial propensity at early stages of economic development. This is in 
+
+> 10
+
+Counties with less than 20 people per square km. are dropped from the analysis. This excludes sparsely populated regions such as Western China, Inner Mongolia, and Tibet. The analysis in this paper is based on the remaining 1648 counties. 
+
+> 11
+
+We use potential yields for the following 11 crops, which account for 96% of cultivated area in China to predict population density: wheat, maize, rice, sorghum, potato, millet, cotton, groundnut, rapeseed, soybean, and sugarbeet. The FAO-GAEZ database provides potential crop yields for different levels of technology and irrigation. Following Galor and ¨Ozak (2016) we use low technology-rainfed agriculture to measure the yields in order to match as closely as possible with historical output. 
+
+8line, once again, with the conventional view. Although agricultural productivity may be exogenously determined by agroclimatic condi-tions, there are many channels through which it could determine the propensity to become an entrepreneur. For example, greater agricultural productivity and resulting pre-industrial economic development could be associated with a greater inherited wealth, higher levels of human capital, and experience in non-farming (industrial) activities. We account for some of these potentially coexist-ing channels by including the education distribution, occupational structure and industry structure among potential entrepreneurs in the birth county in each year in the estimating equation. 12 Condi-tional on these covariates, the population density coefficient marked with green squares do decline, as expected, since population density (our proxy for historical development) will be correlated with them. However, they remain positive and significant in each year [Fact 1]. While private firms emerged in China in the early 1990’s, the second structural transition – into higher value exporting – started a decade later, with China’s entry into the WTO in 2002. As documented above, higher population density counties were better positioned to support private enterprize in the first structural transition. The analysis that follows examines whether these counties were similarly advantaged in the second transition into exporting, from 2002 up until 2009, the end point of our analysis. There are two types of exports in China: production exports and processing exports. The latter activity is restricted to the assembly of imported inputs for resale abroad. Based on their produc-tivity and skill intensity, production exporters are superior to domestic producers who, in turn, are superior to processing exporters (Dai, Maitra and Yu, 2016). Given our interest in the transi-tion from domestic production to higher value exporting, the analysis in this paper thus restricts attention to production exports. Production exports can be further divided into direct exports and indirect exports through intermediaries. Indirect exporters are less productive than direct exporters in China (Ahn, Khandelwal and Wei, 2011). In fact, the capital intensity of production, a common proxy for productivity, is even lower for indirect exporters than for domestic produc-ers (see Appendix A). For the purpose of our analysis, we thus define an exporter as a firm who manufactures goods that are shipped directly to foreign buyers. Using this definition, and linking the SAIC registration database with the Customs database, 0.7% of registered manufacturing firms were engaged in exporting in 2002, with an increase to 1.6% by 2009. While the preceding statistics indicate that the number of exporters was growing faster than the number of firms, our primary interest is in how the propensity to export, measured by the number of active exporters from a given birth county divided by the number of potential entrepreneurs as in Figure 1a, varies across counties at each point in time. The export propensity is regressed on 1982 birth county population density over the 2002-2009 period, with the estimated population 
+
+> 12 As with the number of potential entrepreneurs, we use the one percent sample from the 1990 and 2000 censuses to construct these covariates in each year. The education distribution is measured by the share of 25-55 year old men in each of the following categories: illiterate, primary, secondary, high school, university. The occupational structure is measured by the share of these men who are managers, science professionals, liberal arts professionals, clerical workers, commercial service staff, primary sector workers, operators of production and transportation equipment, and unemployed. The industry structure is measured by the corresponding shares in primary, secondary and tertiary sectors. We do not measure wealth directly, but it will be correlated with these covariates.
+
+9density coefficients reported in each year in Figure 1b. As in Figure 1a: (i) The blue circles and vertical lines represent the benchmark estimates. (ii) The red diamonds and lines represent the 2SLS estimates, using only that part of the variation in population density that can be explained by potential crop yields. (iii) The green squares and lines are estimates derived from a specification that includes the additional covariates. While the export propensity is increasing in population density with the benchmark and 2SLS specifications, as in Figure 1a, the key difference between the two figures is that the sign of this association is reversed (turns negative and marginally significant) in Figure 1b when the covariates are included in the estimating equation [Fact 2]. 13 Much of the analysis that follows will be devoted to explaining this difference. We complete the analysis in this section by examining the robustness of the facts we have un-covered: (i) The economic census, conducted in 2004 and 2008 by the National Bureau of Statistics, is our most reliable source of data. The economic census was restricted to manufacturing firms in 2004, but included all firms in 2008. To be consistent across rounds, all analyses using economic census data in this paper are based on manufacturing firms alone. The number of (manufacturing) firms reported to be active in the SAIC registration database is compared with the number of firms in the 2004 and 2008 economic censuses, by county, in Appendix Figure B1. Although the registration database reports more firms, the discrepancy does not vary with population density and thus cannot explain the results that we obtain. (ii) We verify that Facts 1 and 2 are obtained with economic census data in Appendix Figure B2. (iii) Some of the analysis that follows will restrict attention to firms located outside their birth county to rule out the possibility that the results are being driven by unobserved hometown amenities. Appendix Figure B3 verifies that the facts documented above are qualitatively unchanged with this reduced sample of firms. 
+
+2.2 Firm-Level Outcomes 
+
+We next proceed to examine the firm-level outcomes (revenues) that underlie the decision to enter domestic production and exporting. The SAIC inspection database collects assets and revenues for a subset of registered firms over time. 14 The Customs database, which provides information on all shipments out of China, can be linked to the SAIC registration database to compute export revenues for all exporting firms at each point in time. Since these are panel data sets, firm fixed effects that subsume entrepreneurial ability can be included in the estimating equations, together with a time trend and its interaction with birth county population density. To be consistent with the analysis in Section 4.1, which reconciles the model with the results in this section, we “instrument” for population density with potential crop yields. The estimating equation also includes the firm’s initial capital (in logs) interacted with a time trend because, as observed in Appendix Figure B4,   
+
+> 13 We observe that the same set of covariates weakens the association between birth county population density and the propensity to become an entrepreneur and an exporter. This is consistent with the view that the conven-tional individual-specific constraints to entrepreneurship (domestic production) also apply to exporting in developing countries. For example, Manova (2013); Manova, Wei and Zhang (2015) study how access to credit constrains the transition to exporting. Melitz (2003); Verhoogen (2008); Fieler, Eslava and Xu (2018) examine the role played by ability, broadly defined by productivity, in this transition.
+> 14 The inspection database has reasonable coverage for 23 (out of 31) provinces from 1998 onwards and, hence, the sample that we use for the analysis spans the 1998-2009 period.
+
+10 the marginal entering firm from a denser birth county has lower initial capital. Although this observation is consistent with our network-based model, as shown in Appendix C, we allow for the possibility that the observed variation in initial capital arises for other reasons, in which case firms from denser counties that start smaller could subsequently grow faster. As observed in Table 1, Column 1, firm revenue is increasing more steeply over time for entrepreneurs born in higher population density counties, conditional on the covariates discussed above. This result is retained in Column 2 when revenue is replaced by TFP as the dependent variable, constructed as in Brandt et al. (2022). Column 3 examines the same association as Column 1, but with exporters rather than all firms. We see that export revenues are also increasing more steeply over time for entrepreneurs born in denser counties. Table 1: Revenue, TFP, and Population Density 
+
+Measurement: level Z-score within prefecture-sector-year Dependent variable: log revenue log TFP log (export revenue) log revenue log TFP log (export revenue) (1) (2) (3) (4) (5) (6) Time 0.136*** 0.125*** 0.127*** 0.053*** 0.031*** 0.057*** (0.006) (0.018) (0.024) (0.002) (0.002) (0.013) PD ×time 0.447** 2.330*** 1.341*** 0.290*** 0.241*** 0.858*** (0.206) (0.619) (0.444) (0.062) (0.058) (0.228) Firm fixed effects Yes Yes Yes Yes Yes Yes Mean of dependent variable 3.949 -5.612 5.950 – – –Kleibergen-Paap F 74.05 74.05 10.69 74.05 74.05 10.69 Observations 2,235,509 2,235,509 70,579 2,235,509 2,235,509 70,579  
+
+> Note: Revenue and TFP are obtained from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Population density is obtained from the 1982 Population Census. We “instrument” for PD (birth county population density in 1982) with potential crop yields, reporting the corresponding Kleibergen-Paap F statistics. The firm’s initial capital (in logs) interacted with a time trend is included in the estimating equation. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+What is the source of the advantage enjoyed by firms from denser counties? One explanation is based on the idea that there are moving costs that are increasing with distance. Entrepreneurs thus tend to establish their firms close to where they are born. If denser counties or production centers (cities and Special Economic Zones) close to denser counties were growing relatively fast for exogenous reasons, then this would explain the results in Table 1. These results could also be obtained if the sectors in which firms from denser counties were concentrated, perhaps for accidental reasons, were growing relatively fast. However, if this were the story, then firms from all origins would grow at the same rate within the sector-locations where they were established. The SAIC data provide the sector and location of each firm and so we examine the preceding argument by constructing a Z-score for the firm’s revenue or TFP, based on the distribution within 11 each prefecture-sector-time period. As can be seen in Columns 4-6, entrepreneurs from higher population density counties remain at an advantage, both in domestic production and exporting. There is some factor that is giving these firms a boost, within the sector-locations where they are established, at each point in time. We will propose and verify an explanation for this observation – based on birth county networks – in the sections that follow. We complete the analysis in this section by assessing the robustness of the preceding result in a number of ways: (i) The SAIC inspection data are self-reported by firms. We check the accuracy of these data by comparing them with matched data at the firm level from the economic census in 2004 and 2008. Reporting error only confounds our interpretation of the results if it varies with birth county population density and over time. The more stringent test, implemented in Appendix Table B1, indicates that reporting error does not vary with population density at each point in time (2004 and 2008). (ii) The SAIC inspection database consists of a subset of registered firms. As with the accuracy of the self-reported data, non-representativeness of these firms does not confound our interpretation of the results in Table 1 unless it varies with birth county population density and over time. Firms listed in the inspection database have significantly higher assets and revenues than (representative) firms in the economic census in Appendix Table B2. However, this bias in sample selection does not vary with population density (the interaction terms are small in magnitude and statistically insignificant, without exception). (iii) Firms from denser counties could perform better on average simply because they have access to a more favorable business environment in their birth county, as opposed to the network-based explanation proposed below. However, Appendix Table B3 verifies that the results in Table 1 hold up when the sample is restricted to firms located outside the birth county. 
+
+2.3 Birth County Networks 
+
+As discussed in the Introduction, a number of mechanisms are consistent with Facts 1 and 2. However, just one, based on networks of firms, will explain these facts and the additional empirical results on firm outcomes that we reported above. These networks provide various forms of mutual support to their members that increase their productivity. For example, a longstanding literature describes how firms respond to the difficulty in enforcing formal contracts in developing economies by establishing relational contracts (McMillan and Woodruff, 1999; Macchiavello and Morjaria, 2015, 2021). Community networks can expand the scope of such bilateral arrangements; a firm in a long-term relationship with a buyer or supplier can provide a (credible) referral for another member of its network. Members of a network can also provide information about new technologies and business opportunities to each other. This type of informal support is difficult to sustain through the market mechanism due to the inherent problem of verifying help sought and received, coupled with a weak legal environment. Cooperation is based, instead, on community enforcement, backed by social ties among the entrepreneurs in each network (as described by Nee and Opper (2012) for China). We noted in the Introduction that ethnicity in China is defined by the native place, and it is well documented that laoxiang or “native-place fellows” help each other in different ways (Ma 12 and Xiang, 1998; Zhang and Xie, 2013). 15 Moreover, the help provided by firms to each other, such as connections and information, is inherently local in nature. We thus define the scope of the business network by the birth county-destination prefecture. 16 The additional assumption needed to explain the results in the preceding section is that networks drawn from denser counties are more effective at improving the outcomes of their members. The analysis that follows provides an explanation for this assumption. The starting point for our explanation is the idea that the frequency of social interactions is increasing in population density (spatial proximity) in relatively sparsely populated rural counties. This, in turn, helps sustain higher levels of mutual cooperation, supported by the threat of social sanctions, as argued in early papers on social norms and community enforcement (Coleman, 1988; Greif, 1993, 1994; Kandori, 1992; Ellison, 1994). To make the preceding argument more precise, consider a random graph model in which the probability that an individual is connected to any other individual in a local population, γ, is rising in population density. A higher γ directly raises the degree of the social network (the number of links per capita) and indirectly also network inter-connectedness; for example, the probability that the two nodes in any link have mutual connections. The level of cooperation that can be sustained in a network has been shown to be increasing in the number of “supporting” mutual links that are severed when either node in a given link unilaterally deviates (Jackson, Rodriguez-Barraquer and Tan, 2012). It follows that cooperation or enforceable trust is likely to be increasing in population density in our rural counties. We provide empirical support for the preceding argument with nationally representative data from the China Family Panel Survey (CFPS). The 2012 CFPS included questions on (i) trust in neighbors, which we interpret as measuring localized enforceable trust, and (ii) trust in strangers; individuals that the respondent would meet for the first time, which cannot be supported by social sanctions. Focusing on the residents of rural counties, we find that there is a positive association between trust in neighbors (but not strangers) and population density. 17 Complementing these results, data from the 2010 CFPS indicate that the frequency of social interactions (chatting) between neighbors is increasing in population density. In contrast, there is no association between population density and either trust or social interactions among urban residents. While these results provide micro-foundations for the functioning of the birth county networks, as discussed below, they are not central to our analysis and are thus collected in Appendix B.3. The key findings on trust and social interactions among rural residents are summarized in Table 2. Turning to the business networks that are drawn from the rural counties, our measure of trust  
+
+> 15 In the economics literature, Fisman et al. (2018) document the importance of hometown connections in Chinese academia.
+> 16 Each prefecture consists of an urban center and eight counties on average, and there are approximately 350 prefectures in China. Many government infrastructure and investment initiatives are organized at this administrative level and buyer and sellers will also locate in prefecture-level cities, so the birth county-destination prefecture would appear to be the appropriate domain for the networks that we study. We define the network at the birth county-destination prefecture level rather than the birth county-destination prefecture-sector level because many forms of support, such as help with government connections, will cross sectoral lines.
+> 17 The trust-population density association is not China-specific and we find that the same patterns are obtained across countries with different population densities, using data from the most recent (sixth) round of the World Values Survey in Appendix B.3.
+
+13 Table 2: Trust, Social Interactions, and Population Density Data source: CFPS 2012 individual module CFPS 2010 family module CFPS 2010 individual module Dependent variable: trust in neighbors trust in strangers chatted with neighbors in the past week chat most frequently with neighbors (1) (2) (3) (4) Population density 5.425*** -1.113 2.145** 1.267*** (1.971) (2.774) (0.833) (0.421) Mean of dependent variable 6.429 2.194 0.690 0.198 Observations 20,047 20,047 8,294 20,652 
+
+> Note: Trust, social interactions, household income and individual education are obtained from the China Family Panel Survey (2010, 2012). See Appendix D for variable construction. Population density is obtained from the 1982 Population Census. The sample is restricted to residents of rural counties. Column 4 is based on a question that asks whether the respondent chats most frequently with neighbors, relatives or friends/colleagues (see Appendix D). Income and education are included as covariates in the estimating equations. Standard errors clustered at the county level are reported in parentheses.
+
+is not a portable cultural trait but must, instead, be supported by the threat of social sanctions (applied by the entrepreneur’s origin community). We thus assume that county-born entrepreneurs remain connected to their rural origins, despite the fact that most of their firms are established elsewhere, and that business links between firms from the same birth county operating in a given prefecture can thus be “supported” (in the sense of Jackson, Rodriguez-Barraquer and Tan (2012)) by the origin social network. Based on our analysis of trust in Chinese counties, the level of support and associated social enforcement that is provided by the origin social network is increasing in population density. This implies that links between firms from higher population density origins will sustain higher levels of mutual help; i.e. are more valuable. It follows that firms from denser birth counties should (i) be more likely to remain connected to their origin, and (ii) be more likely to form business links with other firms from the same origin operating in the same prefecture. 18 The tests of these implications (in this section) are restricted to firms located outside their birth county since the focus is on the firm’s connection to the origin. We also restrict attention to firms that were active in 2009, the end point of our analysis, to emphasize the persistence of these connections. In addition to the principal, the SAIC registration database also lists other key personnel in the firm. 19 We begin our examination of the preceding implications in Table 3, Column 1 by estimating 
+
+> 18
+
+This argument is based on the assumption that links between firms reduce information and enforcement problems and, thereby, support higher levels of cooperation. Moreover, these links and the “supporting” links in the origin social network are complements. If they were substitutes, instead, then firms from denser counties with higher levels of trust would be less likely to make connections with each other, which is at odds with the results reported below. 
+
+> 19
+
+The principal, who is designated as the “legal representative” in the SAIC registration database, has the authority to enter into binding obligations on behalf of the company. This individual typically functions as the firm’s president, chairman or proprietor. Other listed individuals include directors, senior managers, and external “supervisors.” 
+
+14 the relationship between the fraction of listed individuals born in the same county as the principal and his birth county’s population density. The birth county population density coefficient is positive and significant. Notice that the population density coefficient as well as the mean of the dependent variable, which measures average birth county homophily, are many times larger than what would be obtained if listed individuals (other than the principal) were randomly assigned across firms in each prefecture. Since links between firms from higher population density counties are more valuable, as discussed above, we expect that they should have a greater propensity to form such links. As observed in Table 3, Column 2, firms from higher population density counties are indeed more likely to report having external links, where two firms (located in the same prefecture) are defined as being linked if the same individual is listed in both of them. Moreover, conditional on being linked, firms from those counties are more likely to be linked to firms from the same origin (established in the same prefecture) in Column 3. Once again, this homophily is an order of magnitude larger than what would be obtained if firms with links in each prefecture were randomly matched. Table 3: Birth County Connections and Population Density                                    
+
+> Unit of observation: firm network Dependent variable: fraction of listed individuals from the same birth county whether firm has links in the prefecture whether linked firms are linked to a firm from the same birth county fraction of links that are supported number of supporting firms conditional on support (1) (2) (3) (4) (5) PD 1.630*** 0.332*** 1.644*** 1.640*** 15.522*** (0.389) (0.107) (0.480) (0.246) (3.507) Mean of dep. variable 0.488 0.268 0.499 0.288 1.797 PD (counter-factual) 0.082 –0.048 ––Mean (counter-factual) 0.013 –0.014 ––Observations 1,436,699 1,436,699 385,210 1,611 1,291
+> Note: the sample is restricted to firms established outside their birth counties and active in 2009. Two firms are “linked” if the same individual is listed in both of them. A link is “supported” if the nodal firms have mutual links to at least one other firm. The counter-factual estimates are based on the random assignment of listed individuals (other than the principal) and the random matching of linked firms in the prefectures where they are located. The birth county of the principal and other listed individuals is obtained from the SAIC registration database and birth county population density (PD) is derived from the 1982 Population Census. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+Our analysis of business networks thus far has been based on the idea that links between firms from higher population density origins are more strongly “supported” by the overlapping origin social network. Recall that a link is supported if the two nodal firms, or key personnel in those firms, have mutual links to one or more individuals in the origin social network. Although the topology of the origin social network is not observed, this information is available for the business network. We thus turn next to the complementary support that can be provided by the destination business network, based on mutual links to firms from the same origin. When we motivated the positive association between trust and population density above, we argued that higher degree; 15 i.e. a larger number of links per capita was (mechanically) positively associated with the level of support in the origin social network. Having established that firms from higher population density origins are more likely to be linked with each other at a given destination, we expect by the same argument that their destination-based business network will be associated with a higher level of support. Focusing on links between firms from the same origin located in the same prefecture (but outside their birth county) we observe in Table 3, Columns 4-5 that such links between firms from higher population density counties are (i) more likely to be supported by mutually linked firms, and (ii) supported by a greater number of firms, conditional on being supported. The results in Table 3 indicate that while all firms maintain ties with their birth county, even when located elsewhere, firms from higher population density counties display higher levels of birth county homophily. Firms from these counties are more likely to be linked to other firms in the prefectures where they are located and these links are more likely to be with firms from the same origin. 20 The individual links between firms from higher population density counties will be stronger for two reasons: First, they will be supported more strongly by the more inter-connected social network at the origin, which has been shown to be associated with higher levels of localized enforceable trust. Second, these links will be supported more strongly by the business network at the destination, as documented above. This explains why networks of firms drawn from higher population density counties can support higher levels of cooperation (mutual help) and thus function more effectively. The model that follows incorporates these network properties when deriving Facts 1 and 2. Section 4.1 subsequently estimates the effect of the birth county networks on the business outcomes of their members, documenting that networks drawn from denser counties are indeed more effective. 21 
+
+# 3 The Model 
+
+3.1 Population and Technology 
+
+A given birth county with population density p ∈ [p, p ] has successive cohorts of agents indexed by t′ = 1 , . . . , T . All agents continue to live until the terminal date T . The aggregate measure of agents in each cohort is s(p), which is increasing in p. The model is designed to explain Facts 1 and 2, which are derived conditional on a set of covariates associated with entrepreneurial ability. We thus assume that the (conditional) ability distribution is homogeneous across counties, although we will reintroduce the heterogeneity later in Section 4 when we estimate the model. In particular, the ability ω of each agent is drawn from an i.i.d. log normal distribution: log ω is uniformly distributed on [ A − 1, A ]. 
+
+> 20 A particularly useful feature of our network data is that all firms and all links between firms are observed. As with any empirical analysis of networks, the preceding results are obtained for specific types of links (cross-listing). Nevertheless, given the consistency of the results and their micro-foundations, we expect that they would hold up if other (possibly informal) linkages between firms were included in the analysis.
+> 21 The sample size is too small to permit an analysis of support with the network restricted to export firms. However, we will see in Section 4.1 that domestic networks and export networks drawn from denser counties function more effectively.
+
+16 Cohort t′ agents who enter the workforce in period t′ choose occupations at each date t ≥ t′.There are two possible occupations: a traditional occupation and entrepreneurship in a single prefecture (we ignore sectors to simplify the exposition). An agent of ability ω earns a stationary payoff ωσ in the traditional occupation at each date, where σ ∈ (0 , 1). If he chooses to become an entrepreneur, he can produce either for the domestic ( d) market or the export ( e) market, or both. Serving a market i = d, e requires investing in a plant specific to that market, with capital size Kit 
+
+at date t. Investments in either type of plant are irreversible: capital already invested cannot be disinvested, while it is possible to invest more at later dates. Hence, an entrepreneur is committed to a market i once he invests in it. The capital irreversibility constraint is Kit ≥ Ki,t −1 for all t.A plant of size Kit owned by an entrepreneur of ability ω generates revenues at t:
+
+Rdt = Cdt ω1−αKαdt , R et = Cet ωδ(1 −α)Kαet , (1) where α ∈ (0 , 1) reflects diminishing returns to size and δ > 1 represents an ability premium on the export market. TFP (or revenue productivity, to be more precise) depends on the entrepreneur’s individual ability ω and a productivity multiplier term Cit , which we describe in greater detail below. Capital costs for domestic and export plants are as follows: 
+
+Edt = rK dt , E et = r(1 + I)Ket (2) where r includes interest and material costs of equipment, and I > 0 is the incremental cost of operating an export plant, arising from the need to vertically integrate production or to conform to international quality standards. 22 An important additional feature of the model is the presence of diseconomies of scope, incurred by mixed exporters who produce for both the domestic and the export market. This diseconomy of scope, which could be reformulated as a managerial technology with diminishing returns to “span of control,” as in Lucas (1978), is represented by a fixed cost β
+
+in addition to plant costs (2). Hence, the total cost of a mixed exporter equals Edt + Eet + β. This will allow us to explain the presence of pure exporters , who specialize in that activity. We now turn to the productivity multiplier term, Cit , which is determined by an exogenous market-time effect, Qit , and the endogenously determined birth county-destination prefecture net-work, which we introduced in the previous section: 
+
+Cdt = Qdt · [nt−1]θd(p), C et = Qet · [ne,t −1]θe(p)
+
+In the analysis that follows, it will be convenient to take logs and, hence, we denote qit ≡ log Qit .The market-time effect incorporates agglomeration effects and other exogenous business op-portunities associated with product demand, government support and infrastructure, that apply     
+
+> 22 We assume a common interest rate rfor all agents, irrespective of their birth county. This is without loss of generality, as the model can be reformulated to one where (community-wide or individual) differences in capital costs are reflected instead in the ability parameter ω. We could similarly introduce a labor input in the production function, without changing the results that follow, as long as all firms face a common wage.
+
+17 equally to all firms in a market regardless of their origin. This term is increasing over time: 
+
+qit ≥ qi,t −1 for each i = d, e and t, which is plausible in the context of the growing Chinese econ-omy. The network component of the productivity multiplier term reflects the idea that mutual help is complementary and so larger networks are more effective at improving the outcomes of their members: the size of the network is determined by the number of (experienced) firms from the birth county that are established in the prefecture by the end of the preceding period. Notice that the domestic network consists of all firms, nt−1, whereas the export network only consists of exporting firms, ne,t −1. This reflects the idea that experience acquired on the export market is relevant for domestic production, but not vice versa .23 Notice also that other birth county networks do not affect the firm’s revenue; the implicit assumption is that networks do not have the market power to compete or collude strategically. Based on the SAIC registration data, firms from a given origin account for 6.3% of firms in the prefectures where they locate, on average (within narrow two-digit sectors). This statistic is based on all entrepreneurs, including those who locate their firms in their county of birth. The corresponding statistic for the capital share is 5.9%. The common view in China that entire industries are dominated by firms from a single hometown appears to be the exception rather than the rule. While previous research indicates that pricing may be non-competitive in China (Brooks, Kaboski and Li, 2016), the low market share of the origin-based networks suggests that they are not responsible for these distortions. The number of firms in the network will evolve endogenously over time. To initiate the dynamics, we set the number of initial entrants to be independent of p. Given the irreversibility of market entry decisions, network sizes cannot shrink: nt ≥ nt−1, net ≥ ne,t −1. We will see that although network sizes may not vary systematically with p to begin with, there will be divergence over time on account of θd(p) and θe(p), which measure the effectiveness of the domestic and export network, respectively. The key assumption in the model, motivated by the descriptive evidence from Section 2.3, is that networks drawn from denser counties function more effectively; i.e. θ′
+
+> d
+
+(p) > 0, θ′
+
+> e
+
+(p) > 0. 
+
+3.2 Occupational Choice in Equilibrium 
+
+To simplify the exposition, we assume that agents are myopic and that network sizes at past dates are observable by all agents. As shown in Appendix C, the results that follow extend to the case where agents are forward looking but discount future profits at a high enough rate. Consider date 
+
+t with given productivity multiplier Cit , i = d, e . An entrepreneur of ability ω who was active in previous periods inherits plant sizes Ki,t −1 and selects current plant sizes Kit , i = d, e to maximize [Cdt ω1−αKαdt − rK dt ] + [ Cet ωδ(1 −α)Kαet − r(1 + I)Ket ] − βI(Kdt Ket ) (3) 
+
+> 23 We could also consider an alternative version of the model where this asymmetry is absent, and the size of both networks is defined by the incumbents in the respective markets. In other words, where pure exporters do not belong to the domestic network in the same way that domestic producers do not belong to the export network. This version of the model is more difficult to solve analytically. In the Chinese context, exporters constitute a miniscule fraction of firms, below 2%, and pure exporters, an even smaller fraction of firms. Hence, this assumption is unlikely to be empirically relevant.
+
+18 subject to the irreversibility constraints 
+
+Kit ≥ Ki,t −1, i = d, e (4) where I(x) denotes an indicator function which takes the value 1 if x > 0 and 0 otherwise, and past plant size is set equal to zero for any entrepreneur that has not entered the corresponding market previously. Recall that market-time effects, Qit , are assumed to be increasing over time and that network sizes are non-decreasing. This implies that the productivity multiplier Cit , i = d, e , is increasing over time and, hence, that optimal plant sizes must increase over time for incumbents. It follows that the irreversibility constraint can be ignored on the intensive margin. Maximizing profit with respect to capital in each market and then substituting back in the profit function, the equilibrium profit (conditional on entry) for an entrepreneur with ability ω in period t can then be derived for each market W ∈ { O, D, E, M }, where O refers to the traditional (other) occupation, D is domestic production, E is pure exporting, and M is mixed exporting: ΠOt (ω) = ωσ
+
+ΠDt (ω) = ω[ 1
+
+ζ ]C
+
+> 11−α
+> dt
+
+ΠEt (ω) = ωδ[ 1
+
+ζγ ]C
+
+> 11−α
+> et
+
+ΠM t (ω) = ΠDt (ω) + Π Et (ω) − β (5) where ζ ≡ r α   
+
+> 1−α
+> αα
+> 1−α−α11−α
+
+and γ ≡ (1 + I) α 
+
+> 1−α
+
+.The above profits are generated by optimal choices on the intensive margin, for a given market entry decision W on the extensive margin. We now turn to equilibrium choices of (extensive form) market entry decisions. Observe from (5) that the return to ability is increasing as we progress from the traditional occupation (Π Ot ) to domestic production (Π Dt ) to exporting (Π Et , ΠM t ). At the same time, the entrepreneur must face increasing costs as he moves up the occupational ladder: he must bear a cost of capital, r, if he selects domestic production, there is an incremental cost, I,if he opens an export plant, and then there are the diseconomies of scope that accompany mixed exporting. It follows that there will be positive selection on ability in equilibrium, moving up the occupational ladder, as specified below: 
+
+Proposition 1 Parametric restrictions specified in Appendix C enure that for any cohort t′ at date 
+
+t ≥ t′, each between 1 and T , and for any p ∈ [p, ¯p], there are three ability thresholds: 
+
+A − 1 < log ω∗ 
+
+> dt
+
+< log ω∗ 
+
+> et ′
+
+< log ω∗ 
+
+> mt
+
+< A (6) 
+
+and a unique Nash equilibrium involving the following strategies: (a) those with ability below ω∗ 
+
+> dt
+
+stay in the traditional occupation ( O)
+
+19 (b) those between ω∗ 
+
+> dt
+
+and ω∗ 
+
+> et ′
+
+specialize in domestic production ( D)(c) those between ω∗ 
+
+> et ′
+
+and ω∗ 
+
+> mt
+
+specialize in exports ( E)(d) those above ω∗ 
+
+> mt
+
+serve both markets ( M ). 
+
+The condition log ω∗ 
+
+> et ′
+
+< log ω∗ 
+
+> mt
+
+for all t in (6) maintains the ordering of the three ability thresholds for any cohort t′ at each point in time. 24 This ensures that some pure exporters in cohort t′ stay that way, which implies that domestic producers from that cohort, who have ability less than ω∗ 
+
+> et ′
+
+, never transition to (mixed) exporting. As a result, the export propensity (fraction of potential entrepreneurs that export) of any given cohort does not change over time. However the export propensity may vary across different cohorts, depending on the evolution of market-time effects and network sizes in the domestic and export markets, respectively. Aggregate changes in the export propensity are thus driven by the arrival of new cohorts. In contrast with the export propensity, the domestic production threshold ω∗ 
+
+> dt
+
+and the mixed export threshold ω∗ 
+
+> mt
+
+are independent of the cohort but depend on the current date t. These two thresholds are falling in t as the domestic network size nt expands over time (as derived below). The fall in the lower threshold ω∗ 
+
+> dt
+
+motivates a range of low ability agents to move from the traditional occupation into domestic production at older ages. The fall in the higher threshold ω∗ 
+
+> mt
+
+motivates a range of entrepreneurs previously specializing in exports to become mixed exporters at older ages. These changes affect all older cohorts in the same way. We close the discussion in this section by listing the differences between our model and the canonical Melitz (2003) model, which also features sorting by ability into domestic production and exporting. 1. Production technology and market structure: In the Melitz model, each firm produces a differ-entiated product (variety) with a constant returns to scale technology. It faces a downward sloping CES demand curve and thus sets its profit-maximizing price at a constant markup over its unit cost, resulting in a revenue function that exhibits constant elasticity (less than one) with respect to scale. In our model, each firm produces a homogeneous good and is a price taker. However, the production technology is specified such that the revenue function continues to exhibit diminishing returns to scale. We could, instead, have specified the production technology and market structure as in Melitz (2003) without changing any of the results. 2. Decisions at the extensive margin: The Melitz model allows firms to enter and exit, solving for the steady-state equilibrium. In our dynamic model, there is no exit and the number of firms is increasing over time. This focus on the transition dynamics is reasonable in the context of a rapidly growing economy at initial stages of economic development. Moreover, the main result would be retained if we added a uniform and exogenous death rate to the model. The propensity equations derived below to explain Facts 1 and 2 would be simply multiplied through by the survival rate. 3. Decisions at the intensive margin: The Melitz model allows firms to adjust their size in both directions. In our model, capital investments are irreversible, which is once again reasonable in  
+
+> 24 We impose a strong version of this condition for analytical convenience. Weaker versions would allow the in-equality to be reversed in later time periods for some cohorts without changing our results.
+
+20 the context of a growing economy. We obtain qualitatively similar results in the absence of any irreversibility, where agents sort into domestic production, pure exporting and mixed exporting at each date. The only change from the equilibrium derived above is that the cohort-specific pure export threshold, ω∗ 
+
+> et ′
+
+, would now vary over time, just like the domestic production threshold, ω∗
+
+> dt
+
+,and the mixed export threshold, ω∗
+
+> mt
+
+.4. Pure exporters: In the Melitz model, the entire overhead production cost is accounted for in domestic profits and, hence, a firm will export if its additional revenues exceed the additional costs. This implies that no firm will ever export and not produce for the domestic market. In our model, restrictions on the δ, I, parameters ensure that entrepreneurs above an ability threshold produce for the export market. Those entrepreneurs would also produce for the domestic market, as in the Melitz model, in the absence of the scope diseconomy (measured by the β parameter). If the diseconomies of scope are sufficiently large, however, then some exporters will specialize in that activity and their presence is key to explaining Fact 2 below. 5. Occupational dynamics: In the Melitz model, business opportunities are restricted to the do-mestic market to begin with. When export opportunities subsequently become available, domestic producers above an ability threshold become (mixed) exporters. This transition from domestic production to mixed exporting is absent in our model, as noted above, but could be generated if we allowed exports to commence in some period τ + 1, rather than the initial date. Then domestic producers from the τ preceding cohorts above an ability threshold would become mixed exporters once the new opportunities became available, with this process continuing over time as the thresh-old declined (with the expansion of the export network). The advantage of starting the domestic network and the export network at the same time is that this simplifies the analysis. The limitation of this approach is that the model does not account for high ability Melitz-type domestic producers who subsequently become mixed exporters. However, their absence does not qualitatively affect the analysis that follows in this section. The propensity of an incumbent domestic producer to add an export plant is increasing in the size of the export network, but is independent of the size of the domestic network. It is the pure exporters, whose numbers are decreasing in the size of the domestic network, as made precise below, that drive Fact 2. We will, however, take account of the Melitz-type mixed exporters when estimating the model in Section 4. 
+
+3.3 Explaining the Facts 
+
+Recall from Section 2.1 that potential entrepreneurs born in denser counties have a greater propen-sity to enter business (domestic production), but a lower propensity to enter exporting. We now verify that the model can explain both stylized facts, even though networks drawn from denser counties function more effectively in domestic production and exporting; θ′
+
+> d
+
+(p) > 0 and θ′
+
+> e
+
+(p) > 0. 
+
+Fact 1 : Individuals with ability ω ∈ [ω∗
+
+> dt
+
+, A ] become entrepreneurs. Deriving the expression for 
+
+ω∗ 
+
+> dt
+
+from (5), by setting Π Ot (ω∗
+
+> dt
+
+) = Π Dt (ω∗
+
+> dt
+
+), and unpacking Cdt :
+
+nt = ts (p)[ A − ω∗
+
+> dt
+
+] = ts (p)[ A − log ζ
+
+1 − σ + qdt + θd(p) log nt−1
+
+(1 − σ)(1 − α) ] (7) 21 Recall that the initial number of firms, n0, is assumed to be independent of p. From the preceding equation, entrepreneurial propensity in period 1, n1 
+
+> s(p)
+
+and, hence, n1 will be increasing in p because 
+
+θ′
+
+> d
+
+(p) > 0 and the number of potential entrepreneurs, s(p), is increasing in p. By a recursive argument, entrepreneurial propensity in period t, nt 
+
+> ts (p)
+
+is increasing in p to explain Fact 1. 25 
+
+Fact 1 is obtained because more effective (higher-p) networks bring in lower ability entrepreneurs at the margin. This implies that the marginal entrant’s ability and initial capital is decreasing in p
+
+in each cohort, as derived in Appendix C, which, in turn, is consistent with Appendix Figure B4. The resulting variation in the ability of the marginal entering entrepreneur across birth counties is indicative of a misallocation. In particular, total output would increase if the marginal entrant from a higher population density network was replaced by the last (higher ability) individual to stay out of a lower population density network, as in Banerjee and Munshi (2004). Such reallocation is infeasible in practice because networks are restricted to individuals from the same birth county. 
+
+Fact 2 : Individuals from cohort t′ with ability ω ∈ [ω∗ 
+
+> et ′
+
+, A ] become exporters. As noted, there is no further entry into exporting from the t′ cohort after that period. Thus, the stock of exporters at any period t is just the sum of exporters supplied by all preceding cohorts. The marginal pure exporter in cohort t′, with ability ω∗ 
+
+> et ′
+
+, is indifferent between domestic production and pure exporting. Following the same steps as above, we set Π Dt ′ (ω∗ 
+
+> et ′
+
+) = Π Et ′ (ω∗ 
+
+> et ′
+
+) to derive ω∗ 
+
+> et ′
+
+from (5) and then unpack Cet ′ to obtain: 
+
+net = ts (p)[ A − log γδ − 1 ] + s(p)(δ − 1)(1 − α)
+
+> t
+
+∑
+
+> t′=1
+
+[qet ′ − qdt ′ + θe(p) log ne,t ′−1 − θd(p) log nt′−1] (8) As observed in the preceding equation, ω∗ 
+
+> et ′
+
+, which pins down the export propensity, is de-termined by market-time effects ( qet ′ , q dt ′ ) and network sizes ( ne,t ′−1, n t′−1), in exporting versus domestic production. Summing up over all previous cohorts, the export propensity in period t, 
+
+> net
+> ts (p)
+
+, is determined by the net network effect: 1
+
+> t
+
+∑tt′=1 [θe(p) log ne,t ′−1 − θd(p) log nt′−1]. Given that 
+
+θ′
+
+> e
+
+(p) > 0, the export propensity would be increasing in p in the absence of the second term in square brackets. However, θ′
+
+> d
+
+(p) > 0, and we know from Fact 1 that nt′−1 is increasing in p. If the resulting (domestic) network “overhang,” which dampens entry into exporting, is sufficiently large, then the net network effect and, hence, the export propensity will be decreasing in p to explain Fact 2. In the decentralized equilibrium described by our model, potential exporters do not account for the positive network externality associated with their entry into that activity, which implies that there is too little entry. A social planner choosing the optimal number of exporters to maximize total export profits would take account of this externality, but their choice would be independent of the size of the domestic network since the latter does not directly affect export productivity (or prof-its). Regardless of its magnitude, the negative domestic network overhang is thus unambiguously associated with a dynamic inefficiency, which reduces entry into exporting. 
+
+> 25 The preceding result is derived for a given birth county and destination prefecture, whereas Fact 1 is based on all locations where firms from a given birth county are established. However, it is straightforward to verify that the result we have derived also goes through when we aggregate up across locations. The same is true for Fact 2 below.
+
+22 The root cause of the network overhang in our model is the scope diseconomy, which intro-duces a nonseparability between domestic production and exporting. As a result, most active entrepreneurs, with the exception of the mixed exporters, must choose between these activities. The nonseparability does not arise in the Melitz model where, for example, a demand shock on the domestic market would have no bearing on the firm’s export decision. However, it does arise in Fan et al. (2020) and Almunia et al. (2021), who extend the Melitz model by allowing for increasing marginal costs. Positive shocks on the domestic market now reduce the firm’s exports, and while the focus of these recent papers is on the intensive margin, they could in principle generate the same tradeoff at the extensive margin between domestic production and exporting as in our model. Note, however, that the nonseparability in the model with increasing marginal costs does not generate an inefficiency because firms internalize the tradeoffs with respect to domestic and export profits when they make their production decisions. 
+
+3.4 Firm-Level Outcomes 
+
+Recall from Section 2.2 that firm-level revenue and productivity are increasing more steeply over time for firms drawn from denser counties, both in domestic production and exporting. To ver-ify that the model can explain these results, we begin by deriving the corresponding structural equations for revenue and productivity. The revenue obtained by a domestic producer with ability ω, Rdt = Cdt ω1−αKαdt . Taking logs, substituting the value of the profit maximizing capital investment, and unpacking Cdt :log Rdt = α
+
+1 − α log 
+
+( αr
+
+)
+
++ θd(p) log nt−1
+
+1 − α + qdt 
+
+1 − α + [(1 − α)2 + 1] 1 − α log ω. (9) The corresponding expression for export revenue is obtained as: log Ret = α
+
+1 − α log 
+
+( αr(1 + I)
+
+)
+
++ θe(p) log ne,t −1
+
+1 − α + qet 
+
+1 − α + δ[(1 − α)2 + 1] 1 − α log ω. (10) When revenue is replaced by productivity, Pdt , as the outcome, the specification of the structural equation is qualitatively unchanged. Pdt = Cdt ω1−α and, hence, log Pdt = θd(p) log nt−1 + qdt + (1 − α) log ω. (11) Comparing the structural equations with the reduced form specification of the revenue and productivity equations in Table 1, the market-time effects, qdt and qet , are accounted for in Columns 4-6 when revenue and productivity are measured as Z-scores, within the prefecture-sector-time period. Ability, ω, is subsumed in the firm fixed effect that is included in the reduced form equations. To reconcile the model with the reduced form result that domestic revenues and productivity are increasing more steeply over time for firms drawn from denser counties, equations (9) and (11) 23 imply that the following condition must be satisfied: 
+
+d2θd(p) log nt−1
+
+dpdt = θ′
+
+> d
+
+(p) ddt log nt−1 + θd(p) d2 log nt−1
+
+dpdt > 0We cannot sign the second term on the left hand side of the preceding inequality because the model does not have unambiguous implications for the sign of the cross-partial term. However, the first term is positive because θ′
+
+> d
+
+(p) > 0 by assumption and domestic network size, nt−1 is non-decreasing. It follows that the required condition will be satisfied if the first term is sufficiently large. By an analogous argument, the structural equation (10) for export revenues can be reconciled with the corresponding reduced form result in Table 1 because θ′
+
+> e
+
+(p) > 0 by assumption and export network size, ne,t −1 is non-decreasing. 
+
+# 4 Testing the Model 
+
+4.1 Firm-Level Outcomes 
+
+We showed above that the structural equations for firm-level revenues and productivity implied by the model can be reconciled with the reduced form results reported in Section 2.2 under the assumption that networks drawn from denser counties function more effectively; i.e. θ′(p) > 0for domestic production and exporting. We now proceed to estimate these equations (9)-(11) to verify that assumption, with θ(p) parameterized to be linear in p: θ(p) = θ0 + θpp. If birth county networks are active, then θ0 > 0. If networks drawn from denser birth counties are more effective, as assumed, then θp > 0. Although the model is based on a single destination prefecture, the empirical tests that follow allow for multiple origins and for multiple destinations for each origin and, hence, the notation in the estimating equations is modified accordingly: log yijkt = ( θ0 + θppj ) log njk,t −1 + γ log Ki0 · t + fi + ujkt , (12) where yijkt measures the Z-score for the revenue or productivity of firm i from birth county j
+
+located in prefecture k in period t, pj is birth county population density and njk,t −1 measures the stock of firms from county j located in prefecture k in period t − 1; i.e. prior to period t. Note that network size njk,t −1 is based on the stock of exporting firms when the outcome is export revenues, following Fernandes and Tang (2014) and as assumed in our model. 26 The ability terms in the structural equations are captured by a firm fixed effect fi and the prefecture-time effects that affect all firms in a prefecture equally are implicitly accounted for when we measure outcomes by Z-scores. Matching the reduced form specification estimated in Table 1, we also include the firm’s initial capital interacted with a time trend, log Ki0 · t, as a covariate. The structural error term, which does not appear in the model but which we motivate below is denoted by ujkt .
+
+> 26 The network mechanism in Fernandes and Tang (2014) is based on social learning rather than mutual help and, hence, their specification of the estimating equation also includes proxies for the signals inferred from neighbors. However, their definition of the network is based on all firms operating in a given location and thus the effects they
+
+24 Table 4: Revenue, TFP, and Network Effects Model: OLS IV Dependent variable: log revenue log TFP log (export revenue) log revenue log TFP log (export revenue) (1) (2) (3) (4) (5) (6) log njk,t −1 0.242*** 0.150*** 0.266*** 0.117*** 0.008 0.184** (0.006) (0.006) (0.026) (0.024) (0.021) (0.075) 
+
+pj × log njk,t −1 1.756*** 1.201*** 1.245*** 4.155*** 3.567*** 2.363* (0.186) (0.153) (0.420) (0.605) (0.557) (1.278) Firm fixed effects Yes Yes Yes Yes Yes Yes Kleibergen-Paap F – – – 25.45 25.45 12.41 Observations 2,235,509 2,235,509 70,579 2,235,509 2,235,509 70,579                  
+
+> Note: Revenue and TFP are derived from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Network size is constructed with SAIC registration data. All dependent variables are measured as Z-scores within prefecture-sector-time periods. The firm’s initial capital interacted with a time trend is included in the estimating equation.
+> pjdenotes population density in 1982 for birth county jand njk,t −1is the stock of firms from county j
+> established in prefecture kby the end of the preceding period t−1. When the dependent variable is export revenue, njk,t −1is measured by the stock of export firms. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+As seen in Table 4, Columns 1-2, firm revenues and productivity are increasing significantly in network size and in its interaction with birth county population density. This is also true for export revenues in Column 3. By constructing the dependent variable as a Z-score, we are effectively controlling for any source of unobserved variation at the prefecture-sector-time period level, such as infrastructure or agglomeration effects. The threat to identification, given that firm fixed effects are also included in the estimating equation is that unobserved birth county-destination prefecture shocks over time, ujkt , could be correlated with network size, giving rise to a spurious network effect. For example, suppose that potential entrepreneurs from a given birth county unexpectedly have preferred access to government resources in a particular destination prefecture (perhaps because a newly appointed official hails from the same county). Business outcomes will improve for those entrepreneurs, with an accompanying increase in the number of firms established in that prefecture. Basing the network effect on lagged size, as in equation (12), does not solve the problem when shocks are serially correlated, in which case a spurious network effect could be obtained. One strategy to address the identification problem described above is to construct an instrument for network size. For example, Munshi (2003) uses income shocks at Mexican origins to construct an instrument for the size of migrant networks operating in U.S. labor markets. Since mobility in our application is occupational rather than spatial, the analogous strategy would be to use income shocks to non-business activities in the birth county; i.e. the outside option for potential 
+
+> identify are fully accounted for when we construct the dependent variable as a Z-score.
+
+25 entrepreneurs, as instruments for the size of the business networks that emerge from those counties (and are established in different prefectures). Following Imbert et al. (2022), we construct the instrument for network size in the following steps: (i) Using time series variation in world crop prices, and assuming that these prices follow an AR1 process, we construct a price shock in each year for the 11 crops that we used above to predict 1982 population density. (ii) For a given birth county, we weight each crop’s price shock by a factor that reflects its contribution to local agricultural production (by value) to construct a composite agricultural income shock in each year. (iii) We assume that the decision to establish a firm and, hence, firm entry in a given year is based on the average of the income shocks over the past five years. Since the stock of firms is just the sum of past entry, it is then possible to construct a predictor of the stock in each year that is based on the history of past income shocks (aggregated in a particular way). (iv) To predict the stock of firms from a given birth county in a particular destination prefecture, log njk,t −1,we multiply the predictor derived above by a factor, estimated from a gravity equation, that is decreasing in the distance between the two locations. Finally, when we construct the corresponding instrument for pj × log njk,t −1, we interact the potential yield for each of the 11 crops with the shift-share instrument. Details of instrumental variable construction are provided in Appendix D. The instrumental variable estimates of the network effects are reported in Table 4, Columns 4-6. Network size effects continue to be positive and significant (with one exception) and to be increasing in birth county population density. The shift-share instrument we have constructed consists of quasi-random crop price shocks (shifts) interacted with fixed birth county-destination prefecture characteristics (shares). This instrument is seen to have a strong (first-stage) effect on the network variables, for all firms and for export firms, in Appendix Table D1. The discussion that follows examines the validity of each component of the shift-share instrument. We begin with the shift. One way in which agricultural price shocks could directly impact business outcomes is if they affect the local economy more broadly and firms are located in the birth county itself. We allow for this possibility by restricting the sample to firms located outside their birth county in Appendix Table D2. As can be seen, the estimates are very similar to what we obtain with the full sample in Table 4. A second way in which agricultural price shocks could affect a firm’s payoffs is if it is operating in that sector. We address this concern by dropping firms that are engaged in activities associated with agriculture, such as food processing. Once again, the estimates reported in Appendix Table D3 are very similar to what we obtain with the full sample. Finally, a third way in which agricultural price shocks could directly affect business is through the wealth channel. If own (family) wealth is used to finance business, as in Song, Storesletten and Zilibotti (2011), then a negative price shock will curtail the operations of entrepreneurs from agricultural families. This is true regardless of the sector-location in which they are active and will result in a decline in their revenues. We account for this in Appendix Table D4 by verifying that the results are robust to including the agricultural income shock in the birth county, which we use to construct the shift-share instrument, as a covariate in the estimating equation. The income shock has a positive and significant direct effect on firm revenues and productivity, whereas our 26 first-stage estimates in Appendix Table D1 indicate that it has a negative effect on firm entry and, with it, network size (consistent with our model). These effects work in opposite directions and, hence, by ignoring a potential wealth effect in the benchmark specification, we are (if anything) reporting conservative estimates of the network size effect. Next we turn to the share, which consists of two components: (i) the distance term, which maps the total stock of firms from a given birth county into destination prefectures, and (ii) the crop multiplier, which maps crop-specific shocks into the income shock for that county. The share is a fixed characteristic and, hence, its direct effect on the level of the outcome is subsumed in the firm fixed effect. However, Goldsmith-Pinkham, Sorkin and Swift (2020) note that the interaction of the share with time must also be considered when examining the validity of the shift-share instrument. For example, suppose that firms located at a greater distance from their rural origin are established in faster-growing cities or production clusters. Distance interacted with time will then determine absolute firm performance, but this does not undermine our identification strategy because all firm outcomes are measured as Z-scores relative to other firms in the same sector-location. The greater threat to identification stems from the potential endogeneity of the crop shares. Suppose that (historical) cultivation of a particular crop is associated with an entrepreneurial culture or a greater willingness to bear risk in the local population. If these traits have a differential effect on firm outcomes over time with economic development, then our instrument would violate the exclusion restriction. Alternatively, if counties growing particular crops industrialize relatively fast due to the nature of the agricultural production technology, as in Bustos, Caprettini and Ponticelli (2016), then entrepreneurs born in those counties will have preferred access to capital (to the extent that firms are self-financing). This would undermine the validity of the instrument once again. To address the preceding concerns, we take advantage of the fact that if the crop shares are exogenous, then the shift-share instrument is “equivalent” to using the shares associated with each crop, interacted with time effects, as independent instruments for network size (Goldsmith-Pinkham, Sorkin and Swift, 2020). It follows that if the share for any crop violates the exclusion restriction, then the instrumental variable estimates obtained with that crop would differ from the estimates obtained with other crops. Table 5 reports results with firm revenue as the dependent variable, using the share for each crop interacted with time effects as instruments for network size. We report estimates with all 6 of the 11 crops that have a positive Rotemberg weight, a statistic derived by Goldsmith-Pinkham, Sorkin and Swift that measures the contribution of a given crop to the shift-share instrument. Among these crops, maize, rapeseed, soybean, and potato have the largest weights, together accounting for 93.7% of the variation in the shift-share instrument and 69.8% of the harvesting acreage. The network effects estimated separately with each of these crops are positive, significant, and similar in magnitude to each other and to the benchmark estimates with the shift-share instrument in Table 4, Column 4. This indicates that no crop has a separate and independent effect on firm performance, validating the exogeneity of the corresponding shares. We complete the instrumental variable analysis with a comment on the interpretation of the esti-mates. Negative income shocks in the birth county will also increase labor migration, as documented by Imbert et al. (2022). Given that the cost of moving is increasing in distance, entrepreneurs and 27 Table 5: Testing the Exogeneity of the Crop Shares Dependent variable: log revenue Crop used to construct IV: maize repeseed soybean potato sorghum wheat (1) (2) (3) (4) (5) (6) log njk,t −1 0.203*** 0.186*** 0.185*** 0.242*** 0.177*** 0.245*** (0.013) (0.016) (0.015) (0.023) (0.016) (0.021) 
+
+pj × log njk,t −1 3.140*** 3.453*** 3.903*** 2.928*** 3.987*** 2.266*** (0.421) (0.479) (0.528) (0.716) (0.509) (0.655) Firm fixed effects Yes Yes Yes Yes Yes Yes Kleibergen-Paap F 17.58 12.21 12.41 48.53 27.64 6.178 Observations 2,235,509 2,235,509 2,235,509 2,235,509 2,235,509 2,235,509              
+
+> Note: Revenue is derived from the Inspection database, covering the 1998-2009 period. Network size is con-structed with SAIC registration data. Revenue is measured as a Z-score within the prefecture-sector-time period. The firm’s initial capital interacted with a time trend is included in the estimating equation.
+> pjdenotes population density in 1982 for birth county jand njk,t −1is the stock of firms from county jestab-lished in prefecture kby the end of the preceding period t−1. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+workers from a birth county could end up in the same locations. If entrepreneurs are more likely to hire workers from their hometown, then the estimates in Table 4 could reflect an inter-firm business network effect and a complementary labor network effect. While we are comfortable with a more inclusive interpretation, the descriptive evidence in Section 2.3, which is based on observed links between firms, provides explicit support for the hypothesis that inter-firm networks are active. 
+
+4.2 Composition of Firms 
+
+Our ability to explain Fact 2 relies on the presence of pure exporters. Such firms have been observed in many developing countries and we now proceed to document their presence in China. We do this with data from the economic census, available in 2004 and 2008. These data provide revenues for all manufacturing firms and can be matched with the Customs database. Those firms whose revenues exceed their exports are designated as mixed exporters. Those firms whose revenues match their exports are classified as pure exporters. 27 Finally, those firms that do not appear in the customs data are assumed to be domestic producers. Table 6 describes the composition of firms in 2004 and 2008, based on the preceding classifi-cation. Export firms constitute a tiny fraction, around 2-3%, of all manufacturing firms and pure exporters comprise around 15% of all exporters. Notice that these firms can be ranked with respect to their revenue: domestic producers have the lowest revenues, followed by pure exporters and then   
+
+> 27 The economic census is the most reliable data-source that we have at our disposal. Nevertheless, there will be inaccuracies in reported revenues. We thus allow for up to 10% slippage between revenues and exports when classifying a firm as a pure exporter.
+
+28 mixed exporters. This ranking matches the ordering of firms in our model with respect to revenues (and ability). Figure 2 subjects the ranking to closer scrutiny by reporting the distribution of revenues for each type of firm. It can be seen that the distributions for domestic producers, pure exporters and mixed exporters, in that order, are increasingly shifted to the right. Table 6: Composition of Firms Year 2004 2008 Type: number log revenue number log revenue Domestic producer 234,998 14.48 471,961 14.87 Pure exporter 572 15.75 2,086 15.58 Mixed exporter 4,102 16.52 10,300 16.42 
+
+Source: Economic Census (2004,2008) and Customs database. Data restricted to manufacturing firms. Revenue measured in Yuan. 
+
+The vertical line in Figure 2 marks the 5 million Yuan cutoff above which firms are selected into the Above Scale database, which is maintained by the National Bureau of Statistics and has been used in many previous studies. Above Scale firms are subjected to increased government oversight, which is presumably why there is bunching just below the threshold (especially for domestic firms). Firms in the Above Scale database are evidently highly selected, which is why we prefer the economic censuses and the SAIC databases for our analyses. 28 Above-scale cutoff       
+
+> 0
+> .1
+> .2
+> .3
+> .4
+> Density
+> 510 15 20 25
+> log revenue
+> Domestic producer Pure exporter Mixed exporter
+
+(a) 2004 Above-scale cutoff        
+
+> 0
+> .2
+> .4
+> .6
+> Density
+> 510 15 20 25
+> log revenue
+> Domestic producer Pure exporter Mixed exporter
+
+(b) 2008 
+
+Figure 2: Revenue Distribution 
+
+Source: Economic Census (2004,2008) and Customs Database. Revenue measured in Yuan. 
+
+> 28
+
+The SAIC inspection database, which we use for the analysis of network effects, also provides firm revenues. However, this is only for a sample of firms and, as noted in Appendix B, there are discrepancies between the revenues reported in the inspection database and the economic census. This is especially important for the current analysis because revenues and exports must match closely to identify pure exporters. 
+
+29 4.3 Firm Entry 
+
+The final step in the empirical analysis is to reconcile Facts 1 and 2 with the model by estimating the structural propensity equations (7) and (8). Notice that the propensity equations are nonlinear in parameters but linear in variables. They can thus be rewritten as follows, with each “composite” parameter in the equations below corresponding to a set of structural parameters in equations (7) and (8). The ability distribution is assumed to be the same in all birth counties in the model to be consistent with Facts 1 and 2 (which are derived conditional on a set of covariates associated with ability). Based on a comparison of conditional and unconditional estimates in Figure 1, however, we expect the unconditional ability distribution to vary across birth counties. Moreover, while the model is based on a single destination prefecture, entrepreneurs from a given origin will establish their firms in multiple destinations, with different proximities, in practice. Entrepreneurs have a greater propensity to set up their firms in closer prefectures. We thus replace the A parameter in equations (7) and (8) with birth county-destination prefecture specific parameters, Ajk , where j
+
+refers to the birth county and k to the destination prefecture. Modifying the notation to allow for multiple origins and destinations, the propensity equations that we estimate can then be written as follows: 
+
+njkt 
+
+Pjt 
+
+= ˜Ajk + ˜Φkt + ˜Θd(pj ) log njk,t −1 + ˜ jkt (13) 
+
+nejkt 
+
+Pjt 
+
+= Ajk + Φ kt +
+
+[
+
+Θe(pj )
+
+(
+
+1
+
+t
+
+> t
+
+∑
+
+> t′=1
+
+log nejk,t ′−1
+
+)
+
+− Θd(pj )
+
+(
+
+1
+
+t
+
+> t
+
+∑
+
+> t′=1
+
+log njk,t ′−1
+
+)] 
+
++ jkt (14) where Pjt measures the number of potential entrepreneurs and ˜Φkt , Φkt are destination prefecture-time period effects. 29 The Θ functions are assumed to be linear in pj : ˜Θd(pj ) ≡ ˜Θd0 + ˜Θdp · pj ,Θi(pj ) ≡ Θi0 + Θ ip · pj , i ∈ { e, d }. The network terms thus appear uninteracted and interacted with pj in the propensity equations, which can be estimated by Ordinary Least Squares. Based on the model, we expect all the composite parameters to be positive. Although our deterministic model does not include structural error terms, these terms can be introduced by allowing for birth county-destination prefecture entry shocks. The discussion on identification that follows focuses on equation (14) for convenience, but it applies in exactly the same way to equation (13). The numerator of the dependent variable in equation (14) is the stock of export firms at each point in time; i.e. the sum of entry flows over preceding periods and, hence, the error term can be analogously characterized as the sum of per period entry shocks: 
+
+jkt = jk,t −1 + vjkt . The error term, jkt , is serially correlated by construction, and since the propensity equation includes lagged firm stocks (the network size terms) on the right hand side, biased estimates will be obtained if the equation is estimated in levels. However, if we first-difference 
+
+> 29 We ignore sectors in the current analysis in order to leave us with a sufficient number of observations to construct the propensity variables. The propensities are measured at the birth county-destination prefecture-time period level, matching the specification of the network variables.
+
+30 to purge the origin county-destination prefecture effects, Ajk , then we will be left with vjkt in the residual of the estimating equation. If vjkt is serially uncorrelated, OLS estimation of the differenced equation will yield unbiased estimates of the network effects. It is, however, entirely possible that 
+
+vjkt is serially correlated, in which case instruments need to be constructed for the network terms. Since the network variables are measured in logs, the first-differenced variables that need to be instrumented are the network growth rate in period t − 1 in equation (13) and the average network growth rate over all periods up to t − 1, for all firms and for export firms, in equation (14). For this component of the analysis, we cannot base our instruments on the history of agricultural income shocks in the birth county, as we did when estimating the firm-level outcome equations in Section 4.1, because these shocks directly determine firm entry and, hence, the entrepreneurial and export propensities. What we do, instead, is to take advantage of the dynamic properties of the networks. There are 125,000 domestic networks and 5,000 export networks, defined at the birth county-destination prefecture level, in our data. These networks form at different points in time and once a network drawn from a given birth county has formed in a destination prefecture, its size will grow from one period to the next; i.e. with its “duration,” on account of the dynamic network multiplier effect. Moreover, the trajectory of the network will depend on the initial level of entry, which determines the size of the multiplier effect. The interaction of network duration with (log) initial entry can thus be used as an instrument for the growth rate. As commonly assumed in the migration literature, the identifying assumption (validated below) is that the factors that determine initial entry should not determine subsequent entry, except through the network multiplier effect. Once we first-difference the propensity equations, the left hand side is approximately equal to the flow of new entrepreneurs or exporters from the birth county into a given prefecture divided by the stock of potential entrepreneurs (since the latter statistic changes little from one period to the next). In our model, there is a single destination prefecture and, hence, potential new entrepreneurs can be partitioned by ability into distinct activities. With multiple destinations, however, the same individual could possibly be willing to establish his firm in more than one prefecture. To avoid such double-counting, we assume that each potential entrepreneur receives a single referral, which is required to set up a business, from the birth county network. If there is an equal probability of receiving that referral from all prefectures, then the right hand side of the first-differenced propensity equations will be multiplied by a constant and the estimation proceeds without modification. For our benchmark specification, however, we make the more realistic assumption that the probability that a potential entrant receives a referral from a given prefecture, k, in period t is equal to the share of incumbent firms from the birth county who were located in that prefecture by the end of the preceding period, Sjk,t −1, with the shares across all prefectures summing to one. The right hand side of the first-differenced propensity equations is now multiplied by Sjk,t −1 or, equivalently, the left hand side is divided by Sjk,t −1 (which is what we do in practice). The instrumental variable estimates with entrepreneurial propensity as the dependent variable are reported in Table 7, Column 1 and the corresponding estimates with export propensity as the dependent variable are reported in Column 2. While the model assumes that domestic produc-31 tion and exporting commenced simultaneously for analytical simplicity, we now allow for distinct regimes: the analysis of entrepreneurial propensity spans the 1994-2009 period and the analysis of export propensity spans the 2002-2009 period. Based on the Kleibergen-Paap statistic, our in-struments have sufficient power (the F statistic is well above 10). 30 The estimated coefficients also have the expected signs and are statistically significant, with a couple of exceptions. The nega-tive coefficients on the domestic network terms in the export propensity equation, in particular, are indicative of the network overhang that is a key feature of our model. Qualitatively similar coefficient estimates are obtained without the Sjk,t −1 correction in Appendix Table D5, although our preferred specification does a better job of predicting entry, especially for all entrepreneurs, in distant prefectures (where the share is smaller). 31 
+
+68% of the exporters in the 2004 economic census and 37% of the exporters in the 2008 census registered their firms prior to 2002, which is the starting point for the exporting regime in our analysis. 32 Most of these firms would have transitioned from domestic production to exporting when new opportunities became available with China’s entry into the WTO in 2002, as in Melitz (2003). Since the Melitz-type exporters do not appear in the current formulation of the model, we drop exporters who were registered prior to 2002 when constructing the export propensity in Table 7, Column 3 to more accurately test its implications. Note that there is no change in the regressors of the estimating equation. As can be seen, the estimated coefficients with this alternative specification of the export propensity are broadly in line with the estimates based on all exporters in Column 2. The identifying assumption with our instrumental variable estimates is that the factors that determine initial entry in each birth county-destination prefecture should only determine subse-quent entry through the network multiplier effect; i.e. these factors should not be persistent. This assumption is plausible, given that there is often an accidental one-off aspect to (business) net-work formation, as described, for example, in Munshi (2011). The analysis that follows provides independent support for the validity of the instrumental variable estimates. If the (unobserved) factors that determine initial entry are persistent, then the duration of the network will be correlated with these factors, violating the exclusion restriction. We examine this possibility in the following ways: First, we include duration directly as a covariate in the first-      
+
+> 30 Although we use the interaction of network duration with the initial level of entry to instrument for the domestic network terms and the export network terms in Column 2, we are still identified because the domestic network and the export network (typically) start at different points in time in a given prefecture.
+> 31 We measure the number of potential entrepreneurs, Pjt , by the number of 25-55 year old men who were born in county jat time t, as we did when deriving Facts 1 and 2. In the model, however, a fresh cohort of potential entrepreneurs arrives in each period and then remains active forever. We thus verify that the results are robust to an alternative measure of the number of potential entrepreneurs in Appendix Table D5: we start with the number of 25-35 year olds in 1994 and then add a fresh cohort of 25 year olds each year up to 2009. In addition, 81% of the initial entry levels in our birth county-destination prefecture networks consist of a single firm. Since the log of initial entry is zero in that case, which would result in no variation over time in those networks, we add a small constant equal to 0.1 to all initial entry levels when estimating the propensity equations. Appendix Table D6 verifies that the results are robust to adding 0.05 or 0.15 instead.
+> 32 Among the export firms in the 2008 economic census who were registered after 2002; i.e. during the exporting regime, 76% commenced exporting within two years. This is broadly in line with the equilibrium specified in our model, where exporters commence that activity immediately, once we take account of the time needed in practice to make connections with foreign buyers and receive government permissions.
+
+32 Table 7: Entrepreneurial and Export Propensity Propensity to become: entrepreneur exporter exporter post-WTO (1) (2) (3) ˜Θd0 0.0050*** – –(0.0012) ˜Θdp 0.1540*** – –(0.0514) Θe0 – -0.0004 -0.0003 (0.0003) (0.0002) Θep – 0.0171** 0.0121** (0.0067) (0.0049) Θd0 – -0.0000 -0.0000 (0.0001) (0.0001) Θdp – -0.0063*** -0.0044** (0.0023) (0.0017) Birth county-prefecture FE Yes Yes Yes Prefecture-year FE Yes Yes Yes Kleibergen-Paap F 188.9 15.41 15.41 Observations 699,531 16,559 16,559   
+
+> Note: The number of firms is derived from the SAIC registration database and the Customs database. The number of potential entrepreneurs is derived from the Population Census (1990, 2000). The unit of observation is the birth county-destination prefecture-year. ˜Θd0, Θ e0, Θ d0measure direct network effects, while ˜Θdp , Θ ep , Θ dp measure interaction effects. The interaction of network duration with initial (log) entry and the triple interaction with birth county popu-lation density are used as instruments for each network term and its interaction with population density in the first-differenced equation (separately for the domestic network and the export network in Columns 2-3). Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+differenced entrepreneurial propensity and export propensity equations. There is now less variation in the instruments, but they continue to have sufficient statistical power and the estimated network effects, reported in Appendix Table D6, remain very similar to the benchmark estimates in Table 7. Second, we take account of the fact that even if the factors that determine network formation are persistent, their effects will dissipate over time, as commonly assumed in the time series literature. This implies that any bias in the estimated network effects will decline as we remove time periods from the sample. We thus proceed to re-estimate the propensity equations in Table 7, removing the first period after inception for each network from the sample and then sequentially deleting additional periods. Focussing on the economically meaningful interaction of the network terms with birth county population density in Appendix Figure D1, the magnitude of the estimated coefficients is (statistically) unchanged as the estimating sample moves further away in time from the point of inception of the network. Based on the validation tests that we implement, there is no evidence that the instrumental variable estimates are biased. 33 4.4 Reconciling Fact 2 with the Model 
+
+While the preceding results indicate that a domestic network overhang is present, to reconcile Fact 2 with the model we need to establish that the overhang is sufficiently strong; i.e. that the net network effect in square brackets in equation (14) is decreasing in pj . We do this in two ways: (i) by partialling out the prefecture-time period effects from the first-differenced equation and then estimating the association between export propensity (conditional on these effects) and population density, and (ii) by predicting the term in square brackets, based on the estimated coefficients and taking initial entry in each network as given, and then estimating its association with birth county population density. The estimated population density coefficients are reported for each year over the 2002-2009 period in Figure 3, with the symbol (blue circle or red diamond) denoting the point estimate and the vertical line demarcating the 95 percent confidence interval. The estimated coefficients are negative and significant, as required to generate Fact 2, but notice that they grow smaller (in absolute magnitude) over time. The drag of the domestic network weakens, but it does not disappear completely even in the long run. Notice also that our point estimates based on (i) above, in blue, are very close to the corresponding estimates based on (ii), in red. This indicates that our parsimonious model fits the data well, conditional on the covariates in the estimating equation. -.04         
+
+> -.03
+> -.02
+> -.01
+> 0
+> PD coefficient with 95% CI
+> 2002 2003 2004 2005 2006 2007 2008 2009
+> Year
+> Partialling out covariates Predicted
+
+(a) Net Network Effect (all exporters) -.04          
+
+> -.03
+> -.02
+> -.01
+> 0
+> PD coefficient with 95% CI
+> 2002 2003 2004 2005 2006 2007 2008 2009
+> Year
+> Partialling out covariates Predicted
+
+(b) Net Network Effect (post-WTO exporters) 
+
+Figure 3: Net Network Effect and Population Density 
+
+Source: The net network effect is derived from Table 7, Columns 2 and 3, and birth county population density is obtained from the 1982 Population Census. 
+
+We complete the analysis in this section by quantifying the magnitude of the network ef-fects. Based on the estimated entrepreneurial propensity equation and maintaining the estimated prefecture-time effects, our counter-factual simulations indicate that the predicted number of do-mestic firms in 2009 would have declined by 39% if the domestic networks had not emerged. Focusing on the export propensity equation and maintaining the estimated prefecture-time effects once again, the predicted number of exporters would have increased by 16% in 2009 if the domestic network overhang were absent. While the domestic networks played an important role in stimu-lating entrepreneurship in China, they exerted a substantial drag on the subsequent transition to 34 higher value exporting. 
+
+# 5 Conclusion 
+
+Despite its well documented inefficiencies, the Chinese economy has grown at an unprecedented rate over the past three decades. Our analysis provides a (partial) explanation for these apparently contradictory facts, based on the idea that networks of firms provide mutual support to each other in an environment where markets function imperfectly. Our estimates indicate that hometown (birth county) networks contributed substantially to the increase in the number of rural-born en-trepreneurs, whose firms account for two-thirds of registered firms in China, over the 1994-2009 period. Although the existence of community-based business networks has been documented his-torically and in contemporary industry studies, this constitutes the first economy-wide evidence to date of the important role played by these institutions in the process of development. While the networks that we identify may have contributed to the growth in domestic production, they create inefficiencies of their own. In the decentralized equilibrium described by our model, potential entrants into exporting (and domestic production) do not internalize the positive network externality that they generate by selecting into those activities. While this results in a sub-optimal level of entry, the additional dynamic inefficiency that we identify arises because pre-existing do-mestic networks discourage potential exporters from selecting into that activity. There is a common view that Chinese exporters receive anti-competitive government subsidies. Although we cannot assess whether the level of these subsidies is optimal, our analysis provides an efficiency-based ra-tionale for their presence. In developing economies where networks are active, timely promotion of new (more advanced) activities, that may only need to be temporary, can prevent or reduce the lock-in that we document in this paper. We conclude with a comment on external validity. Although our findings are not specific to business or to China, the preceding arguments and, indeed, the analysis in this paper, will only be relevant in populations where community networks are already active or have the potential to be activated. This will, in general, depend on the underlying social structure. Both China, the setting for the current analysis, and India, where the role of caste networks has been previously documented, have high population densities. This gives rise to well functioning networks, as we have shown. In other, more sparsely populated regions of the world, such as Africa, community-based networks will function less effectively and, thus, will play a less important role during the process of development. While the political economy of African development has been studied extensively, and differences in the complexity of Asian and African societies have been previously noted (Diamond, 1997), this particular aspect of African society has received less attention and may be responsible (in part) for the observed variation in trajectories across these regions. 35 References 
+
+Acemoglu, Daron, Philippe Aghion, and Fabrizio Zilibotti. 2006. “Distance to frontier, selection, and economic growth.” Journal of the European Economic Association , 4(1): 37–74. 
+
+Acemoglu, Daron, Simon Johnson, and James A Robinson. 2002. “Reversal of fortune: Ge-ography and institutions in the making of the modern world income distribution.” The Quarterly Journal of Economics , 117(4): 1231–1294. 
+
+Ahn, JaeBin, Amit K Khandelwal, and Shang-Jin Wei. 2011. “The role of intermediaries in facilitating trade.” Journal of International Economics , 84(1): 73–85. 
+
+Allen, F, J Qian, and M Qian. 2005. “Law, Finance, and Economic Growth in China.” Journal of Financial Economics , 77(1): 57–116. 
+
+Almunia, Miguel, Pol Antr` as, David Lopez-Rodriguez, and Eduardo Morales. 2021. “Venting out: Exports during a domestic slump.” American Economic Review , 111(11): 3611– 62. 
+
+Atkin, David, and Amit K Khandelwal. 2020. “How distortions alter the impacts of interna-tional trade in developing countries.” Annual Review of Economics , 12: 213–238. 
+
+Bai, Chong-En, Chang-Tai Hsieh, Zheng Michael Song, and Xin Wang. 2020. “The Rise of State-Connected Private Owners in China.” National Bureau of Economic Research. 
+
+Banerjee, Abhijit, and Kaivan Munshi. 2004. “How Efficiently is Capital Allocated? Evidence from the Knitted Garment Industry in Tirupur.” Review of Economic Studies , 71(1): 19–42. 
+
+Banerjee, Abhijit V, and Andrew F Newman. 1993. “Occupational choice and the process of development.” Journal of Political Economy , 101(2): 274–298. 
+
+Blum, Bernardo S, Sebastian Claro, Ignatius Horstmann, and Trevor Tombe. 2020. “The DNA of New Exporters: Spin-offs and FDI at the Extensive Margin of Trade.” American Economic Review: Insights , 2(3): 397–408. 
+
+Blumenstock, Joshua Evan, Guanghua Chi, and Xu Tan. 2019. “Migration and the value of social networks.” 
+
+Brandt, Loren, Johannes Van Biesebroeck, Luhang Wang, and Yifan Zhang. 2017. “WTO accession and performance of Chinese manufacturing firms.” American Economic Review ,107(9): 2784–2820. 
+
+Brandt, Loren, Ruochen Dai, Gueorgui Kambourov, Kjetil Storesletten, and Xiaobo Zhang. 2022. “Serial Entrepreneurship in China.” CEPR Discussion Paper No. DP17131. 
+
+Brooks, Wyatt J., Joseph P. Kaboski, and Yao Amber Li. 2016. “Growth Policy, Agglom-eration, and (the Lack of) Competition.” NBER Working Paper Series .
+
+Burchardi, Konrad B, Thomas Chaney, and Tarek A Hassan. 2019. “Migrants, ancestors, and foreign investments.” The Review of Economic Studies , 86(4): 1448–1486. 
+
+Bustos, Paula, Bruno Caprettini, and Jacopo Ponticelli. 2016. “Agricultural productivity and structural transformation: Evidence from Brazil.” American Economic Review , 106(6): 1320– 1365. 36 Bustos, Paula, Gabriel Garber, and Jacopo Ponticelli. 2020. “Capital accumulation and structural transformation.” The Quarterly Journal of Economics , 135(2): 1037–1094. 
+
+Carvalho, Vasco M, and Alireza Tahbaz-Salehi. 2019. “Production networks: A primer.” 
+
+Annual Review of Economics , 11: 635–663. 
+
+Carvalho, Vasco M, Makoto Nirei, Yukiko U Saito, and Alireza Tahbaz-Salehi. 2021. “Supply Chain Disruptions: Evidence from the Great eEast Japan Earthquake.” The Quarterly Journal of Economics , 136(2): 1255–1321. 
+
+Chaney, Thomas. 2014. “The network structure of international trade.” American Economic Review , 104(11): 3600–3634. 
+
+Coleman, James S. 1988. “Social Capital in the Creation of Human Capital.” American Journal of Sociology , 94: S95–S120. 
+
+Dai, Mi, Madhura Maitra, and Miaojie Yu. 2016. “Unexceptional exporter performance in China? The role of processing trade.” Journal of Development Economics , 121: 177–189. 
+
+de Astarloa, Bernardo D´ ıaz, Jonathan Eaton, Kala Krishna, Bee Aw Roberts, Andr´ es Rodr´ ıguez-Clare, and James Tybout. 2015. “Born to Export: Understanding Export Growth in Bangladesh’s Apparel and Textiles Industry.” Working paper. 
+
+Diamond, Jared. 1997. Guns, Germs and Steel: The Fates of Human Societies. New York:W. W. Norton,. 
+
+Ellison, Glenn. 1994. “Cooperation in the Prisoner’s Dilemma with Anonymous Random Match-ing.” Review of Economic Studies , 61(3): 567–588. 
+
+Fafchamps, Marcel. 2000. “Ethnicity and credit in African manufacturing.” Journal of Develop-ment Economics , 61(1): 205–235. 
+
+Fan, Haichao, Yu Liu, Larry D Qiu, and Xiaoxue Zhao. 2020. “Export to elude.” Journal of International Economics , 127: 103366. 
+
+Fernandes, Ana P, and Heiwai Tang. 2014. “Learning to export from neighbors.” Journal of International Economics , 94(1): 67–84. 
+
+Fieler, Ana Cec´ ılia, Marcela Eslava, and Daniel Yi Xu. 2018. “Trade, quality upgrading, and input linkages: Theory and evidence from colombia.” American Economic Review , 108(1): 109– 46. 
+
+Fisman, Raymond J. 2003. “Ethnic ties and the provision of credit: Relationship-level evidence from African firms.” The BE Journal of Economic Analysis & Policy , 3(1). 
+
+Fisman, Raymond, Jing Shi, Yongxiang Wang, and Rong Xu. 2018. “Social Ties and Favoritism in Chinese Science.” Journal of Political Economy , 126(3): 1134–1171. 
+
+Galor, Oded, and ¨ Omer ¨ Ozak. 2016. “The agricultural origins of time preference.” American Economic Review , 106(10): 3064–3103. 
+
+Goldsmith-Pinkham, Paul, Isaac Sorkin, and Henry Swift. 2020. “Bartik instruments: What, when, why, and how.” American Economic Review , 110(8): 2586–2624. 37 Goodman, Bryna. 1995. Native Place, City, and Nation: Regional Networks and Identities in Shanghai, 1853–1937. University of California Press. 
+
+Greif, Avner. 1993. “Contract enforceability and economic institutions in early trade: The Maghribi traders’ coalition.” The American Economic Review , 525–548. 
+
+Greif, Avner. 1994. “Cultural beliefs and the organization of society: A historical and theoretical reflection on collectivist and individualist societies.” Journal of Political Economy , 102(5): 912– 950. 
+
+Greif, Avner, and Guido Tabellini. 2017. “The Clan and the Corporation: Sustaining Coop-eration in China and Europe.” Journal of Comparative Economics , 45(1): 1–35. 
+
+Honig, Emily. 1992. Creating Chinese Ethnicity: Subei People in Shanghai, 1850-1980. New Haven:Yale University Press. 
+
+Honig, Emily. 1996. Regional Identity, Labor, and Ethnicity in Contemporary China. Berkeley, California:Institute of East Asian Studies, University of California. 
+
+Imbert, Clement, Marlon Seror, Yifan Zhang, and Yanos Zylberberg. 2022. “Migrants and firms: Evidence from china.” American Economic Review , 112(6): 1885–1914. 
+
+Jackson, Matthew O, Tomas Rodriguez-Barraquer, and Xu Tan. 2012. “Social capital and social quilts: Network patterns of favor exchange.” American Economic Review , 102(5): 1857–97. 
+
+Kandori, Michihiro. 1992. “Social Norms and Community Enforcement.” Review of Economic Studies , 59(1): 63–80. 
+
+Karlan, Dean, Markus Mobius, Tanya Rosenblat, and Adam Szeidl. 2009. “Trust and social collateral.” The Quarterly Journal of Economics , 124(3): 1307–1361. 
+
+Khandelwal, Amit K, Peter K Schott, and Shang-Jin Wei. 2013. “Trade liberalization and embedded institutional reform: Evidence from Chinese exporters.” American Economic Review ,103(6): 2169–95. 
+
+Levine, Ross, and Yona Rubinstein. 2017. “Smart and illicit: who becomes an entrepreneur and do they earn more?” The Quarterly Journal of Economics , 132(2): 963–1018. 
+
+Lucas, Robert E. 1978. “On the size distribution of business firms.” The Bell Journal of Eco-nomics , 508–523. 
+
+Macchiavello, Rocco, and Ameet Morjaria. 2015. “The value of relationships: evidence from a supply shock to Kenyan rose exports.” American Economic Review , 105(9): 2911–45. 
+
+Macchiavello, Rocco, and Ameet Morjaria. 2021. “Competition and relational contracts in the Rwanda coffee chain.” The Quarterly Journal of Economics , 136(2): 1089–1143. 
+
+Ma, Laurence J. C., and Biao Xiang. 1998. “Native Place, Migration and the Emergence of Peasant Enclaves in Beijing.” The China Quarterly , 155: 546. 
+
+Manova, Kalina. 2013. “Credit constraints, heterogeneous firms, and international trade.” Review of Economic Studies , 80(2): 711–744. 
+
+Manova, Kalina, Shang-Jin Wei, and Zhiwei Zhang. 2015. “Firm exports and multinational activity under credit constraints.” Review of Economics and Statistics , 97(3): 574–588. 38 McMillan, John, and Christopher Woodruff. 1999. “Interfirm relationships and informal credit in Vietnam.” The Quarterly Journal of Economics , 114(4): 1285–1320. 
+
+Melitz, Marc J. 2003. “The Impact of Trade on Intra-Industry Reallocations and Aggregate Industry Productivity.” Econometrica , 71(6): 1695–1725. 
+
+Munshi, Kaivan. 2003. “Networks in the Modern Economy: Mexican Migrants in the U. S. Labor Market.” Quarterly Journal of Economics , 118(2): 549–599. 
+
+Munshi, Kaivan. 2011. “Strength in Numbers: Networks as a Solution to Occupational Traps.” 
+
+Review of Economic Studies , 78(3): 1069–1101. 
+
+Murphy, Kevin M, Andrei Shleifer, and Robert W Vishny. 1991. “The allocation of talent: Implications for growth.” The Quarterly Journal of Economics , 106(2): 503–530. 
+
+Nee, Victor, and Sonja Opper. 2012. Capitalism from Below: Markets and Institutional Change in China. Harvard University Press. 
+
+Peng, Yusheng. 2004. “Kinship Networks and Entrepreneurs in China’s Transitional Economy.” 
+
+American Journal of Sociology , 109(5): 1045–1074. 
+
+Rauch, James E, and Vitor Trindade. 2002. “Ethnic Chinese networks in international trade.” 
+
+Review of Economics and Statistics , 84(1): 116–130. 
+
+Roy, Andrew Donald. 1951. “Some thoughts on the distribution of earnings.” Oxford Economic Papers , 3(2): 135–146. 
+
+Song, Zheng, Kjetil Storesletten, and Fabrizio Zilibotti. 2011. “Growing Like China.” 
+
+American Economic Review , 101(1): 196–233. 
+
+Tombe, Trevor, and Xiaodong Zhu. 2019. “Trade, migration, and productivity: A quantitative analysis of china.” American Economic Review , 109(5): 1843–72. 
+
+Verhoogen, Eric. 2021. “Firm-level upgrading in developing countries.” 
+
+Verhoogen, Eric A. 2008. “Trade, Quality Upgrading, and Wage Inequality in the Mexican Manufacturing Sector.” Quarterly Journal of Economics , 123(2): 489–530. 
+
+Zhang, Chunni, and Yu Xie. 2013. “Place of Origin and Labour Market Outcomes Among Migrant Workers in Urban China.” Urban Studies , 50(14): 3011–3026. 39 Appendix A: Export Accounting 
+
+There are two types of exports in China: production exports and processing exports. Given our interest in the transition from domestic production to higher value exporting, and the evidence provided by Dai, Maitra and Yu (2016), we thus restrict attention to production exports. The Customs database, which indicates the type of export for each shipment over the 2000-2009 period, can be merged with the SAIC registration database, which provides the ownership structure of each supplying firm. The merged data, reported in Figure A1, indicate that private domestically owned firms are largely involved in production exports in any case, whereas processing exports are dominated by foreign owned firms. 0           
+
+> 200
+> 400
+> 600
+> 800
+> Exporting value (Billion USD)
+> 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009
+> Year
+> Foreign private firms State-owned firms Domestic private firms
+
+(a) Production Export 0            
+
+> 200
+> 400
+> 600
+> 800
+> Exporting value (Billion USD)
+> 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009
+> Year
+> Foreign private firms State-owned firms Domestic private firms
+
+(b) Processing Export 
+
+Figure A1: Production and Processing Export, By Ownership 
+
+> Source: Customs Data
+
+Production exports can be further divided into direct exports and indirect exports through intermediaries or trading firms. Indirect exporters are less productive than direct exporters in China (Ahn, Khandelwal and Wei, 2011). Following Verhoogen (2008), we thus expect them to supply lower quality products and Table A1 provides empirical support for this claim. The Customs database provides information on the price (unit value) and the destination of each shipment. The SAIC registration database, which can be merged with the Customs database, indicates whether the supplier is a direct exporter (producer) or trading firm (operating in the wholesale or retail sector). As observed in Table A1, trading firms (and, hence, indirect exporters) receive lower prices for their goods and are less likely to ship to OECD countries where the demand for quality is higher. Notice that this result is obtained within narrowly defined (4-digit) goods categories in each year; i.e. with goods-year fixed effects in the estimating equation. While indirect exporters may be less productive than direct exporters, how do they compare with domestic producers? To answer this question, we turn to the Above Scale database, which provides total revenues and export revenues for all firms with annual revenues above 5 million Yuan, in each year over the 2000-2009 period. The Above Scale database can be merged with the Customs database. This allows us to measure direct exports for each above-scale firm that appears in the Customs database in a given year. It also allows us to measure indirect exports for firms that 40 Table A1: Unit Price and Destination of Exported Goods Dependent variable: price per unit OECD destination (1) (2) Trading firms -15.857*** -0.074*** (2.703) (0.001) Constant 82.018*** 0.474*** (1.978) (0.001) Goods-year fixed effects Yes Yes Observations 9,062,560 9,062,560 
+
+Note: Trading firms are identified as exporters in the Customs Data who operate in the wholesale and retail sector. Direct exporters are the reference group. Price per unit is calculated at the 8-digit HS code level. Firm-goods in the bottom and top 5 percentile of each 5-digit Standard International Trade Classification (SITC) code are excluded from the analysis. Standard errors clustered at the good - year level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+report positive export revenues in the Above Scale database, as the difference between reported total exports and direct exports (from the Customs database, if relevant). While direct exports can also be computed for below-scale firms if they appear in the Customs database, we cannot directly measure their indirect exports. As shown in Figure A2 below, the contribution of these firms to total indirect exports is small in any case. 0 200  400  600  800          
+
+> Exporting value (Billion USD)
+> 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009
+> Year
+> Direct export by below-scale firm
+> Direct export by above-scale firm
+> Indirect export by below-scale firm
+> Indirect export by above-scale firm
+
+Figure A2: Export Accounting 
+
+Source: SAIC registration database, Customs database, and Above Scale database. 
+
+The blue area in Figure A2 represents the sum of indirect exports supplied by all above-scale firms, based on the method described above. The red area represents the contribution of below-scale firms to indirect exports. This is derived by subtracting above-scale indirect exports from 41 total indirect exports; i.e. the amount supplied by trading firms in the Customs data. As can be seen, the contribution of below-scale firms to indirect exports is negligible. To compare the productivity of indirect exporters and domestic producers we thus begin by focusing on above-scale firms. Since a given firm could be engaged in multiple activities, we examine the association between the capital-labor ratio, a common measure of firm productivity, and the share of the firm’s revenue accounted for by direct exports and indirect exports, respectively, in Table A2, Column 1. Note that domestic production is the reference category, measured by the constant term, in this specification. Conditioning for industry-year effects and the firm’s total revenue (linear and quadratic terms), we observe that the capital-labor ratio is increasing in the direct export ratio and decreasing in the indirect export ratio. Table A2: Capital Intensity of Different Type of Firms Data source: Above Scale: 2000-2009 Census: 2004, 2008 Dependent variable: log (K/L) (1) (2) Direct export share 0.029* 0.094*** (0.016) (0.028) Indirect export share -0.368*** -0.290*** (0.009) (0.014) Constant 15.861*** 11.755*** (0.204) (0.120) Industry-year fixed effects Yes Yes Observations 654,408 775,722 
+
+> Note: The estimating equations include log firm revenue (linear and quadratic terms) and industry-year effects. Standard errors clustered at 4-digit industry - year level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+While indirect exporting is concentrated among above-scale firms, notice from Figure A2 that a substantial fraction of direct exports are supplied by below-scale firms. These firms also comprise the bulk of domestic producers. We thus expand the sample in Table A2, Column 2 by using data from the Economic Census, which includes all firms not just above-scale firms, but only at two points in time (2004 and 2008). The Economic Census provides revenues for each firm, but not export revenues, and thus indirect exports must be obtained from the Above Scale database as above. Indirect exports for below-scale firms are set to zero. The estimates with the augmented sample of firms in Column 2 match what we obtain with above-scale firms in Column 1. Direct exporting is more productive and indirect exporting is less productive than domestic production (the reference category in these regressions). Given our interest in the transition to higher quality (productivity) exporting, we thus define “exporting” more narrowly in our analysis by direct exporting. Less productive indirect exporting is clubbed together with domestic production. 42 Appendix B: Descriptive Evidence 
+
+1. Entrepreneurship in China 0
+
+1000 
+
+2000 
+
+3000 
+
+4000 
+
+> Registration Data
+
+0
+
+500 
+
+1000 
+
+1500 
+
+2000 
+
+2500 
+
+> Census Data
+
+0 .02 .04 .06 .08 .1 
+
+Birth county population density 
+
+Census2004 Census2008 
+
+Registration Data2004 Registration Data2008 
+
+Figure B1: Number of Manufacturing Firms 
+
+Source: SAIC registration database and Economic Census (2004, 2008). 0         
+
+> .05
+> .1
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008
+> Year
+> OLS 2SLS 2SLS with control
+
+(a) Entrepreneurial Propensity and Population Den-sity -.002           
+
+> 0
+> .002
+> .004
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008
+> Year
+> OLS 2SLS 2SLS with control
+
+(b) Export Propensity and Population Density 
+
+Figure B2: Entrepreneurial and Export Propensity 
+
+Source: Economic Census (2004, 2008) and Customs database. 2SLS estimates use potential crop yields as instruments for population density in 1982. Covariates measure education distribution, occupational structure and industry structure in the birth county in each year. 
+
+43 0        
+
+> .05
+> .1
+> .15
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008 2010
+
+Year   
+
+> OLS 2SLS 2SLS with covariates
+
+(a) Entry into Business -.001        
+
+> -.0005
+> 0
+> .0005
+> .001
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008
+
+Year    
+
+> OLS 2SLS 2SLS with covariates
+
+(b) Entry into Exporting 
+
+Figure B3: Entrepreneurial Propensity, Export Propensity, and Population Density: Outside the Birth County 
+
+Source: Registration database, Customs database and Population Census 1982, 1990, 2000. 2SLS estimates use potential crop yields as instruments for population density in 1982. Covariates measure education distribution, occupational structure and industry structure in the birth county in each year. 
+
+44 2 Firm-Level Outcomes 2.1 Marginal initial capital and birth county population density: The SAIC registration database provides the registration year and the initial capital of each firm. The initial (registered) capital represents the total amount paid up by the shareholders. This amount is deposited with the firm’s bank and can be used to pay the firm’s operating expenses before it becomes cash flow positive. Access to bank credit is also dependent on the firm’s registered capital, which is why firms will often choose to increase their registered capital over time. We account for the fact that capital requirements will vary across sectors by measuring marginal initial capital within each birth county-sector in each year, with sectors defined at the 2-digit level. Marginal initial capital is then regressed on birth county population density, measured in 1982, with sector fixed effects included in the estimating equation. We measure marginal initial capital as the bottom (first) percentile of the initial capital distribution among new entrants in each birth county-sector-year. As can be seen in the figure below, the population density coefficient is negative and significant in each year. This is also true for the 2SLS estimates. -25          
+
+> -20
+> -15
+> -10
+> -5
+> 0
+> PD coefficient with 95% CI
+> 1994 1996 1998 2000 2002 2004 2006 2008 2010
+> Year
+> OLS 2SLS
+
+Figure B4: Marginal Initial Capital and Population Density 
+
+> Source: Registration database and 1982 Population Census.
+
+45 2.2 Accuracy and representativeness of SAIC inspection data 
+
+Table B1: Accuracy of Inspection Data Data: Economic Census 2004 Economic Census 2008 Difference in: log assets log revenues log assets log revenues (1) (2) (3) (4) 
+
+P D -0.038 1.419 0.532 0.255 (0.374) (2.666) (0.503) (3.452) Province fixed effects Yes Yes Yes Yes Industry fixed effects Yes Yes Yes Yes Observations 30,717 30,717 209,578 209,578  
+
+> Note: The dependent variable is measured as the difference between log assets(revenues) in the Economic Census and the Inspection database, for firms who appear in both datasets. Birth county population density (PD) is obtained from the 1982 Population Census. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+Table B2: Representativeness of Inspection Data Data: Economic Census 2004 Economic Census 2008 Dependent variable: log assets log revenues log assets log revenues (1) (2) (3) (4) Reporting inspection 0.705*** 0.551*** 0.476*** 0.548*** (0.060) (0.073) (0.044) (0.052) 
+
+P D 1.950*** 5.118*** 3.774*** 5.286*** (0.576) (0.641) (0.953) (1.272) Reporting × P D 0.679 0.129 0.303 -0.604 (1.666) (2.110) (1.124) (1.416) Province fixed effects Yes Yes Yes Yes Industry fixed effects Yes Yes Yes Yes Observations 122,649 122,649 228,089 228,089 
+
+> Note: Reporting inspection indicates whether a firm in the Economic Census is also in the SAIC inspection database. Birth county population density (PD) is obtained from the 1982 Population Census. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+46 2.3 Outcomes for firms located outside the birth county 
+
+Table B3: Revenue, TFP, and Population Density: Outside the Birth County Measurement: Level Z-score within sector-location-year Dependent variable: log revenue log TFP log(exporting revenue) log revenue log TFP log(exporting revenue) (1) (2) (3) (4) (5) (6) Time 0.146*** 0.194*** 0.131*** 0.065*** 0.041*** 0.032** (0.006) (0.018) (0.030) (0.002) (0.003) (0.015) PD × Time 0.479*** 1.918*** 1.393** 0.280*** 0.217** 1.342*** (0.182) (0.606) (0.644) (0.071) (0.086) (0.359) Firm fixed effects Yes Yes Yes Yes Yes Yes Mean of dependent variable 3.564 -6.187 5.537 – – –Kleibergen-Paap F 96.78 96.78 33.41 96.78 96.78 33.41 Observations 1,272,673 1,272,673 26,223 1,272,673 1,272,673 26,223 
+
+Note: Revenue and TFP are obtained from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Population density is obtained from the 1982 Population Census. We “instrument” for PD (birth county population density in 1982) with potential crop yields, reporting the corresponding Kleibergen-Paap F statistics. The firm’s initial capital (in logs) interacted with a time trend is included in the estimating equation. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+47 3. Birth County Networks 3.1 Trust and population density in China: The CFPS is a nationally representative, longitu-dinal, general social survey conducted at the individual, household, and community level that was launched in 2010, with subsequent rounds in 2012 and 2014. The 2012 CFPS included questions on (i) trust in neighbors, which we interpret as measuring localized enforceable trust, and (ii) trust in strangers; individuals that the respondent would meet for the first time, which cannot be supported by social sanctions. As observed below, there is a positive and significant association between trust in neighbors (but not trust in strangers) and population density among respondents residing in rural counties. In contrast, there is no association between either measure of trust and population density in the urban sample, where spatial proximity is not a constraint to social interactions. Table B4: Trust and Population Density Respondent’s location: county city Dependent variable: trust in neighbors trust in strangers trust in neighbors trust in strangers (1) (2) (3) (4) Population density 5.425*** -1.113 -0.384 -0.045 (1.971) (2.774) (0.533) (0.543) Mean of dependent variable 6.429 2.194 6.282 2.177 Observations 20,047 20,047 6,674 6,674  
+
+> Note: Trust, household income and individual education are obtained from the China Family Panel Survey (2012). Population density is obtained from the 1982 Population Census. Trust is measured as an ordinal variable that takes values from 0 to 10. Household income and individual education are included as covariates in the estimating equation. Standard errors clustered at the birth county (urban district) level are reported in parentheses.* significant at 10%, ** at 5%, *** at 1%.
+
+3.2 Trust and population density across the world: The trust-population density association is not China-specific and we expect to observe the same positive association in other settings. The most recent (sixth) round of the World Values Survey (WVS) asks the same questions about trust in neighbors and trust in strangers; i.e. people that the respondent would meet for the first time as the CFPS. The WVS provides the fraction of respondents for a given country in each category: trust completely, trust somewhat, trust not very much, trust not at all. We combine the first two categories and the latter two categories to construct a binary measure of trust. While the advantage of the WVS data is that they cover many countries, one limitation is that responses from rural and urban residents cannot be distinguished. We partially address this limitation by only including large developing countries with large rural populations (GDP per capita less than $20,000 and area greater than 100,000 km 2) in the sample. This leaves us with 31 countries in the binned scatter plots reported below. 48 .5    
+
+> .6
+> .7
+> .8
+> .9
+> Fraction of people who trust neighbors
+> 0.01 .02 .03
+> Population density
+
+(a) Trust in neighbors 0    
+
+> .1
+> .2
+> .3
+> .4
+> .5
+> Fraction of people who trust strangers
+> 0.01 .02 .03
+> Population density
+
+(b) Trust in strangers 
+
+Figure B5: Trust and Population Density: Cross-Country Comparison 
+
+Source: World Values Survey and World Development Index. 
+
+3.3 Social interactions with neighbors and population density: Complementing the trust results, data from the 2010 CFPS indicate that the frequency of social interactions (chatting) be-tween neighbors is increasing in population density, once again in counties but not cities. The family module of the 2010 CFPS asks whether the household has had the following social interactions with neighbors in the past week: chatting, group entertainment/gatherings, visits to neighbors’ homes. We construct a binary variable for each type of interaction that indicates whether it occurred. Table B5: Interactions with Neighbors and Population Density Repondent’s location: county city Social interactions with neighbors: chatting group entertainment visits to homes chatting group entertainment visits to homes (1) (2) (3) (4) (5) (6) Population density 2.145** -0.594 0.480 0.029 -0.260 -0.422** (0.833) (0.510) (0.910) (0.224) (0.166) (0.167) Mean of dependent variable 0.690 0.168 0.250 0.639 0.141 0.249 Observations 8,294 8,294 8,294 3,314 3,314 3,314 
+
+Note: Social interactions, household income and household average education are obtained from China Family Panel Survey (2010). Population density is obtained from the 1982 Population Census. Household income and average education are included as covariates in the estimating equation. Standard errors clustered at the birth county (urban district) level are reported in parentheses.* significant at 10%, ** at 5%, *** at 1%. 
+
+49 3.4 Most frequent interactions and population density: The adult individual module of the 2010 CFPS asks who the respondent chats most with: neighbors, different types of relatives; e.g. parents, spouse, etc., friends/classmates, colleagues, or others. We construct three binary variables that indicate whether the respondent lists neighbors, relatives, and friends/colleagues as their most frequent chatting partners, respectively. Table B6: Most Frequent Interactions and Population Density Repondent’s location: county city Most frequent interactions: neighbor relatives friends/ colleagues neighbor relatives friends/ colleagues (1) (2) (3) (4) (5) (6) Population density 1.267*** -0.974* 0.165 0.010 -0.077 0.072 (0.421) (0.510) (0.247) (0.129) (0.171) (0.080) Mean of dependent variable 0.198 0.547 0.198 0.122 0.601 0.247 Observations 20,652 20,652 20,652 7,555 7,555 7,555 
+
+> Note: Social interactions, household income and individual education are obtained from China Family Panel Survey (2010). Population density is obtained from the 1982 Population Census. Household income and individual education are included as covariates in the estimating equation. Standard errors clustered at the birth county (urban district) level are reported in parentheses.* significant at 10%, ** at 5%, *** at 1%.
+
+50 Appendix C: The Model 
+
+1. Proposition 1 
+
+For the discussion that follows we assume that log ability ω is uniformly distributed with constant density s(p) on support [ a, a + μ]. Our model sets the dispersion parameter μ = 1, with 
+
+a ≡ A − 1, to simplify notation. We impose the following parameter restrictions, which ensure existence of a unique equilibrium featuring positive, interior shares of different occupations at each date for each cohort: log ζ > 11 − α [qdT + θd(p) log T ] + a (15) log γ > (δ − 1) log ζ
+
+1 − σ − (δ − σ)qd1
+
+(1 − σ)(1 − α) + 11 − α [qdT + θe(p) log T ] (16) log β > log γδ − 1 − log ζ + δ
+
+(δ − 1)(1 − α) [qdT + θd(p) log T ] − qe1
+
+(δ − 1)(1 − α) (17) 
+
+a + μ > log β + log ζ − qd1
+
+1 − α (18) Proof of Proposition 1: To prove the Proposition, we show that ability thresholds are interior and ordered, as in (6), given the parameter restrictions (15-18). We begin by showing that log ω∗ 
+
+> dt
+
+> a if (15) is satisfied. From (5): log ω∗ 
+
+> dt
+
+= log ζ
+
+1 − σ − log Cdt 
+
+(1 − α)(1 − σ)Observe that T is an upper bound on network size. Hence, θd(p) log T is an upper bound on the network effect in the domestic market. It follows that (15) is a sufficient condition for log ω∗ 
+
+> dt
+
+> a .Next, we show that log ω∗ 
+
+> et ′
+
+> log ω∗
+
+> dt
+
+, for all t ≥ t′, if (16) is satisfied. From (5): log ω∗ 
+
+> et ′
+
+= 1
+
+δ − 1
+
+[
+
+log γ + log Cdt ′ − log Cet ′
+
+1 − α
+
+]
+
+It follows that log ω∗ 
+
+> et ′
+
+> log ωdt ∗ if log γ > (δ − 1) log ζ
+
+1 − σ − (δ − 1) log Cdt 
+
+(1 − σ)(1 − α) − log Cdt ′ − log Cet ′
+
+1 − α
+
+log Cdt , log Cdt ′ are bounded below by qd1, assuming min. n0 = 1. log Cet ′ is bounded above by 
+
+qeT + θe(p) log T . It follows that (16) is a sufficient condition for the preceding inequality to be satisfied. A similar bounding argument shows that (17) implies ω∗ 
+
+> mt
+
+> ω ∗ 
+
+> et ′
+
+for any t ≥ t′, and that (18) implies a + μ > max {ω∗
+
+> mt
+
+, ω ∗
+
+> dt
+
+} for all p, t .51 Condition (15) ensures that some low ability agents always choose the traditional occupation, as ζ (e.g., interest rate r) is high enough relative to ability lower bound a, terminal output market size and maximum network size. Condition (16) sets γ (i.e., incremental cost of exporting plant investments I) large enough relative to the export market premium δ, home and export market sizes, interest rate and technology parameters, to ensure that the ability threshold for specializing in exports will always be higher than for entry into the home market. As in the Melitz model, this ensures positive selection into exports. Condition (17) imposes a lower bound on the scope diseconomy cost β relative to the other parameters, to ensure that the threshold for mixed exporters exceeds that for entry into export specialization. Unlike the Melitz model, this ensures existence of an intermediate range of entrepreneurs who specialize in exports. Finally, (18) requires ability to be sufficiently dispersed to ensure a positive mass of mixed exporters in every cohort. 
+
+2. Marginal initial capital is decreasing in birth county population density 
+
+As observed in Appendix Figure B4, marginal initial capital, K∗
+
+> dt
+
+, is decreasing in p. To show that this is consistent with the model, set Π Ot (ω∗
+
+> dt
+
+) = Π Dt (ω∗
+
+> dt
+
+) and solve for ω∗ 
+
+> dt
+
+from (5): log ω∗ 
+
+> dt
+
+= log ζ
+
+1 − σ − log Cdt 
+
+(1 − σ)(1 − α) . (19) Recall that log Cdt = qdt + θd(p) log nt−1. We assume that θ′
+
+> d
+
+(p) > 0 and log nt−1 is increasing in p
+
+from Fact 1. It follows that log ω∗ 
+
+> dt
+
+is decreasing in p.To verify that this result also applies to the marginal entrant’s initial capital, K∗
+
+> dt
+
+, we solve for that agent’s optimal capital investment by maximizing his profit: Cdt (ω∗
+
+> dt
+
+)1−αKαdt − rK dt . Substi-tuting the expression for Cdt from (19), it follows that log K∗ 
+
+> dt
+
+= 11 − α log 
+
+( αr
+
+)
+
++ log ζ + σ log ω∗
+
+> dt
+
+. (20) log K∗ 
+
+> dt
+
+is an affine transform of log ω∗
+
+> dt
+
+, which implies that log K∗ 
+
+> dt
+
+is also decreasing in p.
+
+3. Extending the model to allow for forward looking behavior 
+
+We now explain how our model extends to the case where agents are non-myopic, and apply a discount factor φ ∈ (0 , 1) to future profits. We show that expressions for optimal capital stocks and profits at any date (conditional on entry into any market) are unchanged. Moreover, the entrepreneurial propensity equation is unchanged for small values of φ. The same is not true in general for the export propensity, for which a closed form expression can no longer be obtained, but (a) the expression for the case of myopic agents is an approximation for the case of small φ
+
+and (b) forward looking behavior is likely to induce an additional source of the domestic network overhang effect. Suppressing notation for market and network sizes at different dates, the dynamic optimization decision faced by an agent of ability ω at date t with inherited capital stocks Kd,t −1, K e,t −1 is represented by the following Bellman equations. If the agent is a mixed exporter at t − 1, i.e., 52 Kd,t −1Ke,t −1 > 0: 
+
+Wmt (ω; Kd,t −1, K e,t −1) = max 
+
+> Kdt ≥Kd,t −1,K et ≥Ke,t −1
+
+[πdt (ω; Kdt ) + πet (ω; Ket ) − β + φW m,t +1 (ω; Kdt , K et )] (21) where πdt (ω; Kdt ) ≡ Cdt ω1−αKαdt − rK dt and πet (ω; Kdt ) ≡ Cet ωδ(1 −α)Kαet − r(1 + I)Kdt .If the agent is a pure exporter at t − 1 (i.e., Ke,t −1 > 0, K d,t −1 = 0): 
+
+Wet (ω; Ke,t −1) = max 
+
+> Kdt ≥0,K et ≥Ke,t −1
+
+[πet (ω; Ket ) + IKdt >0[πdt (ω; Kdt ) − β
+
++φW m,t +1 (ω; Kdt , K et )] + (1 − I Kdt >0)φW e,t +1 (ω; Ket )] (22) where Ix is an indicator function taking value one if event x happens and 0 otherwise. If the agent is a pure domestic producer at t − 1 (i.e., Kd,t −1 > 0, K e,t −1 = 0): 
+
+Wdt (ω; Kd,t −1) = max 
+
+> Ket ≥0,K dt ≥Kd,t −1
+
+[πdt (ω; Kdt ) + IKet >0[πet (ω; Ket ) − β
+
++φW m,t +1 (ω; Kd,t −1, K e,t −1)] + (1 − I Ket >0)φW d,t +1 (ω; Kdt )] (23) and finally if the agent has not already entered either market at t − 1 (i.e., Kd,t −1 = Ke,t −1 = 0): 
+
+Wot (ω) = max {ωσ + φW o,t +1 (ω); Wdt (ω, 0); Wet (ω, 0); Wmt (ω; 0 , 0) } (24) Observe first that it continues to be the case that capital irreversibility constraints do not bind on the intensive margin, i.e., conditional on entering either domestic or export market, the associated optimal capital stocks are myopically optimal (e.g., K∗
+
+> dt
+
+(ω; Kd,t −1, K e,t −1)) maximizes 
+
+πdt (ω; Kdt ) without any irreversibility constraint. The same proof applies: if we consider the relaxed problem where the irreversibility constraint is dropped, the constraint does not bind since market and network sizes are growing. Hence the solution to the relaxed problem is a solution to the true problem. And in the relaxed problem, current capital stock (conditional on being positive) does not affect future profits, so it must be myopically optimal. This implies that the value functions reduce to the following simpler expressions: 
+
+Wmt (ω) = ΠDt (ω) + Π Et (ω) − β + φW m,t +1 (ω)
+
+Wet (ω) = max {ΠEt (ω) + φW e,t +1 (ω); Wmt (ω)}
+
+Wdt (ω) = max {ΠDt (ω) + φW d,t +1 (ω); Wmt (ω)}
+
+Wot (ω) = max {ωσ + φW o,t +1 (ω); Wdt (ω); Wet (ω); Wmt (ω)} (25) where Π Dt , ΠEt denote static profits at date t associated with myopically (unconstrained) optimal capital stocks provided in the text. If all parameters lie in a compact set, these value functions are bounded and uniformly contin-uous. Hence for φ in a neighborhood of 0, these value functions are close to those corresponding to φ = 0, implying that the pattern of sorting will be similar, with ability thresholds for different 53 options ordered as in the case of myopic agents (given in Proposition 1 of the text). 
+
+Claim: For φ in a right neighborhood of 0, the ability threshold ω∗ 
+
+> dt
+
+for entry into the domestic sector is the same as when agents are myopic ( φ = 0 ). 
+
+The reasoning is as follows. As the pattern of sorting for small φ is similar to that where φ = 0, the threshold ω∗ 
+
+> dt
+
+is determined by indifference between staying in the traditional occupation o and entering the domestic market at t. In other words, it solves 
+
+ωσ + φW o,t +1 (ω) = Π Dt (ω) + φW d,t +1 (ω) (26) and in a neighborhood of this threshold both these options strictly dominate either export special-ization or mixed exporting: 
+
+Wot = max {ωσ + φW o,t +1 (ω); Wdt (ω)} (27) at all dates t. (27) shows that the choice for these agents effectively reduces to a date ˜ t ≥ t when they enter the domestic market (and until ˜ t − 1 they remain in the traditional occupation); after ˜t the continuation value is the same. It follows that the optimal date of entry is the first ˜ t ≥ t at which ωσ ≤ ΠD˜t(ω), which coincides with the choice made by myopic agents. Hence the threshold 
+
+ω∗ 
+
+> dt
+
+is same as for a myopic agent. The threshold ω∗ 
+
+> et
+
+for export specialization solves Wdt (ω) = Wet (ω), i.e., ΠDt (ω) + φW d,t +1 (ω) = Π Et (ω) + φW e,t +1 (ω) (28) Since the corresponding continuation values Wd,t +1 (ω), W e,t +1 (ω) of specializing in the domestic and export markets will typically differ, this threshold will typically vary with φ even for small values of φ. The threshold is of course continuous in φ, so the expression for the export propensity in the text is an approximation for the true threshold for small values of φ. Observe also that the greater the difference between growth of market or network size in the domestic and export markets between t and t + 1, the greater is the corresponding difference in change in the value of domestic specialization Π D,t +1 (ω) − ΠDt (ω) versus export specialization Π E,t +1 (ω) − ΠEt (ω), and the higher will be ω∗
+
+> et
+
+, resulting in a lower export propensity at t. This is a dynamic extension of the domestic network overhang effect amplifying the latter when agents are non-myopic. 54 Appendix D: Instrumental Variable Construction and Validation 
+
+1. Constructing the Shift-share Instruments : The instrument for network size, at the birth county-destination prefecture-year level, is constructed in the following steps: 
+
+Step 1 : To construct the “shift” of the shift-share instrument, we calculate a crop-specific price shock for the same set of 11 crops that we use to predict population density, over the 1992-2009 period. Agricultural Producer Prices (APP) at the “farm gate” are available for each producing country in USD between 1991 and 2016 from the FAO. Following Imbert et al. (2022), the world price of each crop c is the average price across countries (excluding China) weighted by their yearly share of global exports. As in Imbert et al. (2022), the crop price shock, ct , is calculated by estimating the following equation: log Pc,t = θlog Pc,t −1 + ηt + νc + ct .
+
+Step 2 : To construct the first (inner) component of the “share” in the shift-share instrument, we construct a weight for each crop that reflects its contribution to total agricultural output, by value, in county j. The weighted sum of the crop price shocks then provides us with a measure of the income shock in county j in year t:
+
+Sjt = ∑
+
+> c
+
+( P c · Acj · ycj 
+
+∑ 
+
+> c
+
+P c · Acj · ycj 
+
+)
+
+ct 
+
+where P c is the world price of crop c in a reference year (1997), Acj is the acreage allocated to crop c in county j in that year, and ycj is the potential crop yield (obtained from the FAO-GAEZ database). The acreage statistic is obtained from the 2000 World Census of Agriculture (WCA), which provides a geocoded map of harvest area for each crop at a 30 arc-second (approximately 10 km.) resolution. We aggregate the harvest areas to the county level to construct the acreage statistic. We choose 1997 as the reference year when constructing the crop weights because the WCA provides acreage in that year for China. 
+
+Step 3 : Our measure of network size is based on the stock of firms. To predict this stock, we begin with the entry decision. This is a major decision that is unlikely to be determined by a single income shock. We thus assume that the number of entrants in year t from county j is determined by the average income shock over the preceding five years (or as long as available): 
+
+AS jt = 15
+
+> t−1
+
+∑ 
+
+> τ=t−5
+
+Sjτ .
+
+For the analysis with all firms, we construct AS jt from 1993 onwards and Sjt is available from 1991. In the early years (prior to 1997), AS jt is thus computed as the average income shock over a shorter period of time (less than five years). For exporters, we construct AS jt from 2001 onwards and, hence, AS jt can always be computed as the average income shock over five years. 55 To construct a predictor of the stock of firms from birth county j in year t, njt , we sum up 
+
+AS jτ from τ = 0 to t:
+
+T S jt =
+
+> t
+
+∑ 
+
+> τ=0
+
+AS jτ 
+
+where period 0, corresponding to the first cohort of entering firms, is specified to be 1993 for domestic producers and 2001 for exporters. 
+
+Step 4 : While we have constructed a predictor of the total stock of firms from county j in period 
+
+t, our measure of network size is more precisely the stock of firms from county j in destination prefecture k in year t, njkt . To construct a predictor of network size we assume that the probability of establishing a firm in a given prefecture k is declining in its distance, djk , from birth county j.If a firm locates in its birth prefecture, the distance is set to zero. If not, the distance is measured from the centroid of the birth county to the centroid of the destination prefecture. To derive the probability, we estimate a gravity equation as in the New Economic Geography literature; e.g. Tombe and Zhu (2019) : log 
+
+( njkt 
+
+njt 
+
+)
+
+= ηjt + ηkt + κlog( djk ) + εjkt .
+
+The estimated “migration” elasticity, κ, equals -0.865 for all firms and -0.404 for exporters. This allows us to construct the second (outer) “share” of our shift-share instrument for njkt :
+
+IV = dκjk T S jt .
+
+To construct the instrument for the interaction of network size with birth county population density, we interact the shift-share instrument derived above with potential crop yields in the county for all 11 crops. Table D1: First Stage Estimates Dependent variable: log njk,t −1
+
+Sample: all firms exporters (1) (2) IV -10.321*** -10.142*** (0.192) (0.406) Birth county-prefecture fixed effects Yes Yes Observations 148,856 11,673 
+
+> Note: The unit of observation is birth county-destination prefecture-year. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%.
+
+56 2. Validating the Shift-share Instruments 
+
+Table D2: Revenue, TFP and Network Size: Located outside Birth County Model: OLS IV Dependent variable: log revenue log TFP log(exporting revenue) log revenue log TFP log(exporting revenue) (1) (2) (3) (4) (5) (6) log njk,t −1 0.286*** 0.192*** 0.188*** 0.216*** 0.120*** 0.143 (0.006) (0.007) (0.044) (0.031) (0.032) (0.140) 
+
+pj × log njk,t −1 1.188*** 0.663*** 2.133*** 2.800*** 1.580** 4.098* (0.172) (0.160) (0.779) (0.699) (0.723) (2.281) Firm fixed effects Yes Yes Yes Yes Yes Yes Kleibergen-Paap F – – – 25.14 25.14 11.80 Observations 1,270,632 1,270,632 22,714 1,270,632 1,270,632 22,714 
+
+Note: Revenue and TFP are derived from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Network size is constructed from SAIC registration data. The firm’s initial capital interacted with a time trend is included in the estimating equation. 
+
+pj denotes population density in 1982 for birth county j and njk,t −1 is the stock of firms from county j
+
+established in prefecture k by the end of the preceding period t − 1. When the dependent variable is export revenue, njk,t −1 is measured by the stock of export firms. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+Table D3: Revenue, TFP and Network Size: Excluding Agricultural Processing Model: OLS IV Dependent variable: log revenue log TFP log(exporting revenue) log revenue log TFP log(exporting revenue) (1) (2) (3) (4) (5) (6) log njk,t −1 0.258*** 0.157*** 0.276*** 0.119*** 0.013 0.184** (0.007) (0.006) (0.027) (0.024) (0.022) (0.082) 
+
+pj × log njk,t −1 1.736*** 1.106*** 1.226*** 4.544*** 3.491*** 2.377* (0.185) (0.159) (0.426) (0.590) (0.558) (1.382) Firm fixed effects Yes Yes Yes Yes Yes Yes Kleibergen-Paap F – – – 25.48 25.48 11.78 Observations 2,091,979 2,091,979 66,777 2,091,979 2,091,979 66,777 
+
+Note: Revenue and TFP are derived from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Network size is constructed from SAIC registration data. The firm’s initial capital interacted with a time trend is included in the estimating equation. 
+
+pj denotes population density in 1982 for birth county j and njk,t −1 is the stock of firms from county j
+
+established in prefecture k by the end of the preceding period t − 1. When the dependent variable is export revenue, njk,t −1 is measured by the stock of export firms. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+57 Table D4: Revenue, TFP and Network Size: Conditional on Agriculture Income Shock in the Birth County Model: OLS IV Dependent variable: log revenue log TFP log(exporting revenue) log revenue log TFP log(exporting revenue) (1) (2) (3) (4) (5) (6) log njk,t −1 0.251*** 0.163*** 0.273*** 0.156*** 0.073** 0.446*** (0.006) (0.006) (0.028) (0.032) (0.030) (0.100) 
+
+pj × log njk,t −1 1.906*** 1.418*** 1.408*** 4.108*** 3.420*** 1.266 (0.185) (0.171) (0.445) (0.569) (0.535) (1.258) Agriculture income shock 0.361*** 0.521*** 0.518*** 0.296** 0.442*** 1.526*** (0.046) (0.047) (0.198) (0.121) (0.117) (0.351) Firm fixed effects Yes Yes Yes Yes Yes Yes Kleibergen-Paap F – – – 9.121 9.121 7.794 Observations 2,235,509 2,235,509 70,579 2,235,509 2,235,509 70,579 
+
+Note: Revenue and TFP are derived from the Inspection database, covering the 1998-2009 period. Export revenue is obtained from the Customs database, covering the 2002-2009 period. Network size is constructed from SAIC registration data. The firm’s initial capital interacted with a time trend is included in the estimating equation. 
+
+pj denotes population density in 1982 for birth county j and njk,t −1 is the stock of firms from county j
+
+established in prefecture k by the end of the preceding period t − 1. When the dependent variable is export revenue, njk,t −1 is measured by the stock of export firms. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+58 3. Alternative Construction of the Propensity Variable 
+
+Table D5: Alternative Propensity Construction 
+
+Propensity to become: entrepreneur exporter Construction: without Sjk,t −1 accumulated Pjt without Sjk,t −1 accumulated Pjt 
+
+(1) (2) (3) (4) ˜Θd0 0.0157*** 0.0051*** – –(0.0012) (0.0014) ˜Θdp 0.0686*** 0.1657*** – –(0.0141) (0.0568) Θe0 – – -0.0004 -0.0004 (0.0003) (0.0003) Θep – – 0.0172** 0.0190*** (0.0071) (0.0073) Θd0 – – 0.0000 -0.0000 (0.0001) (0.0001) Θdp – – -0.0091*** -0.0070*** (0.0031) (0.0025) Birth county-prefecture FE Yes Yes Yes Yes Prefecture-year FE Yes Yes Yes Yes Kleibergen-Paap F 188.9 188.9 15.41 15.41 Observations 699,531 699,531 16,559 16,559 
+
+Note: The number of firms is derived from the SAIC registration database and the Customs database. The number of potential entrepreneurs is derived from the Population Census (1990, 2000). The unit of observation is the birth county-destination prefecture-year. ˜Θd0, Θ e0, Θ d0 measure direct network effects, while ˜Θdp , Θ ep , Θ dp measure interaction effects. The interaction of network duration with initial (log) entry and the triple interaction with birth county popu-lation density are used as instruments for each network term and its interaction with population density in the first-differenced equation (separately for the domestic network and the export network in Columns 3-4). The accumulated Pjt measure of potential entrepreneurs starts with 25-35 year olds in 1994 and adds a fresh cohort of 25 year olds in each subsequent year. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+59 4. Validating the Propensity Equation Estimates 4.1 Alternative construction of instrumental variables 
+
+Table D6: Alternative Construction of Instrumental Variables 
+
+Propensity to become: entrepreneur exporter Specification: n0 + 0 .05 n0 + 0 .15 conditional on duration n0 + 0 .05 n0 + 0 .15 conditional on duration (1) (2) (3) (4) (5) (6) ˜Θd0 0.0047*** 0.0052*** 0.0056*** – – –(0.0012) (0.0012) (0.0017) ˜Θdp 0.1595*** 0.1499*** 0.1544*** – – –(0.0517) (0.0512) (0.0514) Θe0 – – – -0.0003 -0.0005 0.0002 (0.0003) (0.0003) (0.0004) Θep – – – 0.0139** 0.0203*** 0.0190*** (0.0062) (0.0073) (0.0064) Θd0 – – – -0.0001 0.0001 -0.0003* (0.0001) (0.0001) (0.0002) Θdp – – – -0.0051** -0.0075*** -0.0098*** (0.0020) (0.0026) (0.0030) Birth county-prefecture FE Yes Yes Yes Yes Yes Yes Prefecture-year FE Yes Yes Yes Yes Yes Yes Kleibergen-Paap F 190.9 187.8 95.06 21.24 12.57 13.87 Observations 699,531 699,531 699,531 16,559 16,559 16,559 
+
+Note: The number of firms is derived from the SAIC registration database and the Customs database. The number of potential entrepreneurs is derived from the Population Census (1990, 2000). The unit of observation is the birth county-destination prefecture-year. ˜Θd0, Θ e0, Θ d0 measure direct network effects, while ˜Θdp , Θ ep , Θ dp measure interaction effects. The interaction of network duration with initial (log) entry and the triple interaction with birth county popu-lation density are used as instruments for each network term and its interaction with population density in the first-differenced equation (separately for the domestic network and the export network in Columns 4-6). Instead of using log( n0 + 0 .1) to construct the initial entry variable, we now use log( n0 + 0 .05) or log( n0 + 0 .15) in Columns 1-2 and 4-5. Network duration is included as a covariate in the estimating equation in Columns 3 and 6. Standard errors clustered at the birth county level are reported in parentheses. * significant at 10%, ** at 5%, *** at 1%. 
+
+60 4.2 Testing the exogeneity of initial entry 0.1 .2 .3 Estimated coefficients with 95% CI 0 1 2 3 4 5 
+
+> Number of period safter initial entry removed
+
+(a) Entrepreneurial Propensity Estimation -.1 -.05 0.05 .1 Estimated coefficients with 95% CI 0 1 2 3 4 5  
+
+> Number of period safter initial entry removed
+
+(b) Export Propensity Estimation 
+
+Figure D1: Testing the Exogeneity of Initial Entry 
+
+Source: The coefficients are estimated using the same equation as in Table 7, sequentially removing time periods in each network. 
+
+61

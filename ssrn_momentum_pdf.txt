@@ -1,0 +1,378 @@
+Title: Cryptocurrency Volume-Weighted Time Series Momentum
+
+URL Source: https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1
+
+Markdown Content:
+Cryptocurrency Volume-Weighted Time Series Momentum by Zih-Chun Huang, Ivan Sangiorgi, Andrew Urquhart :: SSRN
+
+===============
+
+[Skip to main content](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#maincontent "Skip to content")
+
+[![Image 1](https://cdn.ssrn.com/ssrn-global-header/11589acb53bc518aa22929bf19add113.svg)](https://www.ssrn.com/ "SSRN Homepage")
+
+![Image 2](https://cdn.ssrn.com/ssrn-global-header/ae31995609ac601ba8a211c58aeb2b2f.svg)
+
+Make use of personalized features like alerts and saved searches
+
+[Create account](https://hq.ssrn.com/login/pubsigninjoin.cfm)[Sign in](https://hq.ssrn.com/login/pubsigninjoin.cfm)
+
+*   [Product & Services](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+    *   [Research Paper Series](https://www.ssrn.com/index.cfm/en/rps/)
+    *   [Site Subscriptions](https://www.ssrn.com/index.cfm/en/site-subscriptions/)
+    *   [Sponsored Services](https://www.ssrn.com/index.cfm/en/sponsored-services/)
+    *   [Jobs & Announcements](https://www.ssrn.com/index.cfm/en/Announcements-Jobs/)
+    *   [Conference Papers](https://www.ssrn.com/index.cfm/en/conferences/)
+    *   [Partners in Publishing](https://www.ssrn.com/index.cfm/en/partners-in-publishing/)
+    *   [First Look](https://www.ssrn.com/index.cfm/en/first-look/)
+
+*   [Subscribe](https://www.ssrn.com/index.cfm/en/subscribe/)
+*   [Submit a paper](https://hq.ssrn.com/submission.cfm)
+*   [Browse](https://papers.ssrn.com/sol3/DisplayJournalBrowse.cfm)
+*   [Rankings](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+    *   [Top Papers](https://hq.ssrn.com/rankings/Ranking_display.cfm?TRN_gID=10)
+    *   [Top Authors](https://www.ssrn.com/index.cfm/en/top-authors/)
+    *   [Top Organizations](https://www.ssrn.com/index.cfm/en/top-organizations/)
+
+*   [Blog↗](https://blog.ssrn.com/)
+*   [Contact](https://www.ssrn.com/index.cfm/en/contactus/)
+
+*   [Product & Services](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+    *   [Research Paper Series](https://www.ssrn.com/index.cfm/en/rps/)
+    *   [Site Subscriptions](https://www.ssrn.com/index.cfm/en/site-subscriptions/)
+    *   [Sponsored Services](https://www.ssrn.com/index.cfm/en/sponsored-services/)
+    *   [Jobs & Announcements](https://www.ssrn.com/index.cfm/en/Announcements-Jobs/)
+    *   [Conference Papers](https://www.ssrn.com/index.cfm/en/conferences/)
+    *   [Partners in Publishing](https://www.ssrn.com/index.cfm/en/partners-in-publishing/)
+    *   [First Look](https://www.ssrn.com/index.cfm/en/first-look/)
+
+*   [Subscribe](https://www.ssrn.com/index.cfm/en/subscribe/)
+*   [Submit a paper](https://hq.ssrn.com/submission.cfm)
+*   [Browse](https://papers.ssrn.com/sol3/DisplayJournalBrowse.cfm)
+*   [Rankings](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+    *   [Top Papers](https://hq.ssrn.com/rankings/Ranking_display.cfm?TRN_gID=10)
+    *   [Top Authors](https://www.ssrn.com/index.cfm/en/top-authors/)
+    *   [Top Organizations](https://www.ssrn.com/index.cfm/en/top-organizations/)
+
+*   [Blog↗](https://blog.ssrn.com/)
+*   [Contact](https://www.ssrn.com/index.cfm/en/contactus/)
+
+[](https://papers.ssrn.com/sol3/ShoppingCart.cfm)
+
+![Image 3](https://cdn.ssrn.com/ssrn-global-header/cbd90d50d6c5684432e5517eb47c279b.svg)[Create account](https://hq.ssrn.com/login/pubsigninjoin.cfm)[Sign in](https://hq.ssrn.com/login/pubsigninjoin.cfm)
+
+ This is a preprint article, it offers immediate access but has not been peer reviewed.
+
+[](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#)
+
+[![Image 4: PDF icon](https://static.ssrn.com/cfincludes/img/icons/icon-adobe-pdf.svg)Download This Paper](https://papers.ssrn.com/sol3/Delivery.cfm/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+[Open PDF in Browser](https://papers.ssrn.com/sol3/Delivery.cfm/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1&type=2)
+
+[Add Paper to My Library](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#)
+
+ Share: 
+*   [](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Share on Facebook")
+*   [](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Share on Twitter")
+*   [](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Share by Email")
+*   [](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Get Permalink")
+
+Permalink
+
+Using these links will ensure access to this page indefinitely
+
+[Copy URL](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Copy Permalink URL")
+
+[Copy DOI](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1# "Copy DOI URL")
+
+Cryptocurrency Volume-Weighted Time Series Momentum
+===================================================
+
+72 Pages Posted: 12 May 2024 Last revised: 5 Dec 2024
+
+[See all articles by Zih-Chun Huang](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=6734326 "View other papers by this author")
+[Zih-Chun Huang](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=6734326 "View other papers by this author")
+---------------------------------------------------------------------------------------------------------------------
+
+University of Reading - ICMA Centre
+
+[Ivan Sangiorgi](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=2504565 "View other papers by this author")
+---------------------------------------------------------------------------------------------------------------------
+
+ICMA Centre, Henley Business School, University of Reading
+
+[Andrew Urquhart](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=2198228 "View other papers by this author")
+----------------------------------------------------------------------------------------------------------------------
+
+University of Birmingham - Birmingham Business School
+
+Date Written: December 04, 2024
+
+### Abstract
+
+This paper finds strong and significant evidence of cryptocurrency TSMOM using volume-weighted market return. Based on the TSMOM strategy, we show that volume-weighted winner minus loser portfolios can generate significant returns which outperform other TSMOM strategies. Specifically, our strategy can gain 0.94% per day with an annualized Sharpe ratio of 2.17. Our findings cannot be fully explained by market, size, and momentum factors and are not subsumed by cross-sectional and MAX momentum returns, and are not the result of wash trading volume. Our findings suggest that trading volume may provide signals within cryptocurrency markets to create profitable strategies.
+
+**Keywords:** Cryptocurrency, Time-series momentum, Trading volume, Return predictability
+
+**Suggested Citation:**[Suggested Citation](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#)
+
+ Huang, Zih-Chun and Sangiorgi, Ivan and Urquhart, Andrew, Cryptocurrency Volume-Weighted Time Series Momentum (December 04, 2024). Available at SSRN: [https://ssrn.com/abstract=4825389](https://ssrn.com/abstract=4825389) or [http://dx.doi.org/10.2139/ssrn.4825389](https://dx.doi.org/10.2139/ssrn.4825389)
+
+[](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#)
+
+### [Zih-Chun Huang](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=6734326)
+
+#### University of Reading - ICMA Centre ( [email](javascript:void(0)) )
+
+Whiteknights Park
+
+P.O. Box 242
+
+Reading RG6 6BA
+
+United Kingdom
+
+### [Ivan Sangiorgi](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=2504565)
+
+#### ICMA Centre, Henley Business School, University of Reading ( [email](javascript:void(0)) )
+
+Whiteknights Park
+
+P.O. Box 242
+
+Reading RG6 6BA
+
+United Kingdom
+
+### [Andrew Urquhart (Contact Author)](https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=2198228)
+
+#### University of Birmingham - Birmingham Business School ( [email](javascript:void(0)) )
+
+Edgbaston Park Road
+
+Birmingham, B15 2TY
+
+United Kingdom
+
+[![Image 5: PDF icon](https://static.ssrn.com/cfincludes/img/icons/icon-adobe-pdf.svg)Download This Paper](https://papers.ssrn.com/sol3/Delivery.cfm/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1)
+
+[Open PDF in Browser](https://papers.ssrn.com/sol3/Delivery.cfm/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1&type=2)
+
+### 24 References
+
+1.    A Aloosh , J Li  Direct evidence of bitcoin wash trading Management Science forthcoming Posted: 2024  
+2.    Y Amihud  Illiquidity and stock returns: cross-section and time-series effects Journal of Financial Markets, volume 5, issue 1, p. 31- 56 Posted: 2002  
+3.    C S Asness , T J Moskowitz , L H Pedersen  Value and momentum everywhere The Journal of Finance, volume 68, issue 3, p. 929- 985 Posted: 2013  
+4.    D Bianchi , M Babiak , A Dickerson  Trading volume and liquidity provision in cryptocurrency markets Journal of Banking & Finance, volume 142 Posted: 2022  
+
+Load more
+
+### 0 Citations
+
+Fetch Citations
+
+Do you have a job opening that you would like to promote on SSRN?
+-----------------------------------------------------------------
+
+[Place Job Opening](https://www.ssrn.com/index.cfm/en/Announcements-Jobs/)
+
+Paper statistics
+----------------
+
+Downloads
+
+ 812
+
+Abstract Views
+
+ 8,721
+
+Rank
+
+ 69,789
+
+[24 References](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#paper-references-widget "Jump to the references for this paper.")
+
+PlumX Metrics
+
+[](https://plu.mx/plum/a/?ssrn_id=4825389 "PlumX Metrics Detail Page")
+
+![Image 6: plumX logo](https://cdn.plu.mx/3ba727faf225e19d2c759f6ebffc511d/plumx-inverse-logo.png)
+
+*   Usage 
+    *   Abstract Views: 8269
+    *   Downloads: 793
+
+*   Captures 
+    *   Readers: 10
+
+[see details](https://plu.mx/plum/a/?ssrn_id=4825389 "PlumX Metrics Detail Page")
+
+[](https://plu.mx/plum/a/?ssrn_id=4825389 "PlumX Metrics Detail Page")
+
+![Image 7: plumX logo](https://cdn.plu.mx/3ba727faf225e19d2c759f6ebffc511d/plumx-inverse-logo.png)
+
+*   Usage 
+    *   Abstract Views: 8269
+    *   Downloads: 793
+
+*   Captures 
+    *   Readers: 10
+
+[see details](https://plu.mx/plum/a/?ssrn_id=4825389 "PlumX Metrics Detail Page")
+
+Related eJournals
+-----------------
+
+*   [Capital Markets: Market Efficiency eJournal](https://papers.ssrn.com/sol3/JELJOUR_Results.cfm?form_name=journalBrowse&journal_id=1504403)
+
+[Follow](javascript:void(0);)  #### Capital Markets: Market Efficiency eJournal
+
+Subscribe to this fee journal for more curated articles on this topic
+
+FOLLOWERS  2,864  PAPERS  25,798      
+*   [Cryptocurrency Research eJournal](https://papers.ssrn.com/sol3/JELJOUR_Results.cfm?form_name=journalBrowse&journal_id=3839004)
+
+[Follow](javascript:void(0);)  #### Cryptocurrency Research eJournal
+
+Subscribe to this free journal for more curated articles on this topic
+
+FOLLOWERS  1,632  PAPERS  3,813      
+
+*   [Alternative & Distressed Asset Investing eJournal](https://papers.ssrn.com/sol3/JELJOUR_Results.cfm?form_name=journalBrowse&journal_id=4058847)
+
+[Follow](javascript:void(0);)  #### Alternative & Distressed Asset Investing eJournal
+
+Subscribe to this free journal for more curated articles on this topic
+
+FOLLOWERS  330  PAPERS  1,183      
+
+[](https://papers.ssrn.com/sol3/Delivery.cfm/4825389.pdf?abstractid=4825389&mirid=1#)
+
+Feedback
+
+Feedback to SSRN
+
+Feedback(required) 
+
+Email(required) 
+
+ Submit 
+
+[Submit a Paper](https://hq.ssrn.com/submission.cfm)
+
+[Section 508 Text Only Pages](https://www.ssrn.com/index.cfm/en/section-508/ "Section 508 Text Only Pages")
+
+#### SSRN Quick Links
+
+*   [SSRN Solutions](https://www.elsevier.com/solutions/ssrn "SSRN Solutions")
+*   [Research Paper Series](https://www.ssrn.com/index.cfm/en/rps/ "Research Paper Series")
+*   [Conference Papers](https://www.ssrn.com/index.cfm/en/conferences/ "Conference Papers")
+*   [Partners in Publishing](https://papers.ssrn.com/sol3/DisplayPipPublishers.cfm "Partners in Publishing")
+*   [Jobs & Announcements](https://www.ssrn.com/index.cfm/en/Announcements-Jobs/ "Jobs & Announcements")
+*   [Special Topic Hubs](https://www.ssrn.com/index.cfm/en/special-topic-hubs/ "Jobs & Announcements")
+
+#### SSRN Rankings
+
+*   [Top Papers](https://hq.ssrn.com/rankings/Ranking_display.cfm?TRN_gID=10 "Top Papers")
+*   [Top Authors](https://www.ssrn.com/index.cfm/en/top-authors/ "Top Authors")
+*   [Top Organizations](https://www.ssrn.com/index.cfm/en/top-organizations/ "Top Organizations")
+
+#### About SSRN
+
+*   [Network Directors](https://www.ssrn.com/index.cfm/en/network-directors/ "Network Directors")
+*   [Announcements](https://www.ssrn.com/index.cfm/en/recent-announcements/ "Announcements")
+*   [Contact us](https://www.ssrn.com/index.cfm/en/contactus/ "Contact us")
+*   [FAQs](https://service.elsevier.com/app/home/supporthub/ssrn/ "FAQs")
+
+*   [](https://www.facebook.com/SSRNcommunity/ "SSRN on Facebook")
+*   [](https://www.linkedin.com/company/493409?trk=tyah&trkInfo=clickedVertical%3Acompany%2CentityType%3AentityHistoryName%2CclickedEntityId%3Acompany_493409%2Cidx%3A0 "SSRN on Linkedin")
+*   [](https://twitter.com/SSRN "SSRN on Twitter")
+
+[](http://www.elsevier.com/ "Elsevier")
+
+[Copyright](https://www.ssrn.com/index.cfm/en/dmca-notice-policy/ "Copyright")[Terms and Conditions](https://www.ssrn.com/index.cfm/en/terms-of-use/ "Terms and Conditions")[Privacy Policy](https://www.elsevier.com/legal/privacy-policy "Privacy Policy")
+
+All content on this site: Copyright © 2024 Elsevier Inc., its licensors, and contributors. All rights are reserved, including those for text and data mining, AI training, and similar technologies. For all open access content, the relevant licensing terms apply.
+
+We use cookies to help provide and enhance our service and tailor content.
+
+To learn more, visit Cookie settings | Your Privacy Choices. This page was processed by aws-apollo-l200 in  0.062 seconds
+
+[](http://www.relx.com/ "RELX")
+
+[![Image 8: ](https://papers.ssrn.com/sol3/Delivery.cfm/header/pixel.gif)](https://papers.ssrn.com/sol3/updateInformationLog.cfm?process=true)
+
+We use cookies that are necessary to make our site work. We may also use additional cookies to analyze, improve, and personalize our content and your digital experience. For more information, see our[Cookie Policy](https://www.elsevier.com/legal/cookienotice)
+
+Cookie Settings Accept all cookies
+
+![Image 9: Company Logo](https://cdn.cookielaw.org/logos/static/ot_company_logo.png)
+
+Cookie Preference Center
+------------------------
+
+We use cookies which are necessary to make our site work. We may also use additional cookies to analyse, improve and personalise our content and your digital experience. For more information, see our [Cookie Policy](https://www.elsevier.com/legal/cookienotice) and the list of [Google Ad-Tech Vendors](https://support.google.com/admanager/answer/9012903). 
+
+ You may choose not to allow some types of cookies. However, blocking some types may impact your experience of our site and the services we are able to offer. See the different category headings below to find out more or change your settings. 
+
+ You may also be able to exercise your privacy choices ![Image 10: Cookie Settings | Your Privacy Choices](https://cdn-assets-eu.frontify.com/s3/frontify-enterprise-files-eu/eyJwYXRoIjoiZWxzZXZpZXJcL2ZpbGVcL05DSmJ6RDhNV3M1dlU5QlJ1djduLnBuZyJ9:elsevier:Yp1j0Yyk-ykfbG0S8wnos_RNIKx91C44OIjUpaxPXWE?width=2400) as described in our [Privacy Policy](https://www.elsevier.com/legal/privacy-policy)
+
+Allow all
+### Manage Consent Preferences
+
+#### Strictly Necessary Cookies
+
+Always active
+
+These cookies are necessary for the website to function and cannot be switched off in our systems. They are usually only set in response to actions made by you which amount to a request for services, such as setting your privacy preferences, logging in or filling in forms. You can set your browser to block or alert you about these cookies, but some parts of the site will not then work. These cookies do not store any personally identifiable information.
+
+Cookie Details List‎
+
+#### Functional Cookies
+
+- [x] Functional Cookies 
+
+These cookies enable the website to provide enhanced functionality and personalisation. They may be set by us or by third party providers whose services we have added to our pages. If you do not allow these cookies then some or all of these services may not function properly.
+
+Cookie Details List‎
+
+#### Performance Cookies
+
+- [x] Performance Cookies 
+
+These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site. They help us to know which pages are the most and least popular and see how visitors move around the site.
+
+Cookie Details List‎
+
+#### Targeting Cookies
+
+- [x] Targeting Cookies 
+
+These cookies may be set through our site by our advertising partners. They may be used by those companies to build a profile of your interests and show you relevant adverts on other sites. If you do not allow these cookies, you will experience less targeted advertising.
+
+Cookie Details List‎
+
+### Cookie List
+
+Clear
+
+- [x] checkbox label label
+
+Apply Cancel
+
+Consent Leg.Interest
+
+- [x] checkbox label label
+
+- [x] checkbox label label
+
+- [x] checkbox label label
+
+Confirm my choices
+
+[![Image 11: Powered by Onetrust](https://cdn.cookielaw.org/logos/static/powered_by_logo.svg)](https://www.onetrust.com/products/cookie-consent/)

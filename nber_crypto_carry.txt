@@ -1,0 +1,1652 @@
+Title: 
+
+URL Source: https://www.nber.org/system/files/working_papers/w31887/w31887.pdf
+
+Published Time: Thu, 16 Oct 2025 00:55:28 GMT
+
+Markdown Content:
+NBER WORKING PAPER SERIES PANDEMIC-ERA INFLATION DRIVERS AND GLOBAL SPILLOVERS Julian di Giovanni 
+
+Ṣebnem Kalemli-Özcan Alvaro Silva Muhammed A. Yildirim Working Paper 31887 http://www.nber.org/papers/w31887 NATIONAL BUREAU OF ECONOMIC RESEARCH 1050 Massachusetts Avenue Cambridge, MA 02138 November 2023 , revised February 2025 
+
+We would like to thank our discussants Gianluca Benigno, Aydan Dogan, Mishel Ghassibe, Rob Johnson, Andrea Raffo, John Romalis, participants at the 2023 Bank of Italy-ECB-World Bank Workshop on “Trade, value chains and financial linkages in the global economy,” the Summer School in International Economics by the Journal of International Economics (2023 ed.), the RBA Annual Conference (2023), the 8th NBU-NBP Annual Research Conference (2024), BIS, BoE, ECB and IMF Spillover Conference (2024) and the Pacific Basin Research Conference (2024) for insightful comments. We also thank Luca Fornaro, Jonathan Eaton, and Guido Lorenzoni who have provided useful comments. All remaining errors are our own. The views expressed herein are those of the authors and not necessarily those of the Federal Reserve Bank of New York, the Federal Reserve Bank of Boston, any other person affiliated with the Federal Reserve System, or the National Bureau of Economic Research. NBER working papers are circulated for discussion and comment purposes. They have not been peer-reviewed or been subject to the review by the NBER Board of Directors that accompanies official NBER publications. © 2023 by Julian di Giovanni, Sebnem Kalemli-Özcan, Alvaro Silva, and Muhammed A. Yildirim. All rights reserved. Short sections of text, not to exceed two paragraphs, may be quoted without explicit permission provided that full credit, including © notice, is given to the source. Pandemic-Era Inflation Drivers and Global Spillovers Julian di Giovanni, Ṣebnem Kalemli-Özcan, Alvaro Silva, and Muhammed A. Yildirim 
+
+NBER Working Paper No. 31887 November 2023 , revised February 2025 
+
+JEL No. F40 
+
+ABSTRACT 
+
+We develop a multi-country, multi-sector New Keynesian model to examine the drivers of global inflation during the pandemic and recovery periods. The model incorporates both country-sector-specific and aggregate shocks that propagate through international trade and production networks, leading to global demand-supply imbalances. Production complementarities raise non-labor costs, resulting in widespread sectoral cost-push inflation, even though the original negative labor supply shock is heterogeneous across country-sectors. Flexible exchange rate regimes absorb cross-country monetary policy differences, curbing global demand reallocation and the inflationary spillovers relative to fixed-rate regimes. The interaction of sectoral supply and aggregate demand shocks is the key to match the inflation experience of several countries, as the sectoral shocks spread through the global production network. Julian di Giovanni Federal Reserve Bank of New York 
+
+Research and Statistics Group 33 Liberty Street New York, NY 10045 and CEPR juliandigiovanni@gmail.com 
+
+Ṣebnem Kalemli-Özcan 
+
+Department of Economics Brown University Box B Providence, RI 02912 and CEPR and also NBER sebnem_kalemli-ozcan@brown.edu Alvaro Silva 600 Atlantic Avenue Federal Reserve Bank of Boston 
+
+Boston, MA 02118 asilvub@gmail.com Muhammed A. Yildirim Koc University Rumelifeneri Yolu 
+
+Sariyer Istanbul 34450 
+
+Turkey 
+
+yildirim@gmail.com 1 Introduction 
+
+The Covid-19 pandemic delivered a severe shock to the global economy, triggering inflation rates not seen in the past four decades. The widespread and synchronized nature of inflation across countries is difficult to reconcile with the diverse domestic monetary and fiscal pol-icy responses, multiple economic disruptions, and varying recovery trajectories. We argue that international linkages played an important role in transmitting domestic shocks across borders, leading to global supply and demand imbalances. These imbalances manifest as asymmetric sectoral shocks and led to cost-push inflation. We develop a multi-country, multi-sector New Keynesian macroeconomic model with full global input-output network to quantify the role of international linkages in driving inflation. Our key result is that the primary driver of inflation was strong demand coupled with constrained supply, where international linkages determine the relative contributions of demand and supply to inflation that varies by country. A sectoral approach to inflation in an open economy setting enables us to quantify these differences. Our framework extends the closed-economy models of Baqaee and Farhi (2022) and Guerrieri, Lorenzoni, Straub, and Werning (2022), by incorporating a global trade and pro-duction network, which serves as a crucial transmission mechanism for both sector-level and aggregate shocks across countries. This global network approach is unique to our paper. It distinguishes our contribution from closed-economy network models and open-economy mod-els that typically feature two sectors (tradable and non-tradable). In our framework, similar to closed economy models, a negative supply shock in one sector can reduce demand for goods in another sector (Guerrieri, Lorenzoni, Straub, and Werning, 2022), raising produc-tion costs in the sectors that use the “shocked” sector as an input (Baqaee and Farhi, 2022). In an international context, these negative “Keynesian” supply shocks can spillover both via complementarities in the global trade and production network and also via reallocation of demand globally from certain sectors to others and the role of trade in intermediate inputs in this process. Hence, our model’s key contribution is to provide a structure for reliable quantitative estimates, by incorporating a rich set of realistic shocks, empirically relevant trade and production elasticities, and several channels for the international transmission of these shocks. The paper’s baseline quantitative exercise delineates three distinct phases in the evolution of global inflation. In the early phase of 2020, supply shocks arising from pandemic-induced scarcity in factors of production sparked inflation. This period was characterized by local and global supply chain bottlenecks, rising factor costs, including prices of imported intermediate inputs, and slack in domestic labor markets. In the next phase, demand and supply imbal-2ances were further amplified by large fiscal packages and loose monetary policy, particularly in advanced economies. These aggregate demand shocks along with economies suddenly re-opening helped to spur on inflation over 2021. The final phase of 2022 was characterized by the Russian invasion of the Ukraine with a sizeable impact on energy prices. Importantly, we quantify considerable heterogeneity in the spillover of shocks across economies, such that the international drivers of inflation were more important for the euro area than for the US. 
+
+Model framework. The model is constructed using intertemporal and intratemporal blocks. The intertemporal block is a standard two-period open-economy macro model. We assume that households in each country have perfect foresight. They have access to a local currency domestic bond and can also trade a nominal bond denominated in US dollars in-ternationally. 1 Nominal exchange rate changes are solved for given standard asset market conditions where the Uncovered Interest Parity (UIP) and households’ Euler equations hold. Current accounts adjust endogenously to shocks such that capital flows across countries equi-librate world financial markets. 2 We close this demand block by allowing for each country to set domestic policy rates exogenously. The intratemporal block has a static nested CES production structure with multiple factors of production and a global production network, which plays a key role in the interna-tional transmission of shocks. The network adjusts endogenously in the model once we feed in the shocks, as all relative prices adjust and sectoral expenditures also change. The only frictions in the model, downward wage rigidity, and segmented factor markets are impor-tant for this block. Segmented labor markets are especially important as we assume a fully inelastic labor supply in each labor market. We motivate these rigidities by the evidence presented in Fernald and Li (2022), that during the period we focus on (2020-2022), the con-tribution of labor reallocation from low to high wage/productivity sectors was very small, 0.18 percent, whereas labor productivity grew 1.1 percent. These data-relevant assumptions of segmented labor markets and short-run rigid wages also help us to match the 2020 rise in unemployment. 3 The existence of segmented factor markets also helps us to match cross-sectional moments such as changes in sectoral wages and product prices. The demand side in the intratemporal block allows households to access goods and services globally through a nested CES demand structure. 
+
+> 1The quantitative results are similar if we instead assume that the international bond is denominated by a common world currency.
+> 2This approach is similar to the open-economy contributions of Reyes-Heroles (2016) and Dix-Carneiro, Pessoa, Reyes-Heroles, and Traiberman (2023), who use a world bond to generate endogenous trade imbal-ances across countries.
+> 3These assumptions are in Baqaee and Farhi (2022), who match 2020 unemployment, and are also used to model other unemployment episodes by Schmitt-Groh´ e and Uribe (2016).
+
+3Approximating inflation in an open economy. Before our quantification exercise of the non-linear model, we start by providing a first-order approximation of domestic inflation that extends the closed-economy result in Baqaee and Farhi (2022) to the open economy. This provides a novel contribution and delivers intuition for our two key results. First, the approximation shows that the impact of foreign factor supply shocks on domestic inflation depends on domestic consumption’s exposure to foreign factors of production. This exposure to foreign factors does not only depend on traded intermediates, as shown in other sufficient statistics type approaches, but rather, it depends on the full set of global input-output linkages, implying a dependence on foreign labor through complementarities in production. This foreign-factor exposure varies greatly across countries. 4
+
+Second, the approximation contains an additional term relative to the closed-economy approximation, which we call “local-global demand-supply imbalance”. This term captures the discrepancy between local and global changes in factor demands (via consumption of final and intermediate goods through the global input-output network). For example, suppose there is a rise in demand for factors embedded in “microchips” (an intermediate good) used in the production of “iPhones” (a final good). The imbalance appears when the final demand for “iPhones” across countries outweighs the global supply of “microchips” given a shortage in the underlying factors of production. If, however, all the countries had exactly the same demand profiles (e.g., no home bias), then this term would be zero. This term allows us to understand the inflationary impact of mismatches between demand structures as well as foreign sectoral supply shocks working through sectoral demand-supply imbalances within the global trade and production network. This result is similar in spirit to the welfare gains from trade shown in Baqaee and Farhi (2024), but highlights the impact of changing factor shares, over time and across countries, on inflation for open economies. 
+
+Quantitative approach. Our quantitative analysis provides a decomposition of the drivers of inflation through the lens of our model. We first use the model structure to back out a set of sectoral and aggregate supply and demand shocks for each country from the data. We calculate five shocks at the quarterly level: sectoral consumption demand, monetary policy, aggregate demand, sectoral labor supply, and energy prices. Sectoral demand shocks are modeled as preference-shifters across sectors, which we back out from the data using sectoral consumption shares. Changes in monetary policy are based on observed changes in policy rates of countries. Aggregate demand shocks are intertemporal shifters that we back out using information on monetary policy rates and local currency aggregate expenditures. 
+
+> 4For example, the US shows less exposure to foreign factors relative to a smaller open-economy, such as Ireland; though knowing only the share of imported intermediaries will not be enough to calculate the impact on inflation. Considering full I-O linkages, a 1 percent decline in all foreign factors would result in a 10 basis points increase in the US CPI compared to a 60 basis points increase in the Irish CPI.
+
+4We exploit observed changes in labor hours to capture labor supply shocks. To identify labor supply shocks we proceed as follows. We feed in labor hours from the data into the model together with the remaining shocks. Given our downward nominal wage rigidity, the model will classify sectors as labor supply or demand constrained. Supply constrained sectors are sectors where supply meet demand at a level equal or higher to the nominal wage lower bound. In contrast, demand constrained sectors are sectors where demand is insufficient and the downward nominal wage rigidity binds, creating a gap between equilibrium employment and potential employment which gives rise to Keynesian unemployment. We set the sectoral labor supply shocks to zero in sectors that the model identifies as demand constrained sec-tors following Baqaee and Farhi (2022). Finally, we introduce energy shocks, as measured by changes in a global energy price index, as a negative productivity shock to Russia’s energy sector, which also helps us to account for the complementarity between oil and domestic labor, as highlighted by Gagliardone and Gertler (2023). We next feed these shocks into our global network model, using 2018 input-output linkages aggregated to four regions of the world – the US, the euro area, Russia, and a China + the rest of the world aggregate (“China+”) – and four sectors (durable goods, non-durable goods, services, and energy), 5 to solve for factor prices, product prices, employment and output in the “shocked” economies in general equilibrium. We then calculate inflation rates and changes in other variables relative to variables’ initial steady-state (2018) values. 
+
+Main results. The model is successful in generating aggregate inflation series that track headline numbers. Once we shock each quarter, we calculate deviations in all endogenous variables from their steady-states. We then compute year-on-year inflation rates for ag-gregate prices in each quarter, which provides a time series for the evolution of inflation. Specifically, the correlation between the model-generated series and actual headline inflation is 0.75 and 0.77 for the US and the euro area, respectively. These correlations increase to 0.86 and 0.91 if we drop the lockdown and rebound quarters (2020Q2 and 2021Q2, respec-tively) that were unique in several dimensions and hard to match even with our rich set of shocks. The model can also match the evolution of real wages together with the cross-sectional patterns in sectoral wages and prices. Given the rich production structure, we find this cross-sectional fit of the model comforting. Finally, the model also generates exchange rate changes and current account dynamics that are consistent with the data. A model-based decomposition over 2020–2022 reveals the following. In 2020, negative sectoral factor supply shocks – taken as falling labor supply in our context – played the primary role in both the US and the euro area, the countries that observed the fastest rise 
+
+> 5We are forced to aggregate up at the sector-level given the lack of production data at finer levels of aggregation across several countries in the dataset.
+
+5in prices, as these supply shocks contributed 3.12 and 1.57 percentage points (pp) to annual inflation, respectively in these countries. In 2021, positive aggregate demand shocks played a central role and boosted inflation significantly, contributing 8.53 and 5.79 pp to annual inflation over this year for the US and the euro area, respectively. In 2022, aggregate demand kept playing the primary role in driving inflation in both areas, contributing 8.81 and 9.99 pp to inflation over this year. Russian energy shocks played a non-trivial role quantitatively in driving inflation in the euro area, accounting for 1.32 pp of annual inflation. These numbers might suggest domestic aggregate demand shocks are more important than supply shocks in driving inflation in all countries. Our decomposition between domestic and international sources of inflation reveals that this would be a misleading conclusion since spillovers of supply shocks (especially energy prices), are central. We show that while the extent of international spillovers is limited from other countries to the US, both international aggregate demand shocks and energy price spillovers played a predominant role in the euro area’s inflation. To further assess the role of international spillovers, we conducted two additional counter-factual exercises. First, we study how foreign sectoral supply shocks affect inflation with higher trade elasticities. Trade elasticities should play an important role as they dictate how much a fall in the supply of goods from one country-sector can be substituted with varieties from other country-sectors. Unsurprisingly, a higher trade elasticity (its long-run value of 4) amplifies the inflationary impact of foreign supply shocks as demand switches to home country’s factors of production. Second, we examine the impact of exchange rate regimes. When switching from our baseline scenario of flexible exchange rates to a fixed exchange rate system pegged to the U.S. dollar, we observe higher inflation. This outcome is expected, as under a fixed exchange rate, changes in U.S. monetary policy directly influence domestic policy rates in other countries, amplifying inflationary spillovers. Thus, flexible exchange rates helped mitigate pandemic-era inflation by dampening the transmission of US demand shocks to the rest of the world. 
+
+Related literature. Our multi-sector approach to inflation is shared by the closed-economy papers of Guerrieri, Lorenzoni, Straub, and Werning (2021), Baqaee and Farhi (2022), Rubbo (2023), Lorenzoni and Werning (2023). We share with these papers the idea that relative prices changes can generate inflation. We emphasize the open-economy dimension of this channel, where domestic supply shocks traveling through network imply different relative price changes and hence different inflation experiences in each country, globally. As in single-sector closed economy models of Blanchard and Bernanke (2023) and Gagliar-done and Gertler (2023), we also highlight the role of oil shocks, product price increases, and labor market tightness, though in an open-economy context, helping us to share the insight 6with these papers that strong demand meeting constrained supply is an important feature of this period, that is, supply chain bottlenecks alone and/or large stimulus packages alone is not enough, but rather we need the interaction of the two, in order to understand the inflationary experience of the last few years. In terms of the open-economy papers studying the recent inflationary episode, our paper is quite different. The work by Amiti, Heise, Karahan, and S ¸ahin (2024), Comin, Johnson, and Jones (2023), Ferrante, Graves, and Iacoviello (2023), Guerrieri, Marcussen, Reichlin, and Tenreyro (2023), Fornaro and Romei (2023) and Bianchi and Coulibaly (2024), are all in the tradition of Gali-Monacelli type models, where there are one or two sectors with standard nominal rigidities and no I-O linkages. Ferrante, Graves, and Iacoviello (2023) is an exception with full network but focusing only on a small open economy. Our global general equilibrium with the full global I-O linkages combined with both supply and demand shocks, help us to highlight new channels of international spillovers theoretically and quantitatively in addition to standard role of exchange rate and demand allocation in these papers. We are not aware of any other structural quantification exercises for the pandemic-era inflation in a global setting, but there are reduced-form empirical studies that seek to identify the different drivers of the U.S.inflation with sign restrictions in VAR, such as Jord´ a and Nechio (2022), Jord´ a, Liu, Nechio, and Rivera-Reyes (2022), Shapiro (2022a,b); de Soyres, Gaillard, Santacreu, and Moore (2024); Giannone and Primiceri (2024). 6
+
+Outline of the paper. Section 2 outlines the multi-country multi-sector model that we use to quantify the drivers of inflation. Section 3 describes the data and shock construction that we use for the quantification exercises. Section 4 presents the quantitative results. Section 5 concludes. 
+
+# 2 Model 
+
+We extend the Baqaee and Farhi (2022) model to an open-economy setting by incorporating cross-country and cross-sector input-output linkages, as well as endogenous exchange rate and current account adjustments. The model allows for a rich set of shocks, including country-level aggregate demand shocks, country-sector level demand shifts, and country-sector level factor supply and productivity shocks. 
+
+Notation. Time periods are denoted by subscript t. Steady-state values do not have a time subscript. We write deviations from steady state as bXt = Xt/X for any variable Xt.
+
+> 6We have previously written a policy analysis of 2021 for the 2022 ECB-Sintra conference (di Giovanni, Kalemli- ¨Ozcan, Silva, and Yıldırım, 2022), which is the first paper showing that strong demand meeting constrained supply is an important feature of the data for understanding the inflation experience of 2021. That paper differs significantly from the current analysis as its focus is not on international spillovers.
+
+7We denote countries with indices m, n = 1 , . . . , N , where N is the number of countries, and use i, j, k = 1 , . . . , J as sector indices. A sector in a country is identified by a pair of indices 
+
+mi corresponding to countries and sectors, respectively. 
+
+Timing of events. There are two time periods: “the present,” t = 0, and “the future,” 
+
+t = 1. Throughout, agents have perfect foresight. Prior to the present period, the economy is in steady state, and expect the economy to be there in the foreseeable future. At t = 0, unexpected shocks deviate the economy from this path. The economy reverts back to a steady-state. 
+
+## 2.1 Households 
+
+In each country n, there is a representative household who has perfect foresight. We divide the household problem into an intertemporal and an intratemporal part. 
+
+Intertemporal problem. The household maximizes the present value of lifetime utility: (1 − βn, 0)C1−σn, 0 − 11 − σ + βn, 0
+
+C1−σn, 1 − 11 − σ , (1) where we assume a CRRA utility function each period, and βn, 0 is the subjective discount factor. This discount factor parameter plays an important role for quantifying the impact of aggregate demand drivers on inflation. As in Baqaee and Farhi (2022), we label βn, 0 as an aggregate demand shifter: given prices and income , an increase in (1 − βn, 0)/β n, 0 will shift consumption from the future to the present, which captures a positive change in aggregate demand in the present period. Of course, changes in the domestic policy rate, denoted by 
+
+in, 0 below, will also impact intertemporal consumption decisions. While Baqaee and Farhi (2022) were able to ignore such changes given their analysis focused on a period where the US was at its zero lower bound (ZLB), we take into account potential policy rate changes in our analysis as described in section 2.3. The household has access to two bonds: (i) a nominal domestic bond, Bn, which pays off in domestic consumption units and is priced in local currency , and (ii) a nominal world bond, Fn, that is traded across countries and pays off in US dollars. The domestic bond is in zero net supply, and is introduced to account for the impact of domestic monetary policy. The world bond is in zero net supply across countries, so 
+
+X
+
+> n
+
+Fn,t = 0 .
+
+International markets are frictionless, so the nominal return on the bond is equal across all 8countries. 7 To simplify notation, we further assume that initial holdings of the domestic and world bonds are zero across all countries. Given these assumptions, the present and future budget constraints of the household in local currency units can be written as 
+
+Pn, 0Cn, 0 + Bn, 0 + En, 0Fn, 0 ≤ E n, 0Fn, −1(1 + iU S  
+
+> −1
+
+) + X
+
+> i
+
+(Wni, 0Lni, 0 + Rni, 0Kni, 0), (2) 
+
+Pn, 1Cn, 1 + En, 1Fn, 1 ≤ E n, 1(1 + iU S, 0)Fn, 0 + (1 + in, 0)Bn, 0 + X
+
+> i
+
+(Wni, 1Lni, 1 + Rni, 1Kni, 1), (3) where Pn,t is the price of the consumption bundle at time t, En,t is the exchange rate between country n and the US at time t. An increase in En,t implies a depreciation of the local currency relative to the US dollar. Wni,t is the wage in sector i of country n at time t, Lni,t 
+
+is the quantity of labor in sector i country n at time t, Rni,t is the price of capital in sector i
+
+of country n at time t, Kni,t is the quantity of capital in sector i country n at time t, in, 0 is the nominal interest rate in local currency, and iU S, 0 is the interest rate on the world bond. Maximizing the household’s lifetime utility subject to the present and future budget constraints yields the following standard first-order conditions: (1 − βn, 0)C−σn, 0
+
+Pn, 0
+
+= βn, 0(1 + in, 0)C−σn, 1
+
+Pn, 1
+
+(Euler Equation) , (4) (1 + in, 0) = (1 + iU S, 0)En, 1
+
+En, 0
+
+(No arbitrage condition) . (5) 
+
+Intratemporal problem. We next turn to the household’s intratemporal problem, where we omit the time index to ease notation. While the intertemporal problem provides the time path for aggregate consumption, this section models how household allocates the aggregate consumption across goods each period. To begin, we model Cn as a Cobb-Douglas aggregate of sector-level consumption bundles: 
+
+Cn =
+
+> J
+
+Y
+
+> j=1
+
+CΩCn,j  
+
+> n,j
+
+with 
+
+> J
+
+X
+
+> j=1
+
+ΩCn,j = 1 ,
+
+where Cn,j denotes country n’s consumption bundle of sector j’s goods (or services), and ΩCn,j ≥ 0 represents the household’s consumption share of this sector. The sector-level consumption bundles are in turn aggregates of varieties of goods from different countries in 
+
+> 7
+
+This two bonds characterization follows recent work on understanding endogenous trade imbalances in dynamic international trade models such as Reyes-Heroles (2016) and Dix-Carneiro, Pessoa, Reyes-Heroles, and Traiberman (2023). It is also a well-known device in two-country models, pervasive in the international macroeconomics literature; see, for example, Benigno and Thoenissen (2008). The choice of denominating the foreign currency bond in US dollars is an empirical one, as we discuss below, and similar model results would hold if we chose another num´ eraire currency, or some common world currency to denominate the foreign bond. 
+
+9a given sector. Let Cn,mj denote the consumption of output of sector j in country m by consumers in country n. Then the country n-sector j consumption bundle is formed by the following CES aggregation 8:
+
+Cn,j =
+
+
+
+> N
+
+X
+
+> m=1
+
+ ΩCB n,mj 
+
+1/ξ cj C 
+
+> ξcj−1
+> ξcj
+> n,mj
+
+ 
+
+> ξcjξcj−1
+
+with 
+
+> N
+
+X
+
+> m=1
+
+ΩCB n,mj = 1 ,
+
+where Ω CB n,mj ≥ 0 is the weight of country-sector mj in country n’s consumption of sector j,and ξcj captures the elasticity of substitution between these varieties. The household solves standard cost minimization problems, which define country-level price indices that are used to construct the model-predicted inflation rates at the country and sectoral levels. Having defined the household’s side, we now turn to the production side of the economy. 
+
+## 2.2 Production 
+
+Goods are produced at the sector level by combining different factors of production and intermediate inputs. We assume that factors are sector-specific labor and capital, and to help with notation we combine these to create a value-added bundle. Each sector in each country uses goods from other countries to construct their sector-specific intermediate bundles. Sector i in country n, therefore, uses sector-specific value added, VA ni , and an intermedi-ate bundle, Zni , to produce final output, Yni , using the following CES production function: 
+
+Yni = Ani 
+
+h ΩYni, VA 
+
+1/θ VA θ−1 
+
+> θ
+> ni
+
++  ΩYni,Z 
+
+1/θ Z θ−1
+
+> θ
+> ni
+
+i θθ−1
+
+with ΩYni, VA + Ω Yni,Z = 1 ,
+
+where Ani is a sector-specific productivity parameter, θ determines the elasticity of sub-stitution between the value added and the intermediate bundle, and Ω Yni, VA and Ω Yni,Z are the shares of value added and the intermediate good used in the final good’s production, respectively. The value-added bundle for country-sector ni consists of sector-specific labor and capital. We assume that capital is always fully utilized and is always at its steady-state value. Labor levels, on the other hand, may potentially fluctuate from their steady-state value when the economy experiences shocks. The value-added bundle is defined as: VA ni =
+
+h ΩVA 
+
+> ni,L
+
+1/η (Lni )η−1 
+
+> η
+
++  ΩVA 
+
+> ni,K
+
+1/η (Kni )η−1
+
+> η
+
+i ηη−1
+
+with Ω VA  
+
+> ni,L
+
++ Ω VA  
+
+> ni,K
+
+= 1 ,
+
+> 8To calibrate the CES, we set all prices equal to 1 at the steady state and use sales and expenditure shares directly from international input-output tables. This also allows us to conduct quantitative exercises with varying elasticities of substitution without changing initial steady state values.
+
+10 where η is the elasticity of substitution between labor and capital, and Ω VA  
+
+> ni,L
+
+(Ω VA  
+
+> ni,K
+
+) is the weight of value-added that is attributed to labor (capital). Similar to consumption bundles, the intermediate bundles are constructed from country-specific sector bundles given the following CES aggregator with an elasticity of substitution of ε:
+
+Zni =
+
+" JX
+
+> j=1
+
+ ΩZni,j 
+
+1/ε X ε−1
+
+> ε
+> ni,j
+
+# εε−1
+
+with 
+
+> J
+
+X
+
+> j=1
+
+ΩZni,j = 1 ,
+
+where Ω Zni,j ≥ 0 is sector j’s weight in producing country-sector good ni and Xni,j is the amount of sector-level bundle Xn,j used by ni . These sector-level bundles are formed using the following CES aggregator of country-specific varieties: 
+
+Xn,j =
+
+
+
+> N
+
+X
+
+> m=1
+
+ ΩXn,mj 
+
+1/ξ sj X 
+
+> ξsj−1
+> ξsj
+> n,mj
+
+ 
+
+> ξsjξsj−1
+
+with 
+
+> N
+
+X
+
+> j=1
+
+ΩXn,mj = 1 ,
+
+where Xn,mj is the amount of output of country-sector mj used by country n, ξsj is the elasticity of substitution between sector-level varieties, and Ω Xn,mj is the weight of country-sector mj in the sector bundle for j in country n.Given the production structure of the economy outlined above, it follows that the bilateral flow of intermediate goods produced by country-sector mj and used by country-sector ni is given by: 
+
+Xni,mj = Xn,mj 
+
+Xni,j 
+
+Xn,j 
+
+.
+
+## 2.3 Monetary Policy, Nominal Variables and the Current Account 
+
+In this subsection, we describe how we determine nominal variables such as the exchange rate and world expenditure, which are necessary to solve for equilibrium across countries. We also discuss the current account determination in the model. 
+
+2.3.1 Nominal Variables Exchange rate determination. The framework described above is, in essence, a canon-ical international macroeconomic model that embeds a disaggregated production and trade structure. The nominal exchange rate is a key relative price to help equilibrate goods and assets markets across countries. The nominal exchange rate of each country n relative to the United States is determined by the international arbitrage equation (5), that is by the interest rate differential. This is a classical no-risky-arbitrage condition (Uncovered Interest Parity). It immediately tells 11 us that if nominal exchange rates are flexible, they are determined by the relative stance of monetary policy via interest rate differential between the home country and the United States, which acts as the num´ eraire currency country. 9
+
+In our quantitative model, nominal interest rates are exogenous since we assume monetary policy is exogenous. This choice is driven by our desire to let the data speak on monetary policy differences across countries, rather than getting into optimal monetary policy that had been discussed extensively in the network literature and in particular for this episode as “transitory-permanent” shock debate. This choice of treating monetary policy and hence nominal interest rates as exogenous also allows us to construct aggregate demand shocks (changes in the discount factors across countries) that match local currency expenditure observed in the data conditional on observed interest rate changes. 10 To understand the data constraint we are faced with, recall that the Euler equation for the domestic bond is (1 + in, 0)En, 0
+
+En, 1
+
+= 1 − βn, 0
+
+βn, 0
+
+, (6) where we set σ = 1, as we will do in the quantitative section, and En,t = Pn,t Cn,t is local currency expenditure at time t.With knowledge of the nominal interest rates (1 + in, 0) and local currency expenditure relative to the steady state 
+
+En, 0
+
+> En, 1
+
+
+
+, we can back out the implied change in the discount factors that rationalizes this expenditure choice given nominal interest rate changes, i.e., the change in 1−βn, 0 
+
+> βn, 0
+
+. Another route we could take would be to assume that local currency expenditure is an exogenous object in the model. This assumption would imply that nominal interest rates are endogenous objects, moving in the opposite direction of En, 0 
+
+> En, 1
+
+. Therefore, a decline in expenditures would be isomorphic to an increase in the nominal interest rate, and conversely an increase in expenditures would require a decline in the interest rate. This second case would be counterfactual and violate the ZLB in steady state since positive changes in nominal expenditures would imply negative nominal interest rates. 
+
+World expenditure. Another key endogenous object in the model is world expenditure denominated in US dollars, E$
+
+> W,t
+
+. We define it as follows: 
+
+E$ 
+
+> W,t
+
+= X
+
+> n
+
+En,t 
+
+En,t 
+
+. (7) This object is important as it serves as our num´ eraire. Our motivation for choosing this num´ eraire is empirical: most input-output tables contain expenditures in US dollars, allowing 
+
+> 9Given that this no arbitrage condition holds across all countries in equilibrium, we can similarly define other bilateral rates between non-US country pairs’ domestic interest rates.
+> 10 We describe the construction of the shocks in section 3.1.
+
+12 us to construct a measure of world expenditure transparently. Notice that world expenditure in US dollars requires solving for both expenditure in local currency ( En,t ) and exchange rates (En,t ). Tracking changes in nominal world expenditure is not necessary in standard trade-network models without nominal rigidities as they are concerned with real objects (Costinot and Rodr´ ıguez-Clare, 2014). Recent efforts that embed nominal rigidities into trade models consider changes in nominal world expenditure exogenous, as a parameter (Rodr´ ıguez-Clare, Ulate, and Vasquez, 2024). We show that (see Appendix A) aggregate demand changes across the world, and changes in US monetary policy change nominal world expenditure in US dollars endogenously, affecting nominal variables across countries. The change in nominal world expenditure in US dollars also has important implications for the behavior of labor markets, a key feature of this period, as we explain below in section 2.4. 
+
+2.3.2 Current Account 
+
+Given our assumption that initial bond holdings are at the steady state, the period-0 current account equals deviations from this steady state: CA n, 0 = Fn, 0 − Fn, −1 = Fn, 0 − Fn. The steady-state foreign bond holdings follows from the budget constraint 
+
+Fn = E$ 
+
+> n
+
+− nGDP $
+
+> n
+
+iU S . (8) We do not impose balanced trade as assumed in most papers that use a multi-country multi-sector framework. Specifically, recall from the household’s budget constraint that country 
+
+n’s period-0 holdings of the foreign bond, Fn, 0 equals 
+
+Fn, 0 = ( E$ 
+
+> n, 1
+
++ Fn, 1 − nGDP $
+
+> n, 1
+
+)/(1 + iU S, 0) = nGDP $ 
+
+> n, 0
+
+− E$ 
+
+> n, 0
+
++ (1 + iU S  
+
+> −1
+
+)Fn, −1, (9) where nGDP $ 
+
+> n,t
+
+= P
+
+> i
+
+(W $
+
+> ni,t
+
+Lni,t + R$
+
+> ni,t
+
+Kni,t ) represents country’s n GDP in US dollars at time t and E$ 
+
+> n,t
+
+= En,t /En,t is expenditure of country n denominated in US dollars at time t.Under our assumption that future variables are at the steady state, it follows from the first equality in equation (9) that 
+
+Fn, 0 = (E$ 
+
+> n
+
++ Fn − nGDP $ 
+
+> n
+
+)(1 + iU S, 0) .
+
+After some manipulations, we can write the current account as 
+
+Fn, 0 − Fn
+
+E$
+
+> n
+
+= (αn − ηn)
+
+αn
+
+(iU S − iU S, 0)
+
+iU S (1 + iU S, 0), αn = E$
+
+> n
+
+E$
+
+> W
+
+, ηn = nGDP $
+
+> n
+
+E$
+
+> W
+
+. (10) Hence, the current account of country n (normalized by its own expenditure) can fluctuate due to US interest rate changes only, (1 + iU S, 0). For countries that are net savers at the 13 steady state ( αn − ηn < 0), an increase in the US interest rate in the present reduces the present value of future surplus, which reduces (in absolute value) the current account deficit in the present period. The converse is true for net debtors ( αn − ηn > 0): an increase in the US interest implies a lower present value of future deficits, thus lowering the need for saving in the present period. 
+
+## 2.4 Market Clearing 
+
+We assume that all goods’ markets clear. Goods can be used as final (consumption) goods and intermediate inputs in all countries. Therefore, we write the goods market clearing condition for country-sector ni at time t as 
+
+Yni,t = X
+
+> m∈N
+
+(Cm,ni,t + Xm,ni,t ) ,
+
+where country m is the consuming country. For the factor markets, we take both labor and capital to be sector-specific. Capital is fully utilized and assumed to be at its steady-state level: 
+
+Kni,t = Kni .
+
+Labor, on the other hand, is subject to shocks in the present period. In addition, we assume that there is a downward wage rigidity relative to the steady-state wage. Denoting the amount of available labor for country-sector ni at the time of the shock with eLni, 0 and given the sector-specific labor assumption implies that the available labor is below the steady state-level ( Lni ): 
+
+eLni, 0 ≤ Lni .
+
+Given the downward wage rigidity, there might be slack conditions in a sector’s labor market during the shock period. Therefore, the shock-period employment, Lni, 0, maybe be lower than available labor: 
+
+Lni, 0 ≤ eLni, 0. (11) Finally, the downward wage rigidity necessitates that the wage in a given country sector (Wni, 0) in the present period cannot go below its steady-state level ( Wni ) in local currency. The downward wage rigidity condition is then given by 
+
+Wni, 0 ≥ Wni . (12) What matters for labor allocation, however, are real wages. In our multi-country setting with nominal objects, this requires setting all countries to a common currency and then turning 14 it into common relative prices. Since we choose our num´ eraire to be world expenditure in US dollars, it proves convenient to rewrite (12) as 
+
+W wni, 0 ≥ Wni 
+
+En, 0E$
+
+> W, 0
+
+| {z }
+
+> In world expenditure units
+
+. (13) Equation (13) makes clear that decreases in exchange rates or world expenditure make the downward nominal wage rigidity more likely to bind for given real wage in world expenditure units ( W wni, 0 = Wni, 0/(En, 0E$
+
+> W, 0
+
+)). Optimality implies that at least one of the inequalities in (11) and (12) is binding. Writing this condition in terms of world expenditure yields 
+
+eLni, 0 − Lni, 0
+
+
+
+W wni, 0 − Wni, 0
+
+En, 0E$
+
+> W, 0
+
+!
+
+= 0 . (14) Finally, world and domestic asset markets are in zero net supply: 
+
+X
+
+> n
+
+Fn,t = 0 for all t, (15) 
+
+Bn,t = 0 for all n, t. (16) 
+
+Model solution. Appendix B describes the solution methodology in detail. Starting from the steady state, we solve for the changes in prices and expenditure shares (over world expenditure) to arrive at a new equilibrium. Although we solve for levels, our methodology yields solutions akin to the hat-algebra methodology often used in the trade literature, since we start with equilibrium prices set to 1. However, given the non-linearities of the model arising from the rigidities in the factor market, we cannot simply use the hat-algebra approach like in Dekle, Eaton, and Kortum (2007). 
+
+## 2.5 Approximating Inflation in an Open Economy 
+
+Before proceeding to the quantitative decompostion results of the fully calibrated model, we provide an analytic first-order approximation of a country’s inflation as a function of domestic and foreign shocks. We utilize an “enhanced” input-output matrix, Ω, to derive the approximation to inflation. This generalized input-output matrix integrates households, sector-level outputs, factors and input/consumption bundles that are required for production or used for consumption – see appendix B for more details. We briefly sketch out the solution and refer the interested reader to appendix C for a formal proof. First, we define the Leontief inverse matrix: Ψ = [ I − Ω] −1,
+
+15 where I is the appropriately sized identity matrix. The Leontief inverse captures the direct and indirect dependencies between entities. For country n, its consumption dependencies are captured by the nth row of the Ψ matrix, which corresponds to the households of this country. The entries of this row reflect how much of the output of the corresponding entity accounts for direct and indirect expenditures in country n. These constitute the basis for 
+
+country-specific Domar weights , which capture the influence of a sector or a factor in the consumption basket of a country. Formally, we define the country-specific Domar weights for each country-sector as: 
+
+λnmj = Ψ n,mj for mj ∈ Y. 
+
+Similarly, for any factor f (including labor and capital), with some abuse of notation we define: Λnf = Ψ n,f for f ∈ F, 
+
+where F is the set of all factors in the world. Global Domar weights of each factor is given by: Λf ≡ W $ 
+
+> f
+
+Lf
+
+E$
+
+> W
+
+= X
+
+> n
+
+(En/En,U S )
+
+E$
+
+> W
+
+Λnf .
+
+We write the corresponding column vector for these Domar weights by dropping the sub-scripts. Note that households are the terminal nodes of the input-output networks. Starting from the households, we can thus trace back the origin of the goods that are consumed in country n. The Leontief inverse operation captures this path of production to consumption. Applying this Leontief logic, define the share of the output of country-sector mj directly or indirectly (i.e., through supply chains) to satisfy the consumption of households in country 
+
+n with Y nmj . Then, the country-specific Domar weight can be written as: 
+
+λnmj ≡ Pmj Y nmj 
+
+En
+
+.
+
+For each sector, we know the share of the sector-specific labor in its value-added. Then, we can interpret the country-specific factor shares of the different labor factors as: Λn = Ω VA ΩY λn.
+
+Therefore, Λ nf captures the factor share that directly or indirectly satisfies the consumption in n. With these definitions in hand, we calculate the first-order approximation to the CPI in country n via the following proposition: 
+
+Proposition 1. The first-order approximation to CPI in country n is: 
+
+d log CPI n = d log En,U S 
+
+| {z }
+
+> Exchange rate changes
+
++ d log E$
+
+> W
+
+| {z }
+
+> World aggregate demand
+
+−(λn)T d log A
+
+| {z } 
+
+> Productivity shock
+
+−(Λ n)T d log L
+
+| {z } 
+
+> Factor changes
+
++ (Λ n)T d log Λ 
+
+| {z }
+
+> Local-global D-S imbalance
+
+,
+
+16 En,U S is the US dollar exchange rate in country n, E$ 
+
+> W
+
+is world expenditure in US dollars, 
+
+λn (Λn) is the vector of country-specific Domar weights for country-sector pairs (factors), A
+
+is the vector of sector-specific productivities, L is the vector of factor levels, Λ is the global factor shares. Proof. See Appendix C. This first-order approximation captures the importance of international linkages since all the weights ( λn, Λn, d log A, d log L, d log Λ) are calculated globally. Exchange rate depreciation is not weighted and contributes one-to-one to CPI in country n. This is not surprising given the fact that this term reflects the different stance of county’s own monetary policy vis-a-vis the US, that is, it reflects the interest rate differentials. Proposition 1 implies positive productivity changes, d log A, are deflationary in nature, and shocks to productivity in country-sector mj impact inflation in country n in proportion to λnmj . Meanwhile, factor shortages, at home and abroad, are inflationary domestically. The shocks to labor supply in factor f impact domestic inflation in proportion to Λ nf , the country’s n ultimate exposure to changes in the price of factor f . d log L term affects the prices through factor prices. The factor level decrease (increase) cause an increase (decrease) in factor prices, which in turn increases the good prices. The downward wage rigidity also plays a role on prices through this term. Without wage rigidity, equilibrium labor with an exogenous labor supply shock would be trivial and given by a movement along the labor demand curve. However, with downward wage rigidity, the equilibrium decline in factor usage is endogenously determined, depending on interaction between labor supply, sectoral demand and aggregate demand changes. The local-global demand-supply (D-S) imbalance term captures the discrepancies between local and global changes in demand for factors. If there were no demand pattern differences between countries (including the home bias), this would imply d log Λ = d log Λ n, then (Λ n)T d log Λ n = X
+
+> f
+
+Λnf d log Λ nf = X
+
+> f
+
+dΛnf = d X
+
+> f
+
+Λnf
+
+| {z } 
+
+> =1
+
+= 0 .
+
+Hence, if the global factor demand changes are completely aligned with the local ones, the inflationary effect of this channel would be zero. But if these changes are not aligned, then there might be a non-zero contribution to CPI. Hence, shocks around the world can potentially trigger heterogeneous price changes across countries due to countries differing exposures to these demand-supply discrepancies, as captured by the Λ n vector. 11        
+
+> 11 Another way to understand this term is to go back to its definition Λ f=W$
+> fLf/E $
+> W.Since we are
+
+17 We finally note that positive aggregate demand shocks in the form of discount factor changes ϕn affect country n’s inflation due to two channels. First, a rise in ϕn has a world aggregate demand spillover component. When a country n decides to consume more in the present period, an exogenous increase in ϕn affects world expenditure in US dollars (d log E$ 
+
+> W
+
+) which in turn changes world aggregate demand for all countries. How much it changes depends on the initial share of world expenditure that the country accounted for, i.e., its importance on total world expenditure. Second, aggregate demand shocks also affect factor levels, d log L, due to downward nominal wage rigidities and the global-local demand-supply imbalance term via d log Λ, that is changes in factor demands worldwide. To quantify the potential impact of factor shortages in foreign countries in creating inflation in country n, we define Λ n
+
+> FOR
+
+, as the share of foreign factors in satisfying household consumption in country n:Λn 
+
+> FOR
+
+≡ X  
+
+> f∈F−Fn
+
+Λnf ≡ 1 − Λn
+
+> DOM
+
+, (17) where Fn is the set of factors in country n. The last equality comes from the fact that sum over all factors are equal to 1. Figure 1 shows the values for Λ n 
+
+> FOR
+
+for all countries present in the OECD’s ICIO Tables. 12 
+
+The share of foreign factors is higher compared to the direct share of imports in final goods for all countries. Intuitively, this captures the fact that total domestic consumption of foreign goods includes both final goods as well as foreign factors that are “embedded” in all consumption goods (both domestic and foreign) arising from the use of intermediate goods in production. However, these shares vary significantly between countries. As argued in introduction, a 1 percent decline in factor levels in foreign countries would potentially result in 10 basis points increase in the CPI for the US compared to 60 basis points in the CPI of Ireland. Finally, we also use the Domar weights, λnmj , to ask how productivity shocks d log A im-pact domestic inflation (to a first-order) using Proposition 1. According to the proposition, the impact of any country-sector productivity shock will impact aggregate domestic inflation in proportion to that country-sector’s Domar weight. This Domar weight captures the direct and indirect use of a given country-sector input into the production of final goods of the ul-timate customer, so embeds global supply chain linkages’ importance in transmitting foreign sector-level productivity shocks on domestic inflation. This term plays an important role in      
+
+> already considering changes in factor quantities in the proposition, d log Lf, and changes in world aggregate demand d log E$
+> W, we can interpret these imbalances as the change in factor prices for given levels of factor quantities and world aggregate demand . As these changes in factor prices are endogenous, they depend on our aggregate demand shocks, productivity, and sectoral demand changes, the model’s primitives.
+> 12 See section 3.1.5 for the description of ICIO Tables.
+
+18 Figure 1. Foreign Share of the Factor Domar Weights    
+
+> Notes: This figure shows the share of the foreign factors of the Domar weights (Λ n
+> FOR defined in Equation 17) and foreign share of the final good consumption. Dashed gray line show the 45 ◦line.
+
+transmitting the impact of the energy price shocks resulting from the Ukraine-Russian war as we model the change in energy prices as originating from a negative technology shock in Rus-sia’s fossil fuels sector. The Domar weight of Russia’s energy sector for German consumption is 0.0031, euro area consumption as a whole is 0.0025, and is 0.0006 for US consumption. Therefore, the expected effect of an increase in Russian energy price is approximately 5 times higher for German inflation and 4 times higher for the euro area inflation compared to the US inflation. 
+
+# 3 Data, Shocks, Sector- and Aggregate-Level Facts 
+
+The model-based quantitative exercises require five sets of shocks: country-level aggregate demand changes, changes interest rates rates, country-sector level factor supply changes, country-sector level demand changes, and global energy price changes. The analyses use data on four “countries”: the United States, the euro area, 13 Russia, and a China+ the rest of the world composite (China+). 14 Our baseline specification include four sectors: durables, non-durables, services, and energy. We expand the coverage to forty-four sectors to highlight the role of both granularity and non-linearity in production structure on inflation. A larger number of sectors provide a better match to the observed inflation. Unfortunately, given 
+
+> 13 Note that we use euro area countries’ underlying data and aggregate up.
+> 14 Table D.2 in the appendix provides a list of the 46 countries included in this composite along with the share of world expenditure they account for using information from the inter-country input-output (ICIO) tables year 2018. This data is available from the OECD. For details, see section 3.1.5.
+
+19 data limitations on forty-four sectors from all our countries, we can only do this for the US and euro area. 15 
+
+Importantly, our baseline exercises with four countries and four sectors provide a sufficient level of disaggregation to capture the key shocks over our analysis period, and how they vary in the cross section. For example the measured shocks are able to capture the stringency of the Chinese lock downs in 2020-2021 (measured by the shocks to the China+ labor supply), the US and European fiscal stimuli of 2021–2022, and the Russia-Ukraine War in early 2022 and its impact on energy prices worldwide. We next describe our data sources and explain details of how we construct the shock series using these data before showing how the shocks evolved over time. Our strategy combines nominal and real variables. On the nominal side, we match aggregate and sectoral nominal expenditures, nominal interest rates, and a global energy price index. On the real side, we match sectoral employment. As a result, in the quantitative section 4, we do not judge the ability of the model to match these moments. Rather, we focus on how these different “shocks”, coupled with the model’s structure, decompose into prices and quantities (others than employment) at the country and sector level. 
+
+## 3.1 Data and Construction of Shocks 
+
+3.1.1 Aggregate Demand 
+
+As discussed in section 2.3, aggregate demand shocks take the form of changes in the discount factors in the model. To construct these shocks, we use equation (6) along with observed changes in domestic policy rates and local currency expenditures to calculate changes in aggregate demand at t = 0, bϕn, 0, as 
+
+bϕn, 0 = \ 1 + idata 
+
+> n, 0
+
+ bEdata  
+
+> n, 0
+
+, (18) where bEdata  
+
+> n, 0
+
+= Edata  
+
+> n, 0
+
+/E data  
+
+> n
+
+is local currency expenditure and \ 1 + idata 
+
+> n, 0
+
+ is the policy rate, both in deviation from their steady-state value, which we take to be 2018Q4. 16 Given the model’s structure, calculating interest rate deviations from steady state requires starting at the same initial point for all countries. Our initial point for interest rates is the value of the US interest rate in 2018Q4. 17   
+
+> 15 See appendix D.2 for data construction details for the 44-sector quantitative model.
+> 16 We choose 2018Q4 as our base period to be able to construct year-on-year model-based inflation rates for 2020. To do so, we require model-predicted price levels for 2019. We could have alternatively used actual data for 2019 instead to calculate the inflation rates, but we wanted to use a consistent methodology throughout the three years of analysis.
+> 17 This is a model restriction at the steady state. However, interest rate deviations from steady-state are quantitatively small in the data relative to nominal expenditure changes, as we show in Figure D.1.
+
+20 We collect cross-country data on nominal expenditures or domestic absorption ( Edata  
+
+> n, 0
+
+), depending on data availability, at the quarterly frequency. We finally note that the expen-diture measure we use in the data not only includes household consumption but all forms of final demand, such as government expenditure and investment. As a result, our aggregate demand shocks capture in a reduced form way all other forms of changes in expenditure, such as fiscal stimulus. 
+
+United States. For local currency expenditure, we use gross national income (codename: 
+
+A023RC1Q027SBEA ) available from the Bureau of Economic Analysis (BEA). These data are available at a quarterly frequency from 2010 to 2022. We source US policy rates from the Bank of International Settlements policy rates database. In this database, the US policy rate corresponds to the midpoint between the upper and lower limits of the Federal Funds Target range. 
+
+Euro area. Gross national income is only available at a yearly frequency for the euro area, which is not appropriate for our empirical application. For this reason, we instead collect data on absorption from EuroStat, which we use as the euro area measure of En.Aggregate absorption includes household and consumption expenditures, gross fixed capital formation, and imports. We source the euro area policy rates from the Bank of International Settlements policy rates database. In particular, this rate corresponds to the “official central bank liquidity providing, main refinancing operations, fixed rate”. 
+
+Russia and China+. For Russia, we construct a measure of domestic absorption from Russia’s national accounts. We measure China+’s aggregate expenditure by adding con-sumption on durables, non-durables, and services from the OECD quarterly national ac-counts for all countries except the United States and those in the euro area. 18 We source policy rates from the Bank of International Settlements policy rates database. For Russia, the series corresponds to the “official refinancing rate” published by the Bank of Russia. For China+, the policy rate is that of China only. This China rate corresponds to the “official lending rate at 1-year horizon” published by the People’s Bank of China. We justify using China’s rate as China has the largest share in rest of the total world expenditure and hence changes in the Chinese interest rates are likely to be the main drivers of the interest rate of the China+ composite. 
+
+> 18 The list of countries with available information includes Chile, Costa Rica, Czech Republic, Denmark, United Kingdom, Hungary, Iceland, Israel, Japan, South Korea, Mexico, Norway, New Zealand, Sweden, and South Africa. Together, they account for 15.92 of world expenditure, and thus around 27% expenditure in the rest of the world countries present in the ICIO tables.
+
+21 3.1.2 Country-Sector Level Factor Supply: Total Hours Worked 
+
+The growth rates of total hours, defined as log-deviations from pre-pandemic steady-state values, are used as shocks to potential sector-specific labor supply , ¯Lni . Of course, observed changes in total hours in the data are equilibrium objects and depend on labor demand and labor supply in each sector. Given our modeling assumption of nominal downward wage rigidity, negative changes in equilibrium labor can be rationalized by a decline in labor demand or labor supply. In contrast, positive changes in equilibrium labor can only be rationalized by a combination of labor demand and supply shifts, where a necessary condition is that labor supply shifts at least in the same amount as labor demand. In an extreme case, if labor supply does not shift up while labor demand does, this only creates wage inflation with no effect on the equilibrium level of employment and cannot possibly rationalize increases in total hours worked in equilibrium. As we explain in detail when discussing the results in the next section, we use the model structure in conjunction with the other set of shocks to disentangle changes in total hours worked into supply and demand. The results support our assumption that changes in observed hours work best capture labor supply shocks. 
+
+United States. We use Tables B1 and B2 provided by the Bureau of Labor Statistics (BLS) to collect information to construct our measure of labor supply. These tables contain information on employment and average weekly hours at a monthly frequency, respectively. Since hours in Table B2 are at a higher level of aggregation than those for employment in Table B1, we construct measures of L in the model by multiplying employment in a disag-gregated sector by the hours of the aggregate sector. For example, the ‘Information sector’ contains six sub-sectors in Table B1, but it is only available as an aggregate information sector in Table B2. We thus multiply each sub-sectors employment by the hours of the aggregate sector in Table B2 to obtain a measure of total hours worked in each of the six sub-sectors separately. Our final sample contains information from 2006 to 2022 for 66 sec-tors that we aggregate up to 4 sectors. In addition, we also collect information on total private employment (code CES0500000001 ) and hours (code CES0500000002 ) from the BLS and construct total hours worked for the aggregate economy as we did for the sector-level numbers. 
+
+Euro area. We collected data from Eurostat, which contains information on hours and employment at the sectoral level at a quarterly frequency. We follow the same procedure as in the US to construct changes in total hours worked in each sector. 
+
+Russia. For Russia, we collected information on hours and employment from the Interna-tional Labor Organization (ILO). This data are available for 6 broad sectors, which allows 22 us to construct the total hours worked for the goods, services, and energy sectors. Since the goods sector cannot be disentangled into durables and non-durables in this case, we assume that changes in the hours worked in the durables and non-durables sectors are the same as those in the overall goods sector. 
+
+China+. Since sector-level and time series data are not readily available for China+ for the time span analyzed, we take an indirect approach to construct total hours worked changes for these countries. See Appendix D.1 for details. 
+
+3.1.3 Country-Sector Level Demand: Consumption Expenditure 
+
+Sector-level demand shocks – changes in Ω Cn,j in the model – are computed as the change in sector-level consumption expenditure shares across non-durable goods, durable goods, services, and the energy sector. Computing the shocks therefore requires cross-country in-formation on disaggregated sector-level consumption patterns at the quarterly frequency. 
+
+United States. We use information on personal consumption expenditures from Table 2.3.5U of the Bureau of Economic Analysis version May 2023. This data set contains disag-gregated sector-level information on personal consumption expenditures from 1959 to 2022 at a quarterly frequency. In particular, we use durable, non-durable, services, and energy sector consumption from this table. 
+
+Euro area. We use the information on durables, non-durables, and services from the OECD quarterly national accounts. These data are available from 2010 to 2022 at a quarterly frequency. Unfortunately, the data set does not have information on consumption in the energy sector separately. Since energy consumption is part of non-durable consumption, we assign the change in non-durables to the energy sector. 
+
+China+ and Russia. We use information from the OECD quarterly national accounts to construct sector-level consumption shares for the Rest of the World. We consider all countries except the United States and those belonging to the euro area. Consumption series are denominated in local currency for all countries, so to construct a China+ aggregate, we convert all series to US dollars using the average exchange rate between 1990 and 2022 per country that we source from the IMF. Finally, we aggregate each consumption series across countries. As in the case of the euro area, we assume energy consumption experienced the same changes as non-durables. Since data for sectoral expenditure is not available for Russia, we use the same changes as for China+. 23 3.1.4 Energy Prices 
+
+We proxy energy prices using the energy commodity price index constructed by the IMF (code: PRNG ). This index contains information on crude oil, natural gas, coal price, and propane price indices and is available at a monthly frequency from 1992 to 2022. We choose this broad index to better capture the potential impact of the Russian-Ukraine War, on countries’ inflation rates, and particularly the euro area, which heavily depended on Russian natural gas. 
+
+3.1.5 Input-Output Matrices, Factor and Consumption Shares 
+
+Since we assume two sector-specific factors (capital and labor) in each sector in our quantita-tive exercise, we need to compute each factor’s respective share in nominal GDP. To simulate the model, note that we only need to construct these shares, along with intermediate input expenditure and consumption shares for the initial steady state (the year 2018). 
+
+Input-Output matrices. We use the 2018 inter-country input-output (ICIO) tables from OECD, which contain information for 45 sectors and 66 countries. Given data constraints on other sector-level data (e.g., sector-level hours worked or consumption shares) as well as country coverage for other data series, our main quantitative exercises aggregate the ICIO tables into our four countries and four sectors of interest. These input-output tables allow us to construct intermediate input linkages at the country-sector level. 
+
+Factor shares. The ICIO tables do not contain information on capital and labor payments at the country-sector level. We therefore supplement the ICIO tables with the structural analysis (STAN) database for the year 2018. This database contains information on labor compensation (labor payments) and gross operating surplus (capital payments). These data allow us to construct the fraction of value added that is paid to labor at the country-sector level for the United States and euro area. We aggregate all countries outside of the euro area and the United States into a single China+ composite country, sector by sector. Due to data availability, we use information from the “Socioeconomic Accounts” release 2016 in the World Input-Output tables to compute the sector-level labor shares in Russia. Table D.3 reports the numbers we use for each country-sector. 
+
+## 3.2 Sector- and Aggregate-Level Facts 
+
+As explained above, we feed in actual data on expenditures, aggregate and sector-level, hours worked, and global energy prices as shocks to our model to recover changes in the sector-level prices and wages, and sector-level expenditure shares together with aggregate prices. It is 24 therefore useful to first examine the time series of the data series used to construct the shock series. Figure D.1 begins by plotting aggregate data, where panel (a) plots the aggregate of log hours worked relative to its 2018Q4 value across countries, and panel (b) plots aggregate demand – log deviation relative to 2018Q4 – across countries. 19 We can see that hours worked declined in all countries to slowly recover their 2018Q4 levels by the end of 2021 for the United States and 2022 for the other countries. Panel (b) of Figure D.1 shows the aggregate demand changes for the euro area, United States, Russia, and China+. Consistently across countries, aggregat expenditures plummeted during early 2020 to recover its level in early 2021. Figure D.2 shows the sector-level demand changes as the cumulative growth of nominal expenditures relative to 2018Q4. Several interesting facts jump out. First, services consump-tion uniformly plummeted across countries at the onset of the pandemic, and barely started to recover in the euro area by the end of 2022 and was far below its pre-pandemic level in the United States, Russia and China+ during the pandemic period. Second, we observe the initial shift in consumption from services to durable goods during early 2020. This shift occurred across all countries, but was by far the largest in the United States. Meanwhile, non-durable consumption growth was relatively larger compared to the growth in durables outside the US. Figure D.3 plots the time series of the energy price shocks. As explained above, the energy index used to construct the shocks contains information on oil as well as natural gas prices. We can see that at the beginning of the pandemic, energy prices were lower than their level in 2018Q4, and began to increase, return to pre-pandemic levels by mid-2021 and then continuing to rise. This pattern is consistent with that described in Gagliardone and Gertler (2023), where oil prices started to rise in mid-2021 and into 2022. 
+
+# 4 Quantitative Analysis 
+
+This section presents results for model quantification exercises using the data and shock series described above for our 4-country ×4-sector model. Given the model’s rich consump-tion and production structures, we must choose several parameters in order to perform our calibrations. Importantly, several of these parameter choices will allow us to control how substitutable factors and goods used for production are with each other, both within and    
+
+> 19 As explained in the earlier section, we construct measures of aggregate demand using nominal expen-ditures and policy rates. For the US, we use gross national income. For the euro area, we use domestic absorption. For China+, we add up durables, non-durables, and services expenditures from the OECD quarterly national accounts for all countries except the US and those belonging to the euro area. For Russia, we domestic absorption from its national accounts. We show the policy rates and expenditure series used to construct the aggregate demand changes in panels (c) and (d), respectively.
+
+25 Table 1. Baseline parameter values Parm. Value Source Related to 
+
+θ 0.6 Atalay (2017) EoS between intermediates and VA 
+
+η 0.6 Oberfield and Raval (2021) EoS across factors 
+
+ε 0.2 Boehm et al. (2019) EoS among intermediate inputs 
+
+ξs 0.6 Consistent with η, ε Country-sector level input bundle EoS 
+
+ξc 0.6 Consistent with η, ε Country-sector level consumption bundle EoS  
+
+> Note: ‘EoS’ stands for elasticity of substitution.
+
+across countries. Our baseline quantification exercises use the parameter values presented in Table 1. A key assumption that we make in our baseline choice of parameters, based on the recent empirical literature, is that inputs to production have a low degree of substitutability in the short run. We assume complementarities across factors ( η) and between factors of production and intermediate inputs ( θ). Further, intermediates themselves are difficult to substitute for each other along the whole production process, which is meant to capture the difficulty in substituting between types of inputs (e.g., steel vs. plastic, ε) as well as source of inputs (e.g., Chinese vs. US steel, ξs). Similarly, we assume that the elasticity of substitution for sector-level consumption across countries is also low in the short run ( ξc). We will vary the degrees of substitutability in further exercises to highlight how these elasticities impact the importance of shock transmission to domestic inflation. Besides elasticities, we also need to take a stand on what kind of shocks we feed into the model each time we estimate it. Table 2 shows the scenarios we consider in this section. We explain these as we present their results. Before moving on to discussing the results of these different exercises, we discuss some assumptions and choices regarding the mapping between model and data. First, we explain how we use the model structure to map between sector-level supply shocks and labor shocks in the data. Second, we provide an explanation for why we do not use sectoral total factor productivity (TFP) shocks in any of our exercises. Finally, we explain how we introduce energy price shocks into our model. 
+
+Sector-level supply-only shocks with downward nominal wage rigidities. Our model implies that we consider changes in hours worked at the sector level as if these were shocks to potential sector-level labor supply. In the data, however, changes in sector-level hours worked come from both supply and demand forces. We use the model’s equilibrium solutions after feeding in shocks to assess if a shock is to labor supply or labor demand. To 26 Table 2. Shocks and Scenarios Scenario Shocks Unit hit Baseline All All Sectoral Supply Sector-level supply only All Sectoral Demand Sector-level demand only All Aggregate Demand Aggregate demand only All Russia Energy Energy shock only Russia energy sector Domestic All Domestic country International All Foreign countries International Demand Sectoral and aggregate demand only Foreign countries International Supply Sector-level supply only Foreign countries China+ Supply Sector-level supply only China+  
+
+> Note: This table shows the different shocks we use in each scenario.
+
+help build intuition on this approach, we describe two examples of how the model assesses a labor supply change in a given sector in our quantitative exercises. Figure 2 presents a simple diagrammatic analysis of the forces driving the labor market dynamics in the context of our model over two phases of the pandemic. Panel (a) plots the early phase of the pandemic. The y-axis, Wf
+
+> EnE$
+> W
+
+, is the real wage in the sector, while the x-axis represents the labor quantity, Lf . W f is the lower bound on the nominal wage, ¯Lf is the potential labor supply, and Ldf represents the labor demand. To solve the model, we need to take a stand on the initial equilibrium. Point A represents such equilibrium where labor supply meets labor demand. Starting from point A, an observed fall in hours worked may have been driven by inward shifts in potential sector-level labor supply or labor demand combined with the nominal downward wage rigidity. In the example depicted in the figure, demand shifted by more than supply, thus driving the wage to hit the lower bound at point B. In this case, employment is demand-determined, and there are infinite combinations of potential labor supply shifts, i.e., changes in ¯Lf , consistent with the economy moving from point A to point B with a decline in equilibrium labor and hence an increase in unemployment. Panel (b) shows the recovery phase, where employment started to recover in some sectors relative to the initial equilibrium. Within our framework and in contrast to the early phase of the pandemic, sector-level employment may only have increased because demand and supply move in tandem. For example, an increase in ¯Lf without an accompanying increase in labor demand, Ldf , puts downward pressure on wages. Since wages cannot fall below W f
+
+> EnE$
+> W
+
+, the rise in ¯Lf only increase employment in equilibrium with a rise in labor demand as depicted 27 Figure 2. Sector-level Labor Markets under Nominal Downward Rigidity 
+
+(a) 2020 to early 2021    
+
+> Wf
+> EnE$
+> W
+> Lf0
+> Wf
+> EnE$
+> W
+> LdfLdf’¯Lf
+> ¯Lf’
+> ALeq
+> f
+> B
+
+(b) Late 2021 to 2022      
+
+> Wf
+> EnE$
+> W
+> Lf
+> 0
+> Wf
+> EnE$
+> W
+> Ldf
+> Ldf’¯Lf¯Lf’
+> ALeq
+> f
+> CW′
+> f
+> EnE$
+> W
+
+in point C. Similarly, an increase in labor demand without changes in ¯Lf implies that wages must rise without affecting equilibrium employment. Thus, if, after feeding the shocks, the nominal downward wage rigidity is binding in that sector, we set the potential sector-level supply shock to zero. Otherwise, we assume that hours worked changes in the data maps directly to changes in ¯Lf . Notice that this is a conservative approach and will miss some of the negative labor supply shocks as depicted in panel (a), that is, it decreases the role of potential labor supply shocks when hours worked decline in the data relative to 2018Q4. We still prefer this conservative approach since it will never mistakenly assign labor demand shocks in the data to labor supply shocks. By the same token, it cannot be only labor demand shocks, since then model cannot match the initial rise in unemployment (requires a large negative demand shock which will be counter-factually deflationary) and later tightness in the labor market with asymmetric sectoral wage increases as observed in the data. 
+
+Sectoral total factor productivity shocks ( Ani ). The inclusion of sectoral-TFP shocks in our quantitative exercises would require country-sector information at the quarterly level between 2018Q4 to 2022Q4. Unfortunately, such data are not readily available. First, cross-country productivity data are only available at the annual frequency. 20 Second, even at the annual frequency, most productivity estimates for the euro area, Russia, and China+ end in 2020, while our exercise requires information up to 2022. Third, the United States is the only country for which country-sector-level quarterly information on labor productivity  
+
+> 20 A common data source is World KLEMS (https://www.worldklems.net/wkanalytical) that contains information for a set of countries including most European countries and the United States. These data are, however, also at annual frequencies and end in 2020.
+
+28 is available. 21 Unfortunately, this measure does not capture TFP. In principle, we could use these data as a proxy for TFP shocks, but doing so would put all the burden on TFP shocks coming from sectors in the United States only, with no role for TFP in other countries and may introduce several layers of measurement error. For these reasons, we chose to take a conservative approach and not introduce any shock to TFP at the sector-country level, except for Russia’s energy sector starting in 2022Q1, for the reasons we explain next. 
+
+Energy price changes. We introduce energy price changes, illustrated in Figure D.3, as a negative TFP shock for the Russian energy sector starting in 2022Q1, i.e., as a decline in log AEnergy, Russia . While we do have information prior to 2022Q1 for energy prices, their source of variation cannot be attributed to supply and demand. In contrast, starting in 2022Q1 the Russia-Ukraine war provides a source of variation on energy prices that we attribute to a supply force that reduced the capacity of the Russian energy sector to produce, isomorphic to a negative TFP shock. We emphasize that our shock is at the sector-country level: we introduce it as a TFP shock to the Russian energy sector; it is not a symmetric TFP shock to energy sectors worldwide. This is for two reasons. First, all prices are endogenous in our setup; hence, a “price shock” does not exist. Second, this approach allows us to capture spillovers to other country-sector pairs when the energy shock has a clear country-sector origin. This contrasts with the literature that considers an energy price shock as an aggregate world-level shock. Thus, our model provides a lower bound for the effects of energy price shocks on inflation across countries. 
+
+## 4.1 Model’s Fit over Time across Countries 
+
+Figure 3 plots quarterly CPI inflation rates for the model calibration, using all shocks to all countries. We show the US and euro area in panels (a) and (b), respectively. Both sets of inflation rates are calculated as year-on-year annual growth rates. The model gives the price level in deviation from steady-state. We convert them to year-on-year annual growth by taking the annual (log) difference between the model-predicted post-shock price levels. The resulting series is our model-based inflation. We plot actual inflation with the solid black line while the blue diamonds are the model-generated inflation rates that are calculated by feeding in the shock series quarter-by-quarter. We further highlight two periods with pink diamonds: (i) the Covid-Lockdown , and (ii) the Rebound resulting from economies reopening. The magnitude of shocks during these periods, particularly aggregate demand, are an order of magnitude larger than economic 
+
+> 21 The Bureau of Labor Statistics (BLS) provides quarterly measures of labor productivity for major industries such as the business sector, manufacturing non-durables, and durables, among others. They also provide annual information for detailed industries (up to 2 digits).
+
+29 Figure 3. United States and Euro Area Inflation: Baseline Model vs. Data 
+
+(a) United States (b) euro area  
+
+> Note: This figure shows annual inflation implied by the model (blue diamonds) relative to the headline CPI inflation in the data (black solid line) when feeding the model with all shocks. The pink diamond in 2020Q2 highlights the Covid lockdown period, while the pink diamond in 2021Q2 highlights a “base effect” that exist in macroeconomic time series, as economic activity had a huge rebound relative to the Covid lockdown phase once the economy reopened.
+
+shocks witnessed in recent memory (e.g., compared to the Global Financial Crisis), and we therefore put less weight in the model being able to match observed inflation during these periods. 22 The model still performs remarkably well in matching observed inflation over the two year period of 2020q1–2022q4 period with the model-generated series and actual headline inflation correlated at 0.86 and 0.75 for the US and the euro area, respectively. Figure 4 (a) next shows that our model calibration produces US dollar-euro exchange rate dynamics that are similar to those observed in the data during 2020 and early 2021 but falls short of quantitatively reproducing the dollar appreciation vis-` a-vis the euro in 2022. This should not be surprising given that we do not include any financial frictions or drivers of risk premia in the model, such as the “UIP” shocks. Nonetheless, the correlation between the two series is still high (0.70). Panel (b) plots the model and data current-account-to-GDP ratio over time for the US (blue) and euro area (pink). As can be seen, the US current account deficit widened in 2020, improved in 2021, and then widened again in late 2021–2022. Our model is able to reproduce these patterns: the correlation between series during this period was 0.89. This pattern also matches well with the pattern of movements in US savings, which originally increased during the lockdown but then started to fall given aggregate demand stimulus (see Aggarwal, Auclert, Rognlie, and Straub (2023), Gourinchas, Kalemli- ¨Ozcan, 
+
+> 22 It is also debatable how well national statistical agencies were able to measure economic series, such as GDP or aggregate expenditures, during the Covid lockdown.
+
+30 Figure 4. US dollar-euro Exchange Rate and Current Accounts 
+
+(a) USD-euro (b) Current account   
+
+> Note: This figure plots the annual percentage change in the USD-euro exchange rate implied by the baseline model (blue diamonds) and the observed change in the data (black solid line) for comparison in panel (a). The correlation between the model and data is 0.70. Panel (b) plots the US and euro area current account-to-GDP ratio implied by the baseline model and the data in blue color and pink color, respectively. The correlation between the model and data is 0.89 (US) and 0.57 (euro area).
+
+Penciakova, and Sander (2021) for similar current account dynamics). In contrast, the euro area’s current account surplus widened in 2020, worsened since 2021, and started to recover at the end of 2022. Our model can replicate some of these patterns, especially the worsening in 2021 and subsequent recovery. Indeed, the correlation between the model and data is 0.57. 
+
+4.1.1 Real Wage and Other Countries 
+
+In appendix E we provide two additional set of results. Figure E.1 shows inflation under our baseline for Russia and China+. The model does a reasonable job of matching inflation in both cases: the correlation between the model and data is 0.84 for Russia (up to 2022Q1, latest available data point) and 0.61 for China+. Figure E.2 shows a strong correlation between aggregate real wages in the model and the data for the US and the euro area. The baseline exercise is able to replicate the large increase in the real wage during 2020 and its subsequent decline over 2021–2022 for both the US and euro area. 
+
+## 4.2 Model’s Fit in the Cross-Section 
+
+In this subsection, we take advantage of the model structure to examine its performance at the disaggregated level. This would not be possible without modeling the supply side across 31 several sectors of the economy (along with the input-output structure) – an advantage of our methodological approach absent in much of the other literature focusing on the pandemic inflation period. 
+
+4.2.1 Real Wages by Sector 
+
+We start by analyzing how well the model matches the evolution of sector-specific real wages. Performing this exercise is important because when labor is sector-specific and immobile across sectors, a key relative price is the real wage in units of the sector-specific price. For ease of exposition, we aggregate sectors into goods (durables, non-durables, and energy) and services. 23 
+
+Panel I of Figure 5 scatterplots each quarter’s model-generated real wage growth against its corresponding data moment for the two sectors for both the United States and euro area in panels (a) and (b), respectively. Overall, the model does a decent job of matching sectoral real wages in the US and euro area, except for certain periods mostly related to the COVID lockdowns and subsequent sharp recovery (2020-2021). We put dates in each plot whenever the model deviation from the data is larger than 5 percentage points. The model tends to overpredict inflation more for goods than services in the US and euro area. The correlation between series for services in the US is 0.63 and 0.78 for goods. 24 These numbers are 0.68 and 0.70 for services and goods, respectively in the euro area. Hence, the model not only does well in the aggregate but also across sectors-countries. 
+
+4.2.2 Prices by Sector 
+
+We next examine how well the model matches observed sector-level price movements. Panel II of Figure 5 presents a scatterplot similar to the one for real wages in Panel I, but now including price levels for the four sectors used in the baseline analysis. The model fit is generally quite good for all sectors as the model and data sectoral inflation rates come close to lining up on the forty-five-degree lines for both the United States and the euro area. The one exception is the energy sector (pink diamonds). The model tends to over-predict energy inflation, especially for the euro area during the lead-up and at the onset of the Russian invasion of Ukraine. Europe taking preemptive steps in substituting 
+
+> 23 We do this for the model and data based on each sector’s nominal wage and price levels.
+> 24 To see why, note that pink points lie most of the time in the first and third quadrants of the Cartesian plane. This implies that whenever data are positive/negative, so are the model outcomes. The model results remain more in these quadrants for goods (pink) than services (blue), hence the higher correlation in the former sector.
+
+32 across energy sources and a warmer-than-expected winter helps to explain why the baseline quantification exercise misses along this dimension. 
+
+Figure 5. United States and Euro Area Sectoral Evidence: Model versus Data 
+
+Panel I: Sector-level Real Wage Growth 
+
+(a) United States (b) euro area 
+
+Panel II: Sector-level Price Inflation 
+
+(c) United States (d) euro area 
+
+Note: This figure shows a scatter plot where the y-axis represents the model and the x-axis is the data. Each point represents a quarter between 2020 and 2022. Panel I do so for real wages of goods and services. The correlation between the model and data is ρU S (services)=0.63, ρU S (goods)=0.78, ρEA (services)=0.68, 
+
+ρEA (goods)=0.70, where ρU S and ρEA represent correlation coefficients for the US and the euro area, re-spectively. Panel II repeats the exercise for sectoral-level price inflation for non-durables, durables, services, and goods. The correlation between the model and data are ρU S (non-durables)=0.61, ρU S (durables)=0.70, 
+
+ρU S (services) = 0.51, ρU S (energy) = 0.89, ρEA (non-durables)=0.52, ρEA (durables)=0.55, ρEA (services) = 0.63 and ρEA (energy) = 0.86. For Panel I dates represent instances where the model under/over predict the data for more than 5 percentage points. For Panel II, we plot label dates for observations where this mismatch is higher than 15 percentage points to ease the exposition. 
+
+33 4.2.3 Dis-aggregating Sectors from Four to Forty-Four 
+
+In our baseline model, we have four sectors, namely non-durables, durables, services, and energy. The reason for using this configuration of sectors is data availability at more dis-aggregated levels for Russia and China+, as well as disggregated expenditures data for the euro area. However, we do have detailed industry level data for the euro area and the United States. Hence, as a robustness check, we use a hybrid version of sectors, where we have forty-four sectors for the US and the euro area but keep four sectors for the rest of the countries. We relegate all details on data for this exercise to Appendix D.2. 
+
+Figure 6. United States and Euro Area Inflation Rates: 4-sector vs. 44-sector Model 
+
+(a) United States (b) euro area   
+
+> Note: This figure shows annual inflation implied by the aggregate model (blue diamonds) and the disag-gregated model (pink dots) relative to the headline CPI inflation in the data (black solid line) when feeding the model with all shocks. Recall that the pink diamonds show implied inflation by the model using the version with 44 sectors for the US and euro area.
+
+Figure 6 plots the results when feeding in all shocks with this more disaggregated struc-ture. The blue diamonds correspond to our baseline 4-sector results, while the pink dots correspond to the results of the disaggregated 44-sector model. This exercise gauges the importance of granularity and sectoral production heterogeneity in understanding the recent inflationary period. Overall, the predicted inflation rates for the two levels of disaggrega-tion track each other closely throughout the sample period. However, two differences are notable. First, the 44-sector model tends to “fit” the data better for the lockdown and reopening quarters for both the US and euro area. This finding highlights the importance of incorporating sector-level heterogeneity at a granular level when analyzing the impact of large shocks given the potential non-linearities that may exist. Second, along the same lines, 34 we see that the 44-sector model better tracks euro area inflation in the latter part of the sample where Russian oil shocks played a more important role in driving aggregate inflation. 
+
+## 4.3 International Spillovers of Demand and Supply Shocks 
+
+4.3.1 Decomposition 
+
+We start with the decomposition of the “all shocks” inflation numbers that were generated by the model shown in Figure 3. To do so, we re-estimate the model by applying each shock one-by-one (for all countries). Figure 7 shows the output for these exercises for the US and euro area in panels (a) and (b), respectively. Before describing the full sets of results, we clarify two important points. First, in what follows, we refer to our measures of changes in sectoral hours worked simply as “sectoral supply shocks.” We do so because we do not use any TFP shock measures at the sectoral level, and therefore, except for the Russian energy shock, the only supply shocks we consider are our sectoral-level hours worked changes. Second, note that the sum of predicted inflation rates of the different “shock experiments” need not equal the inflation rate of the “all shocks” model results reported above, since those solutions capture non-linear interactions generated by applying all shocks simultaneously. We begin by considering the impact of sector-level supply shocks (the purple dots) in isolation. Two main patterns emerge both for the US and euro area. First, sector-level supply shocks were inflationary early in the pandemic. Thus, in the absence of these shocks, there would have been more disinflation early on than observed in the data. Second, we see that without the expansion of sector-level supply in early 2022 as supply chain bottlenecks began to clear up and workers began returning more to the labor market, inflation would have been even higher in the US. We now examine the role of sector-level demand shocks (the yellow crosses). These shocks capture the consumption switching across sectors that took place as economies closed and then reopened, between manufacturing and services. Not surprisingly, the substitution to goods consumption early in the pandemic had an inflationary effect, albeit small, but surprisingly, the re-balancing later as the economy reopened did not have a disinflationary effect. This result highlights the importance of asymmetric shocks linked to global demand-supply imbalances. The original inflationary impact of this consumption reallocation shock is also much smaller compared to the impact of the negative sectoral supply shocks, a result that is not obvious a-priori. Aggregate demand shocks (pink plus signs) played an important role in driving inflation over the period. Notably, the model captures the impact of the fall in aggregate demand and its disinflationary forces early on in the US, as is also found in Baqaee and Farhi (2022). 35 Figure 7. United States and Euro Area Inflation: Shock Decomposition 
+
+(a) United States (b) euro area  
+
+> Note: This figure shows annual inflation in the data (black line) relative to the data when feeding the model with all shocks and counterfactual scenarios where we feed in one type of shock at a time. The pink + in 2020Q2 highlights the Covid lockdown period, while the pink + in 2021Q2 highlights a “base effect” that exist in macroeconomic time series, as economic activity had a huge rebound relative to the Covid lockdown phase once the economy reopened.
+
+Interestingly, these negative aggregate demand shock forces appear to have played an even greater role in the euro area early on (irrespective of including in the ‘Covid Lockdown’ point). The reopening rebound and various expansionary policies then had a large inflation-ary impact in both countries. The model results show that the positive aggregate demand shock has a larger impact in the US vs. the euro area, which matches well with the narrative of the differential impact of stimulative policies in the two regions over this period. Looking at the end of the sample period, a fall in the aggregate demand shock explains the fall in inflation at the end of 2022. Finally, the green stars denote the model-predicted inflation arising from energy shocks. As a result of the Russia-Ukraine War, we see that energy shocks exert upward pressure on prices. Looking at the period where this effect was at its peak, 2022Q1, we find that the model predicted energy inflation is almost five times larger for the euro area than in the US; 1.48 vs. 0.32 percent. 
+
+4.3.2 Spillovers 
+
+We next investigate the role of international spillovers on domestic inflation in Figure 8. Comparing the domestic (orange dots) and international (purple diamonds) points in the US and the euro area, we see that model-based inflation is mostly a domestic shock-driven phenomenon for the US–although without the international shocks, US inflation would have 36 Figure 8. United States and Euro Area Inflation: Domestic and International Shocks 
+
+(a) United States (b) euro area   
+
+> Note: This figure shows annual inflation when feeding only domestically originated shocks (orange diamond) relative to international shocks only (purple dots). 2020Q2 highlights the Covid lockdown period, while 2021Q2 highlights a “base effect” that exist in macroeconomic time series, as economic activity had a huge rebound relative to the Covid lockdown phase once the economy reopened.
+
+been even higher than observed for quite a bit of time–, while the international component played a greater role for the euro area. The non-trivial impact of international spillovers in the US is linked to events such as the initial Chinese lockdown impacting the global supply chain – we delve deeper into the decomposition of the channels of international transmission below. The larger contribution of international spillovers to euro area countries compared to the US is consistent with the differences in the foreign-factor component of consumption depicted Figure 1. In other words, the foreign factor content of European output is larger than that of the US. Hence, euro area inflation is more impacted by shocks to foreign factors. Figure 9 next decomposes different channels underlying international spillovers into do-mestic inflation. The figure plots the international shock component of Figure 8 along with model-based inflation results due to contributions from (i) international demand, (ii) inter-national supply, (iii) the China lockdown , and (iv) the Russian energy price shocks for the US and euro area, in panels (a) and (b) respectively. These figures highlight the relative importance of both international demand and supply shocks transmitting to the euro area relative to the US. Turning to the China-specific lock-down shock (the yellow crosses), we see that the majority of the inflationary impact takes place in 2020 for both the US and euro area. Meanwhile, the energy shock (green stars) had the largest impact on the euro area and attenuated the impact of other favorable factor supply shocks on euro area inflation over 2021–2022. 37 Figure 9. International Shocks Transmission to Inflation 
+
+(a) United States (b) euro area 
+
+Note: This figure shows annual inflation implied by the model for different sets of shocks. International (gray dots) include all shocks except for the home country. International supply (pink triangles) includes supply shocks everywhere except for the home country. International demand (purple diamonds) includes aggregate and sectoral demand shocks except in the home country. China+ supply (yellow x) introduces sectoral supply shocks in China+, while muting all other shocks. Russia energy (green ∗) is a productivity shock to the Russian energy sector. 
+
+Figure 10. Local-Global Demand-Supply Imbalance Contribution to Inflation 
+
+(a) United States (b) euro area 
+
+Note: This figure shows the LGDSI term ((Λ n)T d log Λ) from equation (1), for the US (panel (a)) and the euro area (panel (b)). We chained the solution over time. That is we construct the local global mismatch updating exposures over time (Λ nt−4)T ∆ log Λ t, where ∆ log Λ t = log Λ t − log Λ t−4.
+
+Figure 10 shows the quantitative importance of local-global demand-supply imbalances to help us understand the contribution of cross-country cross-sector linkages to inflation over 38 the sample period. The figure plots the local-global demand-supply imbalance (LGDSI) term from the first-order approximation derived in Proposition 1, which captures discrepancies between local and global changes in factors for a given country. We plot the total LGDSI term with blue diamonds, as well as the term disaggregated to the goods (pink triangles) and services (grey circles) sectors for the US and euro area in panels (a) and (b), respectively. The sum of the LGDSI for goods and services adds up to the total LGDSI. The total LGDSI series displays similar patterns for both the US and euro area. First, the overall series contributes more to inflation in the US than in the euro area. Accumulating over the entire period, this term generates around 11.54 percentage points of cumulative inflation in the US and 2.03 percentage points in the euro area. This is surprising and shows that this term is related but different then foreign factor content and standard intermediate input trade channels. US is a “less-open” country and hence those traditional international channels are less important for the US. The new channel that we propose that needs the full global production network combined with demand and supply shocks turns out to be very important for the US as US demand for global factors is important given its size. Second, looking at the more disaggregated level, the goods LGDSI term is positive throughout the period. In 2020, the contraction in factor supply due to global bottlenecks, along with an increase in local demand for goods, contributed positively to inflation both in the US and the euro area. These inflationary pressures began to reverse over time as supply conditions improved. This reversing was more important in the US than the euro area to-wards 2022 because of the Russia energy shock that hit in 2022. Third, the services LGDSI contribution to inflation was positive in early 2020 for the US, and negative thereafter, while it was negative throughout the period for the euro area. 25 
+
+4.3.3 The Role of the Trade Elasticity 
+
+We next investigate the quantitative importance of changing trade elasticities of substitution within the global network on the amplification/dampening of shocks on domestic inflation. We focus on how varying these elasticities changes supply shock transmission across coun-tries. To do so, we set the trade elasticities of substitution to 4 while keeping the production elasticities of substitution at their baseline values. We then introduce foreign sectoral supply shocks while setting domestic sectoral supply shocks to zero to isolate the impact of the change in trade elasticities on the transmission of foreign supply shocks. Figure 11 shows the results. A higher degree of substitution in trade would have led to 
+
+> 25 It is important to note that given intermediate usage of foreign services is very low in the IO tables (via both direct and indirect trade), the service component of the LGDSI is primarily picking up imbalances between local factor markets.
+
+39 higher inflation in 2020, roughly similar inflation in 2021, and lower inflation in 2022 relative to our baseline. This pattern holds in both the US and the euro area. The intuition for this result is as follows. Foreign sectoral supply shocks increase relative prices in the rest of the world relative to the home economy. In response, countries switch their expenditure towards cheaper goods from the home economy thus putting inflationary pressure at home. This effect is larger with higher trade elasticities of substitution and would explain the higher inflation in 2020 for the ‘Trade substitution’ scenario. Since supply shocks reversed over the period in 2021–2022, the opposite expenditure switching happened: with improvements in labor markets and a decline in relative prices in the rest of the world, countries (both home and foreign) shifted their demand towards foreign goods. This resulted in deflationary pressures for the domestic economy in 2022. Importantly, a higher trade elasticity is counterfactual in the short-run. If we use these higher trade elasticity for the baseline, then, our figure 3-model prediction would have shifted up predicting much higher inflation than the observed series, especially early on. 
+
+Figure 11. Trade Elasticities and the International Transmission of Sectoral Supply Shocks     
+
+> (a) United States (b) euro area
+> Note: This figure shows inflation numbers for the US and euro area when we introduce foreign sectoral supply shocks under different elasticities. Blue diamonds represent our baseline model. Pink dots set trade elasticities to 4.
+
+4.3.4 The Role of the Exchange Rate Regime 
+
+In our model, nominal exchange rates relative to the US dollar are pinned down by interest rate differentials, as in canonical open economy models (see Section 2.3.1). An obvious question is, what are the role of the exchange rate changes in our results? 40 To answer this question, we run another counterfactual exercise, where we assume euro and other countries’ exchange rates are fixed vis-a-vis the dollar. Figure 12 compares euro area inflation between our baseline with flexible exchange rates and a model with fixed exchange rates. 26 The model with flexible exchange rates includes interest rate data for all countries. In contrast, the fixed exchange rate implies all countries’ interest rates follow the same path as the US interest rate, giving up their monetary policy stance. Panel (a) includes all shocks, panel (b) includes interest rate changes only, panel (c) includes aggregate demand shocks only, and panel (d) includes sectoral supply shocks. We see quantitative differences across models early in the pandemic and mid-2022. These differences are about two percentage points on average and stem mainly from interest rate differentials: US monetary policy was more expansionary early in the pandemic and more contractionary in 2022 relative to the euro area (see panel (c) of Figure D.1 in the appendix). To understand the intuition, let us focus on the early period and ignore all other shocks but interest rate changes. By shutting down discount factor shocks ( ˆϕn = 1), countries’ aggregate demand, which in our model takes the form of local currency expenditure ( ˆEn), depends on monetary policies only. Under flexible exchange rates, euro area aggregate demand depends on domestic interest rate changes only (see equations (4) and (5)). The nominal exchange rate absorbs interest rate differentials, insulating euro area aggregate demand from US monetary policy. In contrast, under a fixed exchange rate, euro area aggregate demand depends on US monetary policy only as the euro area gives up its monetary policy stance. It is now entirely exposed to US monetary policy changes. Since the euro area’s monetary policy was less expansionary than that of the US early in the pandemic, the euro area aggregate demand declined more under flexible exchange rates relative to fixed exchange rates, leading to higher deflation (in absolute value). The reverse logic applies in 2022, explaining the faster decline in inflation. Panel (b) of Figure 12, where we introduce only interest rate changes, confirms this intuition. Panel (c) and (d) of Figure 12 provide further evidence on the mechanism under aggregate demand shocks (discount factor changes) and sectoral supply shocks only. We observe the same patterns where fixed exchange rates deliver higher inflation early on and faster inflation decline in 2022. 
+
+> 26 As we define exchange rates relative to the US dollar, flexible and fixed exchange rate results are the same for the US. Hence, we do not show them.
+
+41 Figure 12. Inflation response Euro Area: Different Exchange Rate Regimes (a) All shocks 
+
+(b) Interest rate changes 
+
+(c) Discount factor shocks (d) Sectoral supply shocks 
+
+Note: This figure shows inflation responses in the euro area for different exchange rate regimes and shocks. Blue diamonds correspond to our baseline model, and gray dots correspond to the model with fixed exchange rates. Panel (a) shows it for all shocks, panel (b) introduces interest rate changes only, panel (c) uses discount factor shocks, and panel (d) introduces sectoral supply shocks. All scenarios introduce interest rate changes. The baseline considers interest rate changes from all countries, while the fixed exchange rate scenario only considers US interest rate changes. Panel (d) “baseline + interest rate changes” numbers are different from those reported for sectoral supply only in figure 7 (purple dots) because here we include interest rate changes, while figure 7 does not. Panel (a) and (c) do not exhibit this problem, as they include interest rate changes in both figures. 
+
+42 5 Conclusion 
+
+The prevailing narrative on pandemic inflation is as follows: In 2020, an asymmetric shock induced by the pandemic prompted a shift in consumption from services to goods. The subsequent recovery period (2021–2022) was characterized by a mix of fiscal stimulus and varying monetary policies, accompanied by an energy shock in 2022 linked to Russia’s in-vasion of Ukraine. By 2023, most countries managed to control inflation without entering deep recessions, achieving what has been termed a ”soft landing.” We contend that a multi-sector, multi-country global network New Keynesian model can both capture this narrative and quantify the critical role of international linkages in transmitting domestic shocks and policies. Our model incorporates both sector-specific and aggregate demand and supply shocks that propagate through international trade and pro-duction networks, leading to global demand–supply imbalances. It successfully replicates aggregate trends in inflation, real wages, exchange rates, and current accounts, as well as the cross-sector dynamics of wages and prices. A key insight from our analysis is that the interaction between sectoral supply shocks and aggregate demand shocks is central to explaining the heterogeneous inflation experiences across countries, as these shocks diffuse through global trade and production networks. The differential impacts of demand and supply shocks on various economies can be rational-ized through the new channels of international spillovers documented in our study. Due to the complementarities inherent in global production, sectoral relative prices play a more prominent role in the international transmission of shocks than traditional open-economy channels—such as exchange rate adjustments and substitution between domestic and for-eign goods. Our findings carry significant policy implications, particularly in the context of the cur-rent global trade conflicts. Specifically, shocks affecting the supply of foreign production factors can be highly inflationary and may lead to employment declines, even in relatively closed economies like the United States, due to their large market size. Moreover, U.S. de-mand shocks can disproportionately influence global price levels in an environment where factors of production in short supply are in high global demand. 43 References 
+
+Aggarwal, Rishabh, Adrien Auclert, Matthew Rognlie, and Ludwig Straub. 2023. “Excess savings and twin deficits: The transmission of fiscal stimulus in open economies.” NBER Macroeconomics Annual 37 (1): 325–412, https://doi.org/10.1086/723586 .Amiti, Mary, Sebastian Heise, Fatih Karahan, and Ay¸ seg¨ ul S ¸ahin. 2024. “Inflation strikes back: The role of import competition and the labor market.” NBER Macroeconomics Annual 38 (1): 71–131. https://doi.org/10.1086/729195. Atalay, Enghin. 2017. “How important are sectoral shocks?” American Economic Journal: Macroeconomics 9 (4): 254–280. 10.1257/mac.20160353. Baqaee, David, and Emmanuel Farhi. 2022. “Supply and Demand in Disaggregated Keyne-sian Economies with an Application to the Covid-19 Crisis.” American Economic Review 
+
+112 (5): 1397–1436. 10.1257/aer.20201229. Baqaee, David, and Emmanuel Farhi. 2024. “Networks, Barriers, and Trade.” Econometrica 
+
+92 505–541. 10.3982/ECTA17513. Benigno, Gianluca, and Christoph Thoenissen. 2008. “Consumption and real exchange rates with incomplete markets and non-traded goods.” Journal of International Money and Finance 27 (6): 926–948. https://doi.org/10.1016/j.jimonfin.2008.04.008. Bianchi, Javier, and Louphou Coulibaly. 2024. “Financial Integration and Monetary Policy Coordination.” 10.3386/w32009, NBER Working Paper 32009. Blanchard, Olivier J., and Ben S. Bernanke. 2023. “What Caused the US Pandemic-Era Inflation?” June. 10.3386/w31417, NBER Working Paper 31417. Boehm, Christoph E, Aaron Flaaen, and Nitya Pandalai-Nayar. 2019. “Input linkages and the transmission of shocks: Firm-level evidence from the 2011 T¯ ohoku earthquake.” Review of Economics and Statistics 101 (1): 60–75. https://doi.org/10.1162/rest a 00750. Comin, Diego A., Robert C. Johnson, and Callum J. Jones. 2023. “Supply Chain Constraints and Inflation.” April. 10.3386/w31179, NBER Working Paper 31179. Costinot, Arnaud, and Andr´ es Rodr´ ıguez-Clare. 2014. “Trade Theory with Numbers: Quan-tifying the Consequences of Globalization.” In Handbook of International Economics ,edited by Gopinath, Gita, Elhanan Helpman, and Kenneth Rogoff Volume 4. Chap. 4 197–261, Elsevier, . 10.1016/B978-0-444-54314-1.00004-5. Dekle, Robert, Jonathan Eaton, and Samuel Kortum. 2007. “Unbalanced Trade.” American Economic Review: Papers & Proceedings 97 (2): 351–355. 10.1257/aer.97.2.351. di Giovanni, Julian, S ¸ebnem Kalemli- ¨Ozcan, Alvaro Silva, and Muhammed A. Yıldırım. 2022. “Global Supply Chain Pressures, International Trade, and Inflation.” Conference Proceedings: Challenges for Monetary Policy in a Rapidly Changing World, ECB Forum on Central Banking .Dix-Carneiro, Rafael, Jo˜ ao Paulo Pessoa, Ricardo Reyes-Heroles, and Sharon Traiberman. 2023. “Globalization, trade imbalances, and labor market adjustment.” Quarterly Journal of Economics 138 (2): 1109–1171. https://doi.org/10.1093/qje/qjac043. Fernald, John, and Huiyu Li. 2022. “The Impact of COVID on Productivity and Potential Output.” Jackson Hole Economic Symposium Proceedings. 44 Ferrante, Francesco, Sebastian Graves, and Matteo Iacoviello. 2023. “The inflationary effects of sectoral reallocation.” Journal of Monetary Economics 140 64–81. https://doi.org/10. 1016/j.jmoneco.2023.03.003. Fornaro, Luca, and Federica Romei. 2023. “Monetary policy in an unbalanced global econ-omy.” Gagliardone, Luca, and Mark Gertler. 2023. “Oil Prices, Monetary Policy and Inflation Surges.” May, NBER Working Paper 31263. Giannone, Domenico, and Giorgio Primiceri. 2024. “”The drivers of post-pandemic infla-tion”.” Conference Proceedings: Monetary Policy in an era of transformation, ECB Forum on Central Banking .Gourinchas, Pierre-Olivier, S ¸ebnem Kalemli- ¨Ozcan, Veronika Penciakova, and Nick Sander. 2021. “Fiscal Policy in the Age of COVID: Does it ‘Get in all of the Cracks?’.” 10.3386/ w29293, Jackson Hole Symposium Proceedings. Guerrieri, Veronica, Guido Lorenzoni, Ludwig Straub, and Iv´ an Werning. 2021. “Monetary Policy in Times of Structural Reallocation.” Jackson Hole Economic Symposium Proceed-ings. Guerrieri, Veronica, Guido Lorenzoni, Ludwig Straub, and Iv´ an Werning. 2022. “Macroeco-nomic implications of COVID-19: Can negative supply shocks cause demand shortages?” 
+
+American Economic Review 112 (5): 1437–1474. 10.1257/aer.20201063. Guerrieri, Veronica, Michala Marcussen, Lucrezia Reichlin, and Silvana Tenreyro. 2023. “Geneva Report: The Art and Science of Patience: Relative Prices and Inflation.” Ha, Jongrim, M Ayhan Kose, and Franziska Ohnsorge. 2023. “One-stop source: A global database of inflation.” Journal of International Money and Finance 137 102896. https: //doi.org/10.1016/j.jimonfin.2023.102896. Hale, Thomas, Noam Angrist, Rafael Goldszmidt et al. 2021. “A global panel database of pandemic policies (Oxford COVID-19 Government Response Tracker).” Nature Human Behaviour 5 (4): 529–538. 10.1038/s41562-021-01079-8. Jord´ a, ´Oscar, Celeste Liu, Fernanda Nechio, and Fabi´ an Rivera-Reyes. 2022. “Why Is U.S. Inflation Higher than in Other Countries?” FRBSF Economic Letter 2022 (07): , https: //EconPapers.repec.org/RePEc:fip:fedfel:93890 .Jord´ a, ´Oscar, and Fernanda Nechio. 2022. “Inflation and Wage Growth Since the Pandemic.” https://doi.org/10.24148/wp2022-17, Federal Reserve Bank of San Francisco Working Paper 2022-17. Lorenzoni, Guido, and Iv´ an Werning. 2023. “Wage price spirals.” Brookings Papers in Eco-nomic Activity .Oberfield, Ezra, and Devesh Raval. 2021. “Micro data and macro technology.” Econometrica 
+
+89 (2): 703–732. https://doi.org/10.3982/ECTA12807. Reyes-Heroles, Ricardo. 2016. “The role of trade costs in the surge of trade imbalances.” 
+
+Princeton University, mimeograph .Rodr´ ıguez-Clare, Andr´ es, Mauricio Ulate, and Jose P Vasquez. 2024. “Trade with nominal rigidities: understanding the unemployment and welfare effects of the China shock.” 45 Rubbo, Elisa. 2023. “What drives inflation? Lessons from disaggregated price data.” Septem-ber, Mimeo, Booth School of Business at the University of Chicago. Schmitt-Groh´ e, Stephanie, and Martin Uribe. 2016. “Downward nominal wage rigidity, cur-rency pegs, and involuntary unemployment.” Journal of Political Economy 124 (5): 1466– 1514. 10.1086/688175. Shapiro, Adam H. 2022b. “Decomposing Supply and Demand Driven Inflation.” September, FRBSF Working Paper. Shapiro, Adam Hale. 2022a. “How much do supply and demand drive inflation?” FRBSF Economic Letter 15 1–6. de Soyres, Fran¸ cois, Alexandre Gaillard, Ana Maria Santacreu, and Dylan Moore. 2024. “Supply Disruptions and Fiscal Stimulus: Transmission through Global Value Chains.” In AEA Papers and Proceedings , Volume 114. 112–117. 10.1257/pandp.20241099. 46 Appendix – For Online Publication 
+
+# A World Expenditure Changes 
+
+In this appendix, we show that whenever there are aggregate demand changes across the world and changes in US monetary policy, the num´ eraire changes and thus can affect nominal variables. Define world expenditure in US dollars as 
+
+E$ 
+
+> W,t
+
+= X
+
+> n
+
+En,t 
+
+En,t 
+
+. (A.1) In deviations from the steady state 
+
+bE$ 
+
+> W, 0
+
+=
+
+P
+
+> nEn, 0
+> En, 0
+
+E$
+
+> W
+
+= X
+
+> nEn
+> En
+
+E$
+
+> W
+
+bEn, 0
+
+bEn, 0
+
+= X
+
+> n
+
+αn
+
+bEn, 0
+
+bEn, 0
+
+= X
+
+> n
+
+αn
+
+bϕn, 0
+
+\(1 + iU S, 0)
+
+,
+
+where 
+
+bϕn, 0 = ((1 − βn, 0)/β n, 0)/ ((1 − βn)/β n)represents the deviation of the discount factor shocks relative to the steady-state. Therefore, 
+
+bE$ 
+
+> W, 0
+
+= X
+
+> n
+
+αn bϕn, 0
+
+!
+
+1
+
+\(1 + iU S, 0)
+
+, (A.2) implying that world expenditure changes in our model because of two forces: (i) country-level aggregate demand shocks in the form of changes in bϕn, 0 and (ii) the US monetary policy stance, \(1 + iU S, 0). 
+
+# B Model Solution 
+
+To solve the model, we calibrate consumption and input weights, GDP shares and expendi-ture shares using the OECD Inter-Country Input-Output (ICIO) Tables. We calibrate the CES functions such that the weights coincide with the input and consumption shares. We normalize all prices, wages, and rental rates to 1 at the initial steady state. We calculate all changes in units of world expenditure while keeping track of exchange rate movements of countries relative to the US dollar. Using changes in world expenditure and exchange rates, we can convert prices back to the local currency of each country. We provide a unified representation of the model by creating an enhanced input-output table, which is depicted in Figure B.1. This generalized input-output matrix integrates 47 Figure B.1. Structure of enhanced input-output matrix Ω 
+
+(a) Ω Matrix 
+
+C Y Z VA X CB L K Ric Fut 
+
+C 0 0 0 0 0 ΩC 0 0 0 0
+
+Y 0 0 ΩYZ ΩY 
+
+> VA
+
+0 0 0 0 0 0
+
+Z 0 0 0 0 ΩZ 0 0 0 0 0VA 0 0 0 0 0 0 ΩVA  
+
+> L
+
+ΩVA  
+
+> K
+
+0 0
+
+X 0 ΩX 0 0 0 0 0 0 0 0
+
+CB 0 ΩCB 0 0 0 0 0 0 0 0
+
+L 0 0 0 0 0 0 0 0 0 0
+
+K 0 0 0 0 0 0 0 0 0 0Ric 1 − β 0 0 0 0 0 0 0 0 β
+
+Fut 0 0 0 0 0 0 0 0 0 0
+
+(b) Row / Column Indices                              
+
+> Index Description Size Elasticity
+> CCurrent Consumption N1
+> YGoods / Varieties N × J θZIntermediate Bundle N × J ε
+> VA Value-Added N × J γXCountry-Sector Bundles N × J ξi
+> CB Consumption Bundles N × J ξ′
+> i
+> LSector Specific Labor N × J
+> KSector Specific Capital N × J
+> Ric Ricardian Consumer N1Fut Future Consumption N
+
+Note: All sub-matrix definitions are given in the sections 2.1 and 2.2. Non-zero sub-matrices are light blue colored and light green colored sub-matrices indicate diagonal matrices. 
+
+households, sector-level outputs, factors and input/consumption bundles that are required for production or used for consumption, with all these entities shown as rows and columns (row and column indices and their sizes are given in Panel B.1b). Each row, i, in this matrix corresponds to a single CES aggregator with corresponding elasticity of substitution of σi
+
+and a price P $ 
+
+> i
+
+(in US dollars). Given the CES assumption, we can then write the price index for each row as: (P $ 
+
+> i
+
+)1−σi = X
+
+> j
+
+Ωij (P $ 
+
+> j
+
+)1−σi if σi̸ = 1 ,
+
+log( P $ 
+
+> i
+
+) = X
+
+> j
+
+Ωij log( P $ 
+
+> j
+
+) if σi = 1 , (B.3) where the second equation corresponds to the Cobb-Douglas case. We write the market-clearing condition for each row entry using information contained in the columns of the Ω matrix presented in Figure B.1. For a given column j, we denote its total output by Yj . This output is used by other entities as inputs or for consumption. Xij 
+
+is the amount of j used by row i. The market-clearing condition for each row can be written as: 
+
+P $ 
+
+> j
+
+Yj = X
+
+> i
+
+Pj Xij = X
+
+> i
+
+P $ 
+
+> j
+
+Xij 
+
+P $ 
+
+> i
+
+Yi
+
+P $ 
+
+> i
+
+Yi. (B.4) Using the CES assumption, we then write the optimal input ratio of j in i as a function of 48 relative prices: 
+
+P $ 
+
+> j
+
+Xij 
+
+P $ 
+
+> i
+
+Yi
+
+= P $
+
+> j
+
+P $
+
+> i
+
+!1−σi
+
+. (B.5) Dividing both sides of (B.4) by global expenditure, we express a sector j’s output as a function of world output, i.e., its global Domar weight, which is currency free. Hence, we can relate the Domar weights to each other: 
+
+P $ 
+
+> j
+
+Yj
+
+E$
+
+> W
+
+≡ λj = X
+
+> i
+
+Ωij 
+
+P $
+
+> j
+
+P $
+
+> i
+
+!1−σi
+
+PiYi
+
+E$
+
+> W
+
+= X
+
+> i
+
+Ωij 
+
+P $
+
+> j
+
+P $
+
+> i
+
+!1−σi
+
+λi. (B.6) The Domar weight equations capture the propagation of the consumption of countries down to the payments to factors of production along the global supply chains. Equations (B.3) and (B.6) solve for the prices (relative to the num´ eraire, which we set to be world expenditure in US dollars E$ 
+
+> W
+
+) and Domar weights. At the initial steady-state, domestic monetary policy sets interest rates at the ZLB for all countries (1 + in) = 1. Conditional on discount factor changes ˆϕn and interest rates that we take from the data (1 + in, 0) for all countries, we can use the intertemporal block given by equations (4) and (5), to solve for exchange rates ( En, 0) and local currency expenditures in the model En(0). Finally, we also respect the downward wage rigidity and labor constraints given in Equations (11), (12) and (14). We use the AMPL/Knitro optimizer to solve these equations. Since we start by calibrating CES functions with equilibrium prices set to 1, our methodology yields solutions akin to the hat-algebra methodology often used in the trade literature. 
+
+# C Proofs 
+
+## Proof of Proposition 1 
+
+The rich structure that we introduced in our model can be simplified to capture the first-order effect of shocks on inflation. Here, we will just focus on factors, goods and consumption ignoring the bundling at different levels. The production function in sector ni is given in terms of all other sectors and factors by: 
+
+Yni = Ani Fni 
+
+
+
+{Xni,mj }mj ∈S , L ni , K ni 
+
+
+
+,
+
+where Fni is a nested CES function, S is the set of all country-sector pairs and Xni,mj denotes the amount of output of country-sector mj used by ni . With this, we can write the firm profit maximization problem as: 
+
+πni = Pni Yni − X
+
+> mj ∈S
+
+Pmj Xni,mj − Wni Lni − Rni Kni .
+
+49 Using Shepard’s Lemma, the change in prices are related to the price changes of all other sectors and factor price changes with: 
+
+d log P $ 
+
+> ni
+
+= −d log Ani + X
+
+> mj ∈S
+
+Pmj Xni,mj 
+
+Pni Yni 
+
+d log P $ 
+
+> mj
+
++ Wni Lni 
+
+Pni Yni 
+
+d log W $ 
+
+> ni
+
++ Rni Kni 
+
+Pni Yni 
+
+d log R$
+
+> ni
+
+.
+
+In writing the problem this way, all prices are denominated in the same units, which is the US dollar that we denote with a superscript $. Recall that: 
+
+Xni,mj = Xn,mj 
+
+Xni,j 
+
+Xn,j 
+
+.
+
+At steady state, define the country-sector to country-sector input-output matrix as: ΩSS ni,mj ≡ Pmj Xni,mj 
+
+Pni Yni 
+
+= Pmj Xn,mj 
+
+Pni Yni 
+
+Pn,j Xni,j 
+
+Pn,j Xn,j 
+
+=
+
+Pmj Xn,mj 
+
+Pn,j Xn,j 
+
+  Pn,j Xni,j 
+
+P Zni Zni 
+
+  P Zni Zni 
+
+Pni Yni 
+
+
+
+= Ω Xn,mj ΩZni,j ΩYni,Z .
+
+Similarly, we write the labor and capital shares as: ΩSF,L ni ≡ Wni Lni 
+
+Pni Yni 
+
+=
+
+ Wni Lni 
+
+P VA  
+
+> ni
+
+VA ni 
+
+  P VA  
+
+> ni
+
+VA ni 
+
+Pni Yni 
+
+
+
+= Ω VA  
+
+> ni,L
+
+ΩYni, VA ,
+
+ΩSF,K ni ≡ Rni Kni 
+
+Pni Yni 
+
+= Ω VA  
+
+> ni,K
+
+ΩYni, VA .
+
+Finally, the consumption share of country-sector mj is expressed as: ΩCS n,mj ≡ Pmj Cn,mj 
+
+PnCn
+
+=
+
+Pmj Cn,mj 
+
+P CB n,j Cn,j 
+
+ P CB n,j Cn,j 
+
+PnCn
+
+!
+
+= Ω CB n,mj ΩCn,j .
+
+With these definitions, we can write the changes in prices in vector notation with (and combining capital and labor under factors and denoting both their prices with W ): 
+
+d log P $ = −d log A + Ω SS d log P $ + Ω SF d log W $.
+
+We define the Leontief inverse for Ω SS :ΨSS = I − ΩSS −1 ,
+
+we can solve for the price changes in terms of productivity change and factor price changes: 
+
+d log P $ = −ΨSS d log A + Ψ SS ΩSF d log W $.
+
+50 Similarly, the CPI can be written as the weighted average of the good prices with weights ΩCS n,mj . With this, the CPI can be written as: 
+
+d log CPI n = X
+
+> mj
+
+ΩCS n,mj d log P nmj = d log En,U S + Ω CS n d log P $,
+
+where Ω CS n is the nth row of the Ω CS matrix, P nmj is the price of good mj in country n’s local currency and En,U S is the exchange rate in country n vis-` a-vis the US. Combining with the price change equation, we can write the CPI change as: 
+
+d log CPI n = d log En,U S − ΩCS n ΨSS d log A + Ω CS n ΨSS ΩSF d log W $.
+
+Let’s define the country-specific Domar weight for the labor: (Λ n)T ≡ ΩCS n ΨSS ΩSF 
+
+as the share of expenditures of country n that ends up in the owners of factor f . Since the factors are where all the payments are accumulated, sum over these Domar weights equal to 1: X
+
+> f
+
+Λnf = (Λ n)T 1F = 1 ,
+
+where 1 F is a column vector of ones of size F . Similarly, we can define the country-specific sector Domar-weights as: (λn)T = Ω CS n ΨSS .
+
+Hence, the CPI can be written as: 
+
+d log CPI n = d log En,U S − (λn)T d log A + (Λ n)T d log W $.
+
+The Global factor Domar weights are given by: Λf = W $ 
+
+> f
+
+Lf
+
+E$
+
+> W
+
+,
+
+where E$ 
+
+> W
+
+is the total global expenditure. Therefore: 
+
+d log W $ 
+
+> f
+
+= d log Λ f − d log Lf + d log E$ 
+
+> W
+
+.
+
+With these, we can write the CPI as: 
+
+d log CPI n = d log En,U S − (λn)T d log A + (Λ n)T d log Λ − (Λ n)T d log L + (Λ n)T 1F
+
+| {z }
+
+> =1
+
+d log E$
+
+> W
+
+= d log En,U S + d log E$ 
+
+> W
+
+− (λn)T d log A − (Λ n)T d log L + (Λ n)T d log Λ .
+
+51 D Data Construction Details 
+
+## D.1 Projecting Hours Worked 
+
+China+. To construct hours worked at the sectoral level for China+, we first regress total hours worked shocks computed at the sector level for the US on the US stringency index from Hale et al. (2021), which aims to capture the strictness of countries’ government policies against Covid. Formally, we run the following specification for the period 2020m1 to 2022m12: ˆε(hw )U S st = β0s + βsSU S t + νU S st ,
+
+where ˆ ε(hw )U S st are the total hours worked “shock” in sector s in the United States at time t,constructed as we explained in the previous section, SU S t is the stringency index in the US at time t, and νU S st is an error term. From this regression, we recover the estimated coefficients ( ˆβ0s, ˆβU S ). We then project the stringency index of China+ using these estimated parameters to get predicted values of total hours worked in each sector for both countries: ˆε(hw )cst = ˆβ0s + ˆβsSct ,
+
+where ˆ ε(hw )cst is the series total hours worked shocks in country c, sector s at time t and c =
+
+{China+ }. The China+ stringency index is a population-weighted average of the stringency index in Hale et al. (2021), where we take the mean across all available countries except the United States, Russia, and countries belonging to the euro area. Importantly, China appears in the stringency index. As a result, our predictions for the China+ aggregate will contain their strict lockdown policies that were a focal point in creating the early supply chain disruptions in 2020. 
+
+## D.2 Data Details for 44 Sectors Model 
+
+Here we describe the data details for our 44 sectors model outlined in section 4.2.3. We use a hybrid version of sectors, where we have 44 sectors for the US and the euro area but keep 4 sectors for the rest of the countries. As shown in Table D.1, since each detailed sector maps to a single aggregate sector, we can still use the CES structure we develop in section 2, albeit with different levels of sectoral bundles present in different countries. In particular, sectoral intermediate and consumption bundles are also at 44 sector levels in the United States and the euro area but at the four sector level for the rest. 52 Table D.1. Aggregate and Detailed Sectors Detailed Detailed Sector Aggregate Aggregate Sector 1 Agriculture, hunting, forestry 3 Services 2 Fishing and aquaculture 3 Services 3 Mining and quarrying, energy producing products 4 Energy 4 Mining and quarrying, non-energy producing products 2 Non durable 5 Mining support service activities 2 Non durable 6 Food products, beverages and tobacco 2 Non durable 7 Textiles, textile products, leather and footwear 2 Non durable 8 Wood and products of wood and cork 2 Non durable 9 Paper products and printing 2 Non durable 10 Coke and refined petroleum products 4 Energy 11 Chemical and chemical products 2 Non durable 12 Pharmaceuticals, medicinal chemical and botanical products 2 Non durable 13 Rubber and plastics products 2 Non durable 14 Other non-metallic mineral products 2 Non durable 15 Basic metals 2 Non durable 16 Fabricated metal products 2 Non durable 17 Computer, electronic and optical equipment 1 Durable 18 Electrical equipment 1 Durable 19 Machinery and equipment, nec 1 Durable 20 Motor vehicles, trailers and semi-trailers 1 Durable 21 Other transport equipment 1 Durable 22 Manufacturing nec; repair and installation of machinery and equipment 1 Durable 23 Electricity, gas, steam and air conditioning supply 3 Services 24 Water supply; sewerage, waste management and remediation activities 3 Services 25 Construction 3 Services 26 Wholesale and retail trade; repair of motor vehicles 3 Services 27 Land transport and transport via pipelines 3 Services 28 Water transport 3 Services 29 Air transport 3 Services 30 Warehousing and support activities for transportation 3 Services 31 Postal and courier activities 3 Services 32 Accommodation and food service activities 3 Services 33 Publishing, audiovisual and broadcasting activities 3 Services 34 Telecommunications 3 Services 35 IT and other information services 3 Services 36 Financial and insurance activities 3 Services 37 Real estate activities 3 Services 38 Professional, scientific and technical activities 3 Services 39 Administrative and support services 3 Services 40 Public administration and defence; compulsory social security 3 Services 41 Education 3 Services 42 Human health and social work activities 3 Services 43 Arts, entertainment and recreation 3 Services 44 Other service activities 3 Services 
+
+Note: This table shows the mapping between the aggregate and detailed sectors. Detailed sectors correspond to the sectors present in ICIO with one difference: We merge the sector “Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use” with the “Other service activities.” 
+
+53 D.2.1 Hours Worked United States. We use the same information and procedure as in section 3.1.2. Since data for the US contains information on 66 sectors, we aggregate these sectors up to 44 to be consistent with the ICIO classification. 
+
+Euro area. We compile information from EuroStat. This information is available for all 44 sectors present in the ICIO. We follow the same procedure as in section 3.1.2 to construct our series at this level of disaggregation. 
+
+Russia. As data are not disaggregated enough, we use the same information for Russia as in our 4 by 4 model (see section 3.1.2). 
+
+China+. Since the information for these countries is not as disaggregated as that of the US or euro area, we use the same hours constructed for the 4 by 4 model. See section D.1 for details. 
+
+D.2.2 Sectoral Demand United States. The US has detailed consumption data at the sectoral level (66 sectors). We aggregate these 66 sectors into 44 sectors so as to be consistent with the ICIO classifi-cation. We add expenditures across sectors in the 66 classifications that belong to the same category in the 44 sectors classification. The data sources for the US are the same as those in section 3.1.3. 
+
+Euro area. Unfortunately, the euro area data are not as disaggregated as that of the US. For this reason, we assume that all sectors within each of our 4 main sectors experience the same sectoral demand change. For example, looking at Table D.1, this implies that both ‘computer, electronic and optimal equipment’, and ‘electrical equipment’ experienced the same (nominal) consumption growth rate (relative to 2018Q4). 
+
+China+ and Russia. Since data are not available as a higher level of disaggregation for these countries, we use the same numbers as in subsection 3.1.3. That is, we assume that China+ and Russia experienced the same demand shifts as that of the rest of the world. 
+
+D.2.3 Aggregate Demand 
+
+As disaggregating the supply side of the economy does not change our measures of aggregate demand, these stay the same as in subsection 3.1.1 for the US, euro area, Russia, and China+. 54 D.3 Data Tables 
+
+Table D.2. Expenditure share of countries in China+ group Country Share (%) Country Share (%) Australia 1.62 Canada 2.03 Chile 0.34 Colombia 0.40 Costa Rica 0.07 Czech Republic 0.26 Denmark 0.38 Hungary 0.17 Iceland 0.03 Israel 0.42 Japan 5.82 South Korea 1.91 Mexico 1.43 New Zealand 0.24 Norway 0.48 Poland 0.64 Sweden 0.62 Switzerland 0.77 Turkey 0.90 United Kingdom 3.33 Argentina 0.58 Brazil 2.10 Brunei 0.02 Bulgaria 0.07 Cambodia 0.03 China 16.13 Croatia 0.07 India 3.40 Indonesia 1.24 Hong Kong 0.50 Kazakhstan 0.18 Laos 0.02 Malaysia 0.41 Morocco 0.15 Myanmar 0.09 Peru 0.25 Philippines 0.44 Romania 0.29 Saudi Arabia 0.84 Singapore 0.35 South Africa 0.42 Taiwan 0.63 Thailand 0.53 Tunisia 0.05 Vietnam 0.28 Rest of the World 7.15 China+ 58.10 
+
+Note: This table presents the share of world expenditure accounted for each country in the China+ group. We construct these numbers from the ICIO tables year 2018. 
+
+Table D.3. Sector-level Labor Shares euro area United States Russia China+ Durables 0.61 0.57 0.84 0.44 Non-Durables 0.58 0.49 0.58 0.55 Services 0.54 0.59 0.72 0.68 Energy 0.32 0.15 0.17 0.49 
+
+Note: This table shows the share of value-added that accrued to labor. Value added is compensation to employees (labor) plus gross operating surplus (capital). Data for the euro area, United States and China+ comes from the Structural Analysis Database (STAN) year 2018. For Russia, we use information from the Socioeconomic Accounts available from the World Input-Output tables. 
+
+55 D.4 Data Figures 
+
+Figure D.1. Aggregate Hours Worked and Expenditures 
+
+(a) Total Hours Worked (b) Aggregate Demand 
+
+(c) Policy Rates (d) Expenditure 
+
+Note: These figures plot the log deviations of aggregate time series relative to their 2018Q4 value. Policy rates in panel (c) plots ( in,t − in, 2018 Q4) ∗ 100. Panel (a) plots total hours worked across countries, while panel (b) plots our aggregate demand shock, ϕn. Aggregate demand combines nominal interest rates (panel (c)) and changes in local currency expenditure (panel (d)). See the main text for definitions and data sources of each series. 
+
+56 Figure D.2. Sector-level Consumption Expenditures 
+
+(a) United States (b) euro area (c) Russia and China+ 
+
+Note: This figure plots nominal consumption growth in each quarter vis-` a-vis 2018Q4 and cumulates for four different consumption series: durables, non-durables, services, and energy. The purple line represents durable consumption. The dashed pink dashed line represents non-durable consumption. The green dotted line represents energy consumption. Finally, the blue dashed line represents service consumption. Since we source sector-level consumption for the euro area and China+ from the OECD quarterly national accounts, it only contains information for durables, non-durables, and services. Due to data availability, we use the same behavior of sector-level consumption shares for Russia as that of China+. Thus, Panel (c) plots series that we use for both Russia and China+. 
+
+Figure D.3. Energy Prices 
+
+(a) Energy 
+
+Note: This figure shows the energy price index relative to its value in 2018Q4. 
+
+57 E Additional Results 
+
+## E.1 Russia and China+ Inflation Results 
+
+Figure E.1. Russia and China+ Inflation: Baseline Model vs. Data 
+
+(a) Russia (b) China+ 
+
+Note: This figure shows annual inflation implied by the model (blue diamonds) relative to the headline CPI inflation in the data (black solid line) when feeding the model with all shocks. We compute inflation as a year-on-year growth rate. The pink diamond in 2020Q2 highlights the Covid lockdown period, while the pink diamond in 2021Q2 highlights a “base effect” that exist in macroeconomic time series, as economic activity had a huge rebound relative to the Covid lockdown phase once the economy reopened. CPI inflation data comes from Ha, Kose, and Ohnsorge (2023) who collected information for up to 209 countries from multiple sources. Data for Russia ended in 2022Q1, which is why the black line ends in this quarter. We report Russia’s numbers from our model for completeness. We construct China+ numbers excluding from the sample the United States, Russia, and countries belonging to the euro area 19 countries classification. China+ inflation is a weighted average across 43 countries, consistent with countries in the ICIO tables that compose our China+ aggregate, where weights are given by countries’ expenditure shares over the total expenditure of the 43 countries. See Table D.2 for the list of countries we consider. 
+
+## E.2 Aggregate Real Wages 
+
+This subsection examines how closely the model is able to match real wage movements using our baseline quantification exercise, both in the aggregate and across sectors. We focus on the US and euro area since detailed wage data at the sector level is more readily available. We first examine the behavior of aggregate real wages. For the US, we use the non-farm business sector hourly compensation to measure nominal wages. These data come from FRED (code COMPNFB ). For the euro area, we obtained data on nominal wages in EuroStat (code D11 , sectors B-S). We deflate the series using headline CPI to obtain our measure of 58 real wages from the data. We similarly compute the real wage from the model by deflating the aggregate nominal wage by the overall price index. Figure E.2 compares the behavior of real wages in the data and those generated by baseline model quantification exercise by plotting the year-on-year growth rate of real wages. The black line represents the data, and the blue diamonds depict model predictions. The model-generated series tracks the evolution of real wages observed in the data quite closely over the analyzed period for the United States and euro area, and it is consistent with the large increase in the real wage during 2020 and its subsequent decline over 2021–2022. 
+
+Figure E.2. United States and Euro Area Real Wages 
+
+(a) United States (b) euro area     
+
+> Note: This figure shows year-on-year real wage growth rate. Nominal wage corresponds to total private sector hourly earnings series from the Bureau of Labor Statistics, codes CES0500000003 . For the euro area, nominal wages come from EuroStat (code D11 , sectors B-S). We deflate this measure using headline CPI. The black line represents the data. Blue diamonds are model-based predictions.
+
+59

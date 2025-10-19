@@ -2,7 +2,7 @@
 CLI Commands Module
 
 This module exports all CLI command functions for data management, strategy
-operations, and backtesting.
+operations, backtesting, and master strategy analysis.
 
 **Purpose**: Provide a centralized import point for all CLI command modules,
 making it easy to register commands with the main Typer app.
@@ -11,27 +11,31 @@ making it easy to register commands with the main Typer app.
 - data: Data management commands (fetch, update, list, validate)
 - strategy: Strategy commands (list, info, test, validate)
 - backtest: Backtest commands (run, compare, optimize, report)
+- analyze: Master strategy analysis command (comprehensive testing & ranking)
+- app: Main Typer app with analyze command registered
 
 **Third-party packages**:
 - None (pure Python module for organizing imports)
 
 **Sample Usage**:
 ```python
-from crypto_trader.cli.commands import data, strategy, backtest
+from crypto_trader.cli.commands import data, strategy, backtest, app
 
-# Register with Typer app
-data_app.command("fetch")(data.fetch)
-strategy_app.command("list")(strategy.list_strategies)
-backtest_app.command("run")(backtest.run)
+# Use the main app with analyze command
+if __name__ == "__main__":
+    app()
 ```
 
 **Expected Output**:
 All command modules are available for import and registration.
+
+Updated during Phase 4 refactoring to include master analyze command.
 """
 
 from crypto_trader.cli.commands import backtest, data, strategy
+from crypto_trader.cli.commands.analyze import app, analyze
 
-__all__ = ["data", "strategy", "backtest"]
+__all__ = ["data", "strategy", "backtest", "analyze", "app"]
 
 if __name__ == "__main__":
     """
