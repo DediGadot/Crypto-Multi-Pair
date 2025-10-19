@@ -49,3 +49,88 @@ strategies:
       slow_period: 15
       signal_threshold: 0.6
       ma_type: "SMA"
+
+  # --- SOTA 2025 examples ---
+
+  - name: "MultiTimeframe_Default"
+    class: "MultiTimeframeConfluence"
+    enabled: true
+    description: "Signals only when 1h/4h/1d trends align"
+    tags: ["sota_2025", "trend_following"]
+    parameters:
+      min_confluence: 4
+      ema_fast: 20
+      ema_slow: 50
+
+  - name: "OnChain_BTC"
+    class: "OnChainAnalytics"
+    enabled: true
+    description: "Glassnode-style on-chain capitulation signals"
+    tags: ["onchain", "sentiment"]
+    parameters:
+      mvrv_buy: 0.5
+      mvrv_sell: 6.0
+      sopr_buy: 1.0
+      sopr_sell: 1.05
+
+  - name: "Regime_Adaptive_Core"
+    class: "VolatilityRegimeAdaptive"
+    enabled: true
+    description: "Switch between trend and mean-reversion by regime"
+    tags: ["meta", "regime"]
+    parameters:
+      regime_map:
+        mean_reverting: "RSI_MeanReversion"
+        trending: "Supertrend_ATR"
+        volatile: "OnChainAnalytics"
+
+  - name: "Dynamic_Ensemble_Core"
+    class: "DynamicEnsemble"
+    enabled: true
+    description: "Meta-ensemble weighting based on recent Sharpe"
+    tags: ["meta", "ensemble"]
+    parameters:
+      strategies:
+        - "MultiTimeframeConfluence"
+        - "OnChainAnalytics"
+        - "Supertrend_ATR"
+        - "RSI_MeanReversion"
+      confidence_threshold: 0.1
+
+  - name: "Transformer_GRU_BTC"
+    class: "TransformerGRUPredictor"
+    enabled: false
+    description: "Requires pretrained Transformer-GRU checkpoint"
+    tags: ["ml", "transformer"]
+    parameters:
+      model_path: "models/transformer_gru.ckpt"
+      buy_threshold: 0.02
+      sell_threshold: 0.02
+
+  - name: "DDQN_Feature_Selected"
+    class: "DDQNFeatureSelected"
+    enabled: false
+    description: "Uses DDQN policy with XGBoost-selected features"
+    tags: ["rl", "ddqn"]
+    parameters:
+      model_path: "models/ddqn_policy.zip"
+      feature_file: "models/ddqn_features.json"
+
+  - name: "Sentiment_Fusion"
+    class: "MultiModalSentimentFusion"
+    enabled: true
+    description: "Blend sentiment + on-chain + price momentum"
+    tags: ["sentiment", "fusion"]
+    parameters:
+      buy_threshold: 0.25
+      sell_threshold: -0.2
+
+  - name: "OrderFlow_Imbalance"
+    class: "OrderFlowImbalance"
+    enabled: false
+    description: "Requires L2 order book streaming via ccxt.pro"
+    tags: ["microstructure", "orderflow"]
+    parameters:
+      delta_threshold: 100.0
+      imbalance_threshold: 0.3
+      vpin_threshold: 0.6

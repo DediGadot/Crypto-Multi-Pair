@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Crypto Trading Master Strategy Analysis</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: #f5f5f5;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                background: white;
+                padding: 40px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+
+            h1 {
+                color: #1a1a1a;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 15px;
+            }
+
+            h2 {
+                color: #2c3e50;
+                font-size: 2em;
+                margin-top: 40px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            h3 {
+                color: #34495e;
+                font-size: 1.5em;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            h4 {
+                color: #555;
+                font-size: 1.2em;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .metadata {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 30px;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .metadata p {
+                margin: 5px 0;
+            }
+
+            .metadata strong {
+                color: #2c3e50;
+                display: inline-block;
+                min-width: 180px;
+            }
+
+            hr {
+                border: none;
+                border-top: 1px solid #e0e0e0;
+                margin: 30px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            th {
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            tr:hover {
+                background: #f8f9fa;
+            }
+
+            tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .tier1 {
+                background: #e8f5e9 !important;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .tier2 {
+                background: #fff3e0 !important;
+                border-left: 4px solid #FF9800;
+            }
+
+            .tier3 {
+                background: #ffebee !important;
+                border-left: 4px solid #f44336;
+            }
+
+            .positive {
+                color: #4CAF50;
+                font-weight: 600;
+            }
+
+            .negative {
+                color: #f44336;
+                font-weight: 600;
+            }
+
+            .blockquote {
+                background: #fff8dc;
+                border-left: 5px solid #ffa500;
+                padding: 15px 20px;
+                margin: 20px 0;
+                border-radius: 0 5px 5px 0;
+            }
+
+            .blockquote.warning {
+                background: #fff3cd;
+                border-left-color: #ffc107;
+            }
+
+            .blockquote.info {
+                background: #d1ecf1;
+                border-left-color: #17a2b8;
+            }
+
+            .action-plan {
+                background: #e3f2fd;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #2196F3;
+            }
+
+            .action-plan ol {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .action-plan li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            .recommendation-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 20px 0;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .recommendation-box h4 {
+                color: white;
+                margin-top: 0;
+                font-size: 1.4em;
+            }
+
+            .recommendation-box ul {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .recommendation-box li {
+                margin: 8px 0;
+            }
+
+            .profile-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .profile-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .profile-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            }
+
+            .profile-card h4 {
+                margin-top: 0;
+                color: #667eea;
+            }
+
+            .academic-section {
+                background: #fafafa;
+                padding: 30px;
+                border-radius: 5px;
+                margin-top: 40px;
+                border-top: 3px solid #999;
+            }
+
+            .academic-section h2 {
+                color: #666;
+            }
+
+            .academic-section pre {
+                background: white;
+                padding: 15px;
+                border-left: 3px solid #999;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9em;
+                line-height: 1.5;
+            }
+
+            ul, ol {
+                margin-left: 30px;
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+
+            li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            strong {
+                color: #2c3e50;
+            }
+
+            em {
+                color: #555;
+                font-style: italic;
+            }
+
+            .emoji {
+                font-size: 1.2em;
+            }
+
+            @media print {
+                body {
+                    background: white;
+                    padding: 0;
+                }
+
+                .container {
+                    box-shadow: none;
+                    padding: 20px;
+                }
+
+                table {
+                    page-break-inside: avoid;
+                }
+
+                h2 {
+                    page-break-before: always;
+                }
+            }
+        </style>
+        </head>
+<body>
+<div class='container'>
+<h1>🚀 CRYPTO TRADING MASTER STRATEGY ANALYSIS</h1>
+
+<div class='metadata'>
+    <p><strong>Asset:</strong> BTC/USDT</p>
+    <p><strong>Timeframe:</strong> 1h</p>
+    <p><strong>Strategies Tested:</strong> 15</p>
+    <p><strong>Time Horizons:</strong> 30d</p>
+    <p><strong>Data Period:</strong> 2025-09-11 to 2025-10-11 (720 candles)</p>
+    <p><strong>Total Backtests:</strong> 15</p>
+    <p><strong>Parallel Workers:</strong> 1</p>
+    <p><strong>Generated:</strong> 2025-10-19 04:32:01</p>
+</div>
+
+<h2>🎯 PRACTICAL STRATEGY RECOMMENDATIONS</h2>
+<p><em>Based on actual performance vs buy-and-hold benchmark</em></p>
+<hr>
+
+<h3>🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD</h3>
+<p>❌ <strong>NO strategies consistently beat buy-and-hold</strong> (3+ horizons)<br>
+Consider sticking with passive buy-and-hold strategy</p>
+
+<h3>⚠️ TIER 2: SOMETIMES BEATS BUY-AND-HOLD</h3>
+<p>⚡ These strategies beat buy-and-hold on <strong>1-2 time horizons</strong><br>
+Use with <strong>CAUTION</strong> - performance is inconsistent</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class='tier2'>
+            <td>1</td>
+            <td><strong>TripleEMA</strong></td>
+            <td><span class="positive">+5.6%</span></td>
+            <td>3.58</td>
+            <td>3.9%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>2</td>
+            <td><strong>SMA_Crossover</strong></td>
+            <td><span class="positive">+5.2%</span></td>
+            <td>3.30</td>
+            <td>4.7%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>3</td>
+            <td><strong>BollingerBreakout</strong></td>
+            <td><span class="positive">+0.5%</span></td>
+            <td>0.42</td>
+            <td>5.2%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>4</td>
+            <td><strong>OnChainAnalytics</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>5</td>
+            <td><strong>MultiTimeframeConfluence</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>6</td>
+            <td><strong>TransformerGRUPredictor</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>7</td>
+            <td><strong>DDQNFeatureSelected</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>8</td>
+            <td><strong>MultiModalSentimentFusion</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>9</td>
+            <td><strong>OrderFlowImbalance</strong></td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>10</td>
+            <td><strong>Supertrend_ATR</strong></td>
+            <td><span class="negative">-2.9%</span></td>
+            <td>-1.84</td>
+            <td>7.8%</td>
+            <td>1/1</td>
+        </tr>
+        <tr class='tier2'>
+            <td>11</td>
+            <td><strong>VolatilityRegimeAdaptive</strong></td>
+            <td><span class="negative">-2.9%</span></td>
+            <td>-1.84</td>
+            <td>7.8%</td>
+            <td>1/1</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class='blockquote info'>
+    <p>💡 These may work for specific time horizons or market conditions. Check <strong>TIME HORIZON ANALYSIS</strong> section for details.</p>
+</div>
+
+<h3>❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD</h3>
+<p>🚫 These strategies <strong>NEVER</strong> beat buy-and-hold on any time horizon<br>
+<strong>NOT RECOMMENDED</strong> for trading - use buy-and-hold instead</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class='tier3'>
+            <td>1</td>
+            <td><strong>Ichimoku_Cloud</strong></td>
+            <td><span class="negative">-4.3%</span></td>
+            <td>-1.66</td>
+            <td>11.8%</td>
+            <td>0/1</td>
+        </tr>
+        <tr class='tier3'>
+            <td>2</td>
+            <td><strong>MACD_Momentum</strong></td>
+            <td><span class="negative">-9.7%</span></td>
+            <td>-6.33</td>
+            <td>9.7%</td>
+            <td>0/1</td>
+        </tr>
+        <tr class='tier3'>
+            <td>3</td>
+            <td><strong>RSI_MeanReversion</strong></td>
+            <td><span class="negative">-12.8%</span></td>
+            <td>-7.28</td>
+            <td>13.4%</td>
+            <td>0/1</td>
+        </tr>
+        <tr class='tier3'>
+            <td>4</td>
+            <td><strong>VWAP_MeanReversion</strong></td>
+            <td><span class="negative">-12.8%</span></td>
+            <td>-7.28</td>
+            <td>13.4%</td>
+            <td>0/1</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class='blockquote info'>
+    <p>💡 Even if returns are positive, buy-and-hold performed better.</p>
+</div>
+
+<h3>👤 RECOMMENDATIONS BY INVESTOR PROFILE</h3>
+<div class='profile-section'>
+    <div class='profile-card'>
+        <h4>🎯 AGGRESSIVE INVESTOR</h4>
+        <p><em>Maximize returns, accept high risk</em></p>
+        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>
+    </div>
+    <div class='profile-card'>
+        <h4>🛡️ CONSERVATIVE INVESTOR</h4>
+        <p><em>Minimize drawdown, accept lower returns</em></p>
+        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>
+    </div>
+    <div class='profile-card'>
+        <h4>⚖️ BALANCED INVESTOR</h4>
+        <p><em>Best risk-adjusted returns</em></p>
+        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>
+    </div>
+</div>
+
+<h3>⏰ BEST STRATEGY BY TIME HORIZON</h3>
+<p><em>Choose strategy based on your investment timeline:</em></p>
+<ul>
+    <li><strong>30d</strong> → TripleEMA (<span class="positive">5.6%</span>)<br>
+        <em>Beat buy-and-hold by <span class="positive">+8.7%</span></em></li>
+</ul>
+
+<h2>📊 COMPOSITE SCORE RANKINGS (Academic)</h2>
+<div class='blockquote warning'>
+    <p><strong>⚠️ NOTE:</strong> This ranking uses a weighted composite score (35% Sharpe, 30% Return, 20% Drawdown, 15% WinRate). See <strong>PRACTICAL RECOMMENDATIONS</strong> above for actual trading decisions based on beating buy-and-hold.</p>
+</div>
+
+<p><strong>Top by Composite Score:</strong> SMA_Crossover</p>
+<p><strong>Composite Score:</strong> 0.574 / 1.000</p>
+<p><strong>Rank:</strong> #1 out of 15</p>
+
+<h4>Performance Summary:</h4>
+<ul>
+    <li>Average Return: <span class="positive">+5.2%</span></li>
+    <li>Buy-and-Hold Avg: <span class="negative">-3.2%</span></li>
+    <li>Outperformance: <span class="positive">+8.4%</span></li>
+    <li>Sharpe Ratio: <strong>3.30</strong></li>
+    <li>Max Drawdown: <strong>4.7%</strong></li>
+    <li>Win Rate: <strong>100.0%</strong></li>
+    <li>Horizons Won: <strong>1/1</strong></li>
+</ul>
+
+<h3>Strategy Rankings (by Composite Score)</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th><th>Strategy</th><th>Score</th><th>Return</th>
+            <th>Sharpe</th><th>MaxDD</th><th>WinRate</th><th>Won</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>SMA_Crossover</strong></td>
+            <td>0.574</td>
+            <td><span class="positive">+5.2%</span></td>
+            <td>3.30</td>
+            <td>4.7%</td>
+            <td>100.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>TripleEMA</strong></td>
+            <td>0.492</td>
+            <td><span class="positive">+5.6%</span></td>
+            <td>3.58</td>
+            <td>3.9%</td>
+            <td>33.3%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>BollingerBreakout</strong></td>
+            <td>0.383</td>
+            <td><span class="positive">+0.5%</span></td>
+            <td>0.42</td>
+            <td>5.2%</td>
+            <td>28.6%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>Supertrend_ATR</strong></td>
+            <td>0.279</td>
+            <td><span class="negative">-2.9%</span></td>
+            <td>-1.84</td>
+            <td>7.8%</td>
+            <td>22.2%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>Ichimoku_Cloud</strong></td>
+            <td>0.163</td>
+            <td><span class="negative">-4.3%</span></td>
+            <td>-1.66</td>
+            <td>11.8%</td>
+            <td>0.0%</td>
+            <td>0/1</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>MACD_Momentum</strong></td>
+            <td>0.146</td>
+            <td><span class="negative">-9.7%</span></td>
+            <td>-6.33</td>
+            <td>9.7%</td>
+            <td>26.9%</td>
+            <td>0/1</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>RSI_MeanReversion</strong></td>
+            <td>0.000</td>
+            <td><span class="negative">-12.8%</span></td>
+            <td>-7.28</td>
+            <td>13.4%</td>
+            <td>0.0%</td>
+            <td>0/1</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>VWAP_MeanReversion</strong></td>
+            <td>0.000</td>
+            <td><span class="negative">-12.8%</span></td>
+            <td>-7.28</td>
+            <td>13.4%</td>
+            <td>0.0%</td>
+            <td>0/1</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>OnChainAnalytics</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>MultiTimeframeConfluence</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>VolatilityRegimeAdaptive</strong></td>
+            <td>0.279</td>
+            <td><span class="negative">-2.9%</span></td>
+            <td>-1.84</td>
+            <td>7.8%</td>
+            <td>22.2%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td><strong>TransformerGRUPredictor</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td><strong>DDQNFeatureSelected</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td><strong>MultiModalSentimentFusion</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td><strong>OrderFlowImbalance</strong></td>
+            <td>nan</td>
+            <td><span class="positive">+0.0%</span></td>
+            <td>inf</td>
+            <td>0.0%</td>
+            <td>0.0%</td>
+            <td>1/1</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><strong>Buy-and-Hold Baseline:</strong> <span class="negative">-3.2%</span></p>
+
+<h2>📈 TIME HORIZON ANALYSIS</h2>
+<h4>Best Strategy by Horizon:</h4>
+<ul>
+    <li><strong>30d:</strong> TripleEMA (<span class="positive">+5.6%</span> vs buy-hold <span class="negative">-3.2%</span>)</li>
+</ul>
+
+<h2>📊 INTERACTIVE VISUALIZATIONS</h2>
+
+<h3>Strategy Performance Heatmap</h3>
+<p><em>Color-coded returns across all strategies and time horizons. Green = positive, Red = negative.</em></p>
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>                <div id="a4f666cb-5ee2-42ca-bbcf-83a51acf9564" class="plotly-graph-div" style="height:850px; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("a4f666cb-5ee2-42ca-bbcf-83a51acf9564")) {                    Plotly.newPlot(                        "a4f666cb-5ee2-42ca-bbcf-83a51acf9564",                        [{"colorbar":{"title":{"text":"Return (%)"}},"colorscale":[[0.0,"rgb(165,0,38)"],[0.1,"rgb(215,48,39)"],[0.2,"rgb(244,109,67)"],[0.3,"rgb(253,174,97)"],[0.4,"rgb(254,224,139)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(217,239,139)"],[0.7,"rgb(166,217,106)"],[0.8,"rgb(102,189,99)"],[0.9,"rgb(26,152,80)"],[1.0,"rgb(0,104,55)"]],"text":[["5.2%"],["5.6%"],["0.5%"],["-2.9%"],["-4.3%"],["-9.7%"],["-12.8%"],["-12.8%"],["0.0%"],["0.0%"],["-2.9%"],["0.0%"],["0.0%"],["0.0%"],["0.0%"]],"textfont":{"size":10},"texttemplate":"%{text}","x":["30d"],"y":["SMA_Crossover","TripleEMA","BollingerBreakout","Supertrend_ATR","Ichimoku_Cloud","MACD_Momentum","RSI_MeanReversion","VWAP_MeanReversion","OnChainAnalytics","MultiTimeframeConfluence","VolatilityRegimeAdaptive","TransformerGRUPredictor","DDQNFeatureSelected","MultiModalSentimentFusion","OrderFlowImbalance"],"z":[[5.180226697418474],[5.575801561695334],[0.5182395261700549],[-2.947567836048311],[-4.300795614087037],[-9.733806262070376],[-12.8344350141201],[-12.8344350141201],[0.0],[0.0],[-2.947567836048311],[0.0],[0.0],[0.0],[0.0]],"zmid":0,"type":"heatmap"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"font":{"size":11},"title":{"text":"Strategy Performance Heatmap (Returns % by Time Horizon)"},"xaxis":{"title":{"text":"Time Horizon"}},"yaxis":{"title":{"text":"Strategy"}},"height":850},                        {"responsive": true}                    )                };                            </script>        </div>
+
+<h3>Sharpe Ratio Comparison</h3>
+<p><em>Risk-adjusted performance metric. Green (>1.0) = Good, Orange (>0) = Acceptable, Red (<0) = Poor.</em></p>
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>                <div id="1df82c65-64a7-45fb-978f-7ef056201517" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("1df82c65-64a7-45fb-978f-7ef056201517")) {                    Plotly.newPlot(                        "1df82c65-64a7-45fb-978f-7ef056201517",                        [{"marker":{"color":["green","green","orange","red","red","red","red","red","green","green","red","green","green","green","green"]},"text":["3.30","3.58","0.42","-1.84","-1.66","-6.33","-7.28","-7.28","inf","inf","-1.84","inf","inf","inf","inf"],"textposition":"outside","x":["SMA_Crossover","TripleEMA","BollingerBreakout","Supertrend_ATR","Ichimoku_Cloud","MACD_Momentum","RSI_MeanReversion","VWAP_MeanReversion","OnChainAnalytics","MultiTimeframeConfluence","VolatilityRegimeAdaptive","TransformerGRUPredictor","DDQNFeatureSelected","MultiModalSentimentFusion","OrderFlowImbalance"],"y":[3.302064575347981,3.581334820021354,0.4203129819554057,-1.835080122331182,-1.658741723550218,-6.329389096168726,-7.280534181151532,-7.280534181151532,null,null,-1.835080122331182,null,null,null,null],"type":"bar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"title":{"text":"Strategy"},"tickangle":-45},"font":{"size":11},"title":{"text":"Sharpe Ratio Comparison (Higher is Better)"},"yaxis":{"title":{"text":"Sharpe Ratio"}},"height":500,"shapes":[{"line":{"color":"green","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":1.0,"y1":1.0,"yref":"y"},{"line":{"color":"gray","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"}],"annotations":[{"showarrow":false,"text":"Good (\u003e1.0)","x":1,"xanchor":"left","xref":"x domain","y":1.0,"yanchor":"middle","yref":"y"}]},                        {"responsive": true}                    )                };                            </script>        </div>
+
+<h2>🔍 DETAILED ANALYSIS: SMA_Crossover (Best Overall)</h2>
+<h4>Performance Across Horizons:</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Horizon</th><th>Return</th><th>vs B&H</th><th>Sharpe</th>
+            <th>MaxDD</th><th>WinRate</th><th>Trades</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>30d</strong></td>
+            <td><span class="positive">+5.2%</span></td>
+            <td><span class="positive">+8.4%</span></td>
+            <td>3.30</td>
+            <td>4.7%</td>
+            <td>100.0%</td>
+            <td>1</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>🚀 NEXT STEPS FOR IMPLEMENTATION</h2>
+<div class='blockquote warning'>
+    <p><strong>⚠️ NO STRATEGIES BEAT BUY-AND-HOLD CONSISTENTLY</strong></p>
+</div>
+
+<h4>RECOMMENDED ACTION:</h4>
+<ul>
+    <li>Stick with passive buy-and-hold strategy</li>
+    <li>Review market conditions and retry analysis in 3-6 months</li>
+    <li>Consider these alternatives:
+        <ul>
+            <li>DCA (Dollar Cost Averaging) into BTC/ETH</li>
+            <li>Portfolio diversification (60/40 BTC/ETH split)</li>
+            <li>Focus on parameter optimization of promising strategies</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>📊 Additional Resources</h3>
+<ul>
+    <li><strong>Full comparison matrix:</strong> <code>comparison_matrix.csv</code></li>
+    <li><strong>Detailed results:</strong> <code>detailed_results/</code> directory</li>
+    <li>See <strong>PRACTICAL STRATEGY RECOMMENDATIONS</strong> section above</li>
+</ul>
+
+<div class='academic-section'>
+<h2>📚 ACADEMIC RESEARCH REPORT</h2>
+<p><em>Detailed technical analysis for research purposes</em></p>
+
+<h3>ABSTRACT</h3>
+<div class='blockquote info'>
+<p><strong>TL;DR:</strong> Comprehensive empirical evaluation of 15 algorithmic trading strategies across 1 time horizons revealed 11 strategies outperforming passive buy-and-hold benchmarks, with the top strategy achieving +5.18% average returns versus -3.17% for buy-and-hold.</p>
+</div>
+
+<p>This study presents a systematic comparative analysis of cryptocurrency trading strategies on <strong>BTC/USDT</strong> using high-frequency <strong>1h</strong> candlestick data from Binance exchange. We evaluate <strong>15</strong> single-asset and <strong>0</strong> multi-asset strategies through <strong>15</strong> independent backtests spanning timeframes from <strong>30</strong> to <strong>30</strong> days. Performance is assessed using risk-adjusted metrics including Sharpe ratio, maximum drawdown, win rate, and total returns, with all strategies benchmarked against passive buy-and-hold positions. Results indicate significant heterogeneity in strategy performance across temporal horizons, with momentum-based and portfolio rebalancing approaches demonstrating superior risk-adjusted returns in the tested market conditions.</p>
+
+<h3>1. METHODOLOGY</h3>
+
+<h4>1.1 Data Collection & Preprocessing</h4>
+<div class='blockquote info'>
+<p><strong>TL;DR:</strong> 15 backtests executed on 1h OHLCV data from Binance, spanning 30-30 days with no survivorship bias.</p>
+</div>
+
+<p><strong>Market Data Specification:</strong></p>
+<ul>
+    <li><strong>Exchange:</strong> Binance (via REST API)</li>
+    <li><strong>Primary Asset:</strong> BTC/USDT</li>
+    <li><strong>Timeframe Granularity:</strong> 1h candlesticks</li>
+    <li><strong>Data Fields:</strong> Open, High, Low, Close, Volume (OHLCV)</li>
+    <li><strong>Sample Size (largest horizon):</strong> 720 candles</li>
+    <li><strong>Historical Range:</strong> 30 to 30 days</li>
+    <li><strong>Data Quality:</strong> Real-time market data, no look-ahead bias</li>
+</ul>
+
+<h3>2. RESULTS SUMMARY</h3>
+
+<h4>2.1 Performance Distribution</h4>
+<div class='blockquote info'>
+<p><strong>TL;DR:</strong> 3/15 strategies profitable, 11/15 beat buy-and-hold, average return -2.29% (vs -3.17% passive).</p>
+</div>
+
+<p><strong>Aggregate Statistics:</strong></p>
+<ul>
+    <li><strong>Mean Return:</strong> -2.29%</li>
+    <li><strong>Median Return:</strong> +0.00%</li>
+    <li><strong>Std Deviation:</strong> 5.41%</li>
+    <li><strong>Best Strategy:</strong> SMA_Crossover (+5.58%)</li>
+    <li><strong>Worst Strategy:</strong> OrderFlowImbalance (-12.83%)</li>
+    <li><strong>Return Spread:</strong> 18.41%</li>
+</ul>
+
+<h4>2.2 Risk-Adjusted Performance</h4>
+<ul>
+    <li><strong>Mean Sharpe Ratio:</strong> inf</li>
+    <li><strong>Median Sharpe Ratio:</strong> 3.30</li>
+    <li><strong>Positive Sharpe Count:</strong> 9/15</li>
+    <li><strong>Sharpe > 1.0 (Good):</strong> 8/15</li>
+</ul>
+
+<h4>2.3 Top 5 Performing Strategies</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th><th>Strategy</th><th>Return</th><th>Sharpe</th>
+            <th>Drawdown</th><th>Win Rate</th><th>Beat B&H</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>SMA_Crossover</strong></td>
+            <td><span class="positive">+5.2%</span></td>
+            <td>3.30</td>
+            <td>4.7%</td>
+            <td>100.0%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>TripleEMA</strong></td>
+            <td><span class="positive">+5.6%</span></td>
+            <td>3.58</td>
+            <td>3.9%</td>
+            <td>33.3%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>BollingerBreakout</strong></td>
+            <td><span class="positive">+0.5%</span></td>
+            <td>0.42</td>
+            <td>5.2%</td>
+            <td>28.6%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>Supertrend_ATR</strong></td>
+            <td><span class="negative">-2.9%</span></td>
+            <td>-1.84</td>
+            <td>7.8%</td>
+            <td>22.2%</td>
+            <td>1/1</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>Ichimoku_Cloud</strong></td>
+            <td><span class="negative">-4.3%</span></td>
+            <td>-1.66</td>
+            <td>11.8%</td>
+            <td>0.0%</td>
+            <td>0/1</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>3. KEY FINDINGS</h3>
+
+<div class='blockquote warning'>
+<p><strong>Market Efficiency:</strong> Only 11/15 strategies beat buy-and-hold on average, suggesting semi-strong form efficiency in cryptocurrency markets, though significant alpha opportunities exist for sophisticated strategies.</p>
+</div>
+
+<ol>
+    <li><strong>Strategy Heterogeneity:</strong> Performance varies widely (18.4% spread), indicating strategy selection is paramount. Top quartile strategies demonstrate consistent outperformance across multiple horizons.</li>
+
+    <li><strong>Risk-Return Tradeoff:</strong> Highest returns don't always correspond to best risk-adjusted performance. The composite scoring approach successfully identifies strategies with favorable Sharpe ratios and manageable drawdowns.</li>
+
+    <li><strong>Temporal Dependencies:</strong> Strategy effectiveness varies significantly across time horizons, suggesting different strategies are optimal for different investment timescales (short-term speculation vs long-term investment).</li>
+
+</ol>
+
+<h3>4. LIMITATIONS & CAVEATS</h3>
+
+<ul>
+    <li><strong>Historical Performance:</strong> Past results do not guarantee future returns. Cryptocurrency markets are rapidly evolving.</li>
+
+    <li><strong>Parameter Sensitivity:</strong> Default parameters used; optimization may improve results but risks overfitting.</li>
+
+    <li><strong>Market Impact:</strong> $10,000 capital assumption may not reflect slippage at scale. Larger positions would experience greater market impact.</li>
+
+    <li><strong>Regime Specificity:</strong> Results depend on tested historical period. Different market regimes (bull, bear, sideways) may produce different outcomes.</li>
+
+    <li><strong>Transaction Costs:</strong> 0.1% commission assumption may be conservative for high-frequency strategies or pessimistic for volume-based fee discounts.</li>
+</ul>
+
+<h3>5. CONCLUSIONS</h3>
+
+<div class='blockquote info'>
+<p><strong>TL;DR:</strong> Systematic strategy evaluation framework successfully identified 11 strategies with consistent alpha generation. Top performer (SMA_Crossover) achieved +5.18% returns with favorable risk profile.</p>
+</div>
+
+<p><strong>Primary Conclusions:</strong></p>
+<ol>
+    <li>The optimal strategy (SMA_Crossover) achieved composite score of 0.574, demonstrating superior risk-adjusted returns through consistent performance across multiple time horizons.</li>
+
+    <li>11 out of 15 strategies outperformed passive buy-and-hold, validating the potential for active management in crypto markets while highlighting the importance of strategy selection.</li>
+
+    <li>Multi-horizon testing revealed significant temporal dependencies, suggesting portfolio managers should match strategy selection to intended holding periods and market conditions.</li>
+
+    <li>Risk management remains critical: even top-performing strategies experienced drawdowns up to 13.4%, necessitating appropriate position sizing and stop-loss disciplines.</li>
+</ol>
+
+<h4>Recommendations for Implementation:</h4>
+<ul>
+    <li>Deploy top-quartile strategies with proven track records across horizons</li>
+    <li>Implement robust risk management (position sizing, stop losses)</li>
+    <li>Monitor performance regularly and be prepared to adapt to regime changes</li>
+    <li>Consider ensemble approaches combining multiple complementary strategies</li>
+    <li>Conduct forward testing before live deployment with real capital</li>
+</ul>
+
+<h4>Future Research Directions:</h4>
+<ul>
+    <li>Parameter optimization using walk-forward analysis</li>
+    <li>Machine learning approaches for regime detection and strategy selection</li>
+    <li>Transaction cost sensitivity analysis at various position sizes</li>
+    <li>Multi-asset portfolio optimization with dynamic allocation</li>
+    <li>Out-of-sample testing on additional cryptocurrencies and timeframes</li>
+</ul>
+
+<hr>
+<p><em>Report Generated: 2025-10-19 04:32:01</em></p>
+</div>
+</div>
+</body>
+</html>

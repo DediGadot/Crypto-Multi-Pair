@@ -211,11 +211,12 @@ def _proxy_from_ohlcv(symbol: str, timeframe: str, storage: Optional[OHLCVStorag
     close = df['close'].astype(float)
     vol = df['volume'].astype(float)
 
-    out['proxy_mvrv_z'] = ((close - close.rolling(200, min_periods=10).mean()) / (close.rolling(200, min_periods=10).std() + 1e-9)).fillna(0.0)
-    out['proxy_sopr'] = (close / (close.rolling(30, min_periods=5).mean() + 1e-9)).fillna(1.0)
-    out['proxy_exchange_netflow'] = (vol - vol.rolling(20, min_periods=5).mean()).fillna(0.0)
-    out['proxy_whale_ratio'] = (vol.rolling(10, min_periods=3).max() / (vol.rolling(10, min_periods=3).sum() + 1e-9)).fillna(0.0)
-    out['proxy_puell_multiple'] = (close * vol / ((close * vol).rolling(365, min_periods=30).mean() + 1e-9)).fillna(1.0)
+    # FIX: Use .values to avoid index mismatch (out has RangeIndex, calculations have DatetimeIndex)
+    out['proxy_mvrv_z'] = ((close - close.rolling(200, min_periods=10).mean()) / (close.rolling(200, min_periods=10).std() + 1e-9)).fillna(0.0).values
+    out['proxy_sopr'] = (close / (close.rolling(30, min_periods=5).mean() + 1e-9)).fillna(1.0).values
+    out['proxy_exchange_netflow'] = (vol - vol.rolling(20, min_periods=5).mean()).fillna(0.0).values
+    out['proxy_whale_ratio'] = (vol.rolling(10, min_periods=3).max() / (vol.rolling(10, min_periods=3).sum() + 1e-9)).fillna(0.0).values
+    out['proxy_puell_multiple'] = (close * vol / ((close * vol).rolling(365, min_periods=30).mean() + 1e-9)).fillna(1.0).values
 
     return out
 

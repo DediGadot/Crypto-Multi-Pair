@@ -46,6 +46,19 @@ matplotlib>=3.8.0
 # Utilities
 python-dateutil>=2.8.2
 aiohttp>=3.9.0
+tqdm>=4.66.0
+
+# ============================================
+# SOTA 2025 Strategy Dependencies
+# ============================================
+pytorch-lightning>=2.0.0
+transformers>=4.35.0
+xgboost>=2.0.0
+shap>=0.44.0
+praw>=7.7.0
+tweepy>=4.14.0
+ccxtpro>=0.9.0
+psutil>=5.9.0
 
 # ============================================
 # Development Dependencies (Optional)

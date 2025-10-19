@@ -1,0 +1,55 @@
+--- a/master.py
++++ b/master.py
+@@ -530,11 +530,17 @@ def _calculate_sharpe_ratio_safe(returns: pd.Series, periods_per_year: float) -
+     mean_return = returns.mean()
+     std_return = returns.std()
+
+-    # CRITICAL: Zero variance indicates a broken strategy - FAIL LOUDLY
++    # CRITICAL: Zero variance handling - distinguish no trades from broken strategy
+     if std_return <= 1e-8:
++        # If all returns are exactly 0, strategy made no trades - this is OK
++        if (returns == 0).all():
++            return 0.0  # No trades = Sharpe of 0
++        # Otherwise: trades were made but all same value = broken
+         raise ValueError(
+-            f"Cannot calculate Sharpe ratio: zero/near-zero variance (std={std_return:.2e}). "
+-            f"This indicates constant returns, which suggests a broken strategy. "
++            f"Cannot calculate Sharpe ratio: non-zero but constant returns (std={std_return:.2e}). "
++            f"This indicates a broken strategy (all trades same P&L). "
+             f"Returns: mean={mean_return:.6f}, std={std_return:.2e}"
+         )
+
+@@ -2116,7 +2122,21 @@ class MasterStrategyAnalyzer:
+
+         logger.info(f"\nRunning parallel backtests...")
+
+-        with ProcessPoolExecutor(max_workers=self.workers) as executor:
++        # Try ProcessPool, fall back to ThreadPool if permission denied
++        executor_type = "ProcessPool"
++        try:
++            executor = ProcessPoolExecutor(max_workers=self.workers)
++        except (PermissionError, OSError) as e:
++            logger.warning(
++                f"ProcessPoolExecutor unavailable ({e.__class__.__name__}). "
++                f"Falling back to ThreadPoolExecutor (slower but reliable)"
++            )
++            from concurrent.futures import ThreadPoolExecutor
++            executor = ThreadPoolExecutor(max_workers=self.workers)
++            executor_type = "ThreadPool"
++
++        logger.info(f"Using {executor_type} with {self.workers} workers")
++        with executor:
+             # Submit all jobs
+             future_to_job = {}
+             for job in jobs:
+@@ -763,6 +763,10 @@ def run_backtest_worker(
+     """
+     try:
+         data = job['data']
++
++        # CRITICAL: Slice data to correct horizon window
++        timeframe = job.get('timeframe', '1h')
++        data = _slice_data_to_horizon(data, timeframe, job['horizon_days'], warmup_multiplier=1.5)
+
+         # Get strategy class
+         strategy_class = get_strategy(job['strategy_name'])

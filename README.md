@@ -1,6 +1,6 @@
 # Crypto Trading Pipeline
 
-A comprehensive, research-grade cryptocurrency backtesting framework with **15+ battle-tested trading strategies**, portfolio optimization, and master strategy analysis. Test your strategies against historical data before risking real capital.
+A comprehensive, research-grade cryptocurrency backtesting framework with **15+ battle-tested trading strategies**, portfolio optimization, and master strategy analysis. Test your strategies against historical data before risking real capital. **NEW**: Live portfolio rebalancing advisor for managing active portfolios.
 
 ## 🌟 Key Highlights
 
@@ -10,6 +10,7 @@ A comprehensive, research-grade cryptocurrency backtesting framework with **15+ 
   - **4 Portfolio Strategies**: Portfolio Rebalancer, HRP, Black-Litterman, Risk Parity
   - **3 Advanced Strategies**: Statistical Arbitrage, Copula Pairs Trading, Deep RL Portfolio
 - **🎯 Master Strategy Analyzer**: Automatically discover, test, rank, and compare ALL strategies across multiple time horizons
+- **💼 Live Portfolio Advisor (NEW!)**: Interactive tool for real-time portfolio rebalancing recommendations
 - **🚀 Portfolio Optimization**: Walk-forward parameter optimization with 2-15x speedup using parallel processing
 - **📊 Enhanced Reporting**: Deep-dive analysis with trade-by-trade breakdowns and actionable recommendations
 - **Comprehensive Metrics**: Total return, Sharpe ratio, max drawdown, win rate, profit factor, and more
@@ -76,6 +77,106 @@ master_results_YYYYMMDD_HHMMSS/
 - Sharpe Ratio: 2.15 (excellent risk-adjusted performance)
 - Beat buy-and-hold on 4/5 time horizons
 ```
+
+---
+
+## 💼 Live Portfolio Rebalancing Advisor (NEW!)
+
+The **portfolio_rebalancer_advisor.py** tool provides real-time portfolio analysis and rebalancing recommendations for managing active crypto portfolios. Based on research-backed strategies from academic literature (77% outperformance vs buy-and-hold).
+
+### Key Features
+
+- **Interactive Setup**: Creates config through guided questions if no config exists
+- **Real-Time Prices**: Fetches live prices from exchanges via ccxt
+- **Smart Rebalancing**: Threshold, calendar, or hybrid methods
+- **Detailed Recommendations**: Exact BUY/SELL amounts in USD and shares
+- **Transaction Cost Awareness**: Minimum interval prevents over-trading
+- **Momentum Filter**: Optional feature to skip rebalancing during strong trends
+- **Multiple Outputs**: Console, text file, and JSON formats
+
+### Quick Start
+
+```bash
+# First time use - interactive config creation
+uv run python portfolio_rebalancer_advisor.py check
+
+# With existing config
+uv run python portfolio_rebalancer_advisor.py check --config my_portfolio.yaml
+
+# Update holdings after executing trades
+uv run python portfolio_rebalancer_advisor.py update
+```
+
+### Example Output
+
+```
+================================================================================
+PORTFOLIO REBALANCING ADVISOR
+================================================================================
+Timestamp: 2025-10-19 07:49:28
+Total Value: $24,907.84
+Max Deviation: 12.54%
+
+[!] REBALANCING RECOMMENDED: threshold (12.5% > 15.0%)
+
+--------------------------------------------------------------------------------
+Asset        Action Current    Target     Trade $         Trade Shares
+--------------------------------------------------------------------------------
+BTC/USDT     SELL      53.6%     50.0%  $     -887.00     -0.008311
+ETH/USDT     SELL      39.0%     30.0%  $   -2,236.07     -0.575807
+SOL/USDT     BUY        7.5%     20.0%  $    3,123.07     16.804244
+--------------------------------------------------------------------------------
+
+DETAILED BREAKDOWN:
+BTC/USDT:
+  Current: 0.125000 shares @ $106,727.35 = $13,340.92 (53.56%)
+  Target:  0.116689 shares @ $106,727.35 = $12,453.92 (50.00%)
+  >> SELL 0.008311 shares ($887.00)
+...
+```
+
+### Workflow
+
+1. **Check Portfolio**: Run the `check` command to analyze current state
+2. **Review Recommendations**: Examine whether rebalancing is needed
+3. **Execute Trades**: Manually execute recommended trades on your exchange
+4. **Update Holdings**: Use `update` command to record new balances
+5. **Repeat**: Run checks regularly (daily, weekly, etc.)
+
+### Rebalancing Methods
+
+- **Threshold**: Rebalance only when deviation exceeds threshold (e.g., 15%)
+- **Calendar**: Rebalance on fixed schedule (e.g., every 30 days)
+- **Hybrid** (Recommended): Rebalance on threshold OR calendar trigger
+
+### Configuration Example
+
+```yaml
+portfolio:
+  assets:
+    - symbol: BTC/USDT
+      target_weight: 0.5  # 50%
+    - symbol: ETH/USDT
+      target_weight: 0.5  # 50%
+  holdings:
+    BTC/USDT: 0.125
+    ETH/USDT: 2.5
+
+rebalancing:
+  method: hybrid              # threshold | calendar | hybrid
+  threshold: 0.15             # 15% deviation trigger
+  min_interval_hours: 24      # Prevent over-trading
+  calendar_period_days: 30    # Monthly review
+```
+
+### Documentation
+
+See **[PORTFOLIO_REBALANCER_README.md](PORTFOLIO_REBALANCER_README.md)** for complete documentation including:
+- Detailed usage guide
+- Theory and research basis
+- Configuration options
+- Troubleshooting
+- Best practices
 
 ---
 
@@ -177,6 +278,26 @@ uv run python optimize_portfolio_parallel.py --max-history --quick
 # Full optimization (scales with CPU cores)
 uv run python optimize_portfolio_parallel.py --workers auto
 ```
+
+### 5. Live Portfolio Rebalancing (Manage Active Portfolio)
+
+Get real-time recommendations for your live portfolio:
+
+```bash
+# First time - interactive setup
+uv run python portfolio_rebalancer_advisor.py check
+
+# Daily check with existing config
+uv run python portfolio_rebalancer_advisor.py check --config my_portfolio.yaml
+
+# After executing trades, update holdings
+uv run python portfolio_rebalancer_advisor.py update
+
+# Run validation tests
+uv run python portfolio_rebalancer_advisor.py
+```
+
+**Use Case**: Unlike backtesting tools, this advisor works with your **live portfolio** to tell you exactly when and how to rebalance based on current market prices.
 
 ---
 
@@ -620,10 +741,13 @@ crypto/
 │   └── risk/                # Risk management
 ├── tests/                   # Unit and integration tests
 ├── config*.yaml             # Portfolio configurations
-├── master.py                # Master strategy analyzer (NEW!)
+├── master.py                # Master strategy analyzer
 ├── run_full_pipeline.py     # Single/portfolio backtesting
 ├── optimize_portfolio_parallel.py  # Portfolio optimization
-└── trading_strategies_documentation.html  # Complete strategy guide (NEW!)
+├── portfolio_rebalancer_advisor.py  # Live portfolio advisor (NEW!)
+├── rebalance_config_example.yaml   # Example rebalancing config (NEW!)
+├── PORTFOLIO_REBALANCER_README.md  # Rebalancing guide (NEW!)
+└── trading_strategies_documentation.html  # Complete strategy guide
 ```
 
 ### Running Tests
@@ -710,6 +834,7 @@ uv run python triple_ema.py
 
 ## 📚 Documentation
 
+- **[PORTFOLIO_REBALANCER_README.md](PORTFOLIO_REBALANCER_README.md)** - Live portfolio rebalancing advisor guide (NEW!)
 - **[trading_strategies_documentation.html](trading_strategies_documentation.html)** - Complete strategy guide with pros/cons
 - **[docs/OPTIMIZATION_GUIDE.md](docs/OPTIMIZATION_GUIDE.md)** - Portfolio optimization deep dive
 - **[docs/PARALLELIZATION_EVIDENCE.md](docs/PARALLELIZATION_EVIDENCE.md)** - Performance benchmarks
@@ -777,6 +902,16 @@ For questions or issues:
 ---
 
 ## 🔥 What's New
+
+### Version 2.1 (2025)
+
+- **🎯 Live Portfolio Rebalancing Advisor**: Interactive tool for managing active portfolios with real-time price fetching
+  - Interactive config creation through guided questions
+  - Threshold, calendar, and hybrid rebalancing methods
+  - Real-time recommendations with exact BUY/SELL amounts
+  - Transaction cost awareness and momentum filtering
+  - Based on academic research (77% outperformance vs buy-and-hold)
+  - Complete standalone tool with built-in validation tests
 
 ### Version 2.0 (2025)
 

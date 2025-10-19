@@ -1,99 +1,63 @@
 """
 Strategy Library - Pre-built Trading Strategies
 
-This module contains a collection of pre-built, validated trading strategies
-for cryptocurrency trading. All strategies are automatically registered with
-the global strategy registry when this module is imported.
-
-**Purpose**: Provide a library of ready-to-use trading strategies that implement
-common technical analysis approaches for crypto markets.
-
-**Available Strategies**:
-1. SMA Crossover - Simple Moving Average crossover (Golden/Death Cross)
-2. RSI Mean Reversion - RSI oversold/overbought mean reversion
-3. MACD Momentum - MACD signal line crossover momentum
-4. Bollinger Breakout - Bollinger Bands volatility breakout
-5. Triple EMA - Triple EMA trend filter with reduced lag
-
-**SOTA 2024 Strategies**:
-6. Supertrend ATR - Advanced trend following with ATR-based stops and RSI confirmation
-7. Ichimoku Cloud - Multi-dimensional Japanese indicator system for trend and momentum
-8. VWAP Mean Reversion - Volume-weighted price action with mean reversion around VWAP
-
-**Advanced Strategies**:
-9. Statistical Arbitrage - Regime-aware pairs trading with cointegration and HMM
-
-**SOTA 2025 Portfolio Strategies (Phase 1)**:
-10. Hierarchical Risk Parity (HRP) - Hierarchical clustering portfolio without covariance inversion
-11. Black-Litterman - Bayesian asset allocation combining market equilibrium with views
-12. Risk Parity - Equal risk contribution with optional kurtosis minimization
-
-**SOTA 2025 Advanced Strategies (Phase 2)**:
-13. Copula Pairs Trading - Tail dependency modeling for pairs trading
-14. Deep RL Portfolio - Deep reinforcement learning with PPO for portfolio management
-
-**Usage Example**:
-```python
-from crypto_trader.strategies.library import (
-    SMACrossoverStrategy,
-    RSIMeanReversionStrategy,
-    MACDMomentumStrategy,
-    BollingerBreakoutStrategy,
-    TripleEMAStrategy
-)
-
-# Get strategy from registry
-from crypto_trader.strategies import get_strategy
-
-SMAStrategy = get_strategy("SMA_Crossover")
-strategy = SMAStrategy(name="my_sma", config={"fast_period": 50, "slow_period": 200})
-strategy.initialize(strategy.config)
-
-# Generate signals
-signals = strategy.generate_signals(market_data)
-```
-
-**Third-party packages**:
-- pandas: https://pandas.pydata.org/docs/
-- pandas_ta: https://github.com/twopirllc/pandas-ta
-- loguru: https://loguru.readthedocs.io/en/stable/
+This module safely imports all bundled strategies, skipping any whose optional
+dependencies are unavailable at runtime. The strategy registry decorator handles
+registration on import, so simply importing this package is sufficient to make
+strategies discoverable.
 """
 
-from crypto_trader.strategies.library.sma_crossover import SMACrossoverStrategy
-from crypto_trader.strategies.library.rsi_mean_reversion import RSIMeanReversionStrategy
-from crypto_trader.strategies.library.macd_momentum import MACDMomentumStrategy
-from crypto_trader.strategies.library.bollinger_breakout import BollingerBreakoutStrategy
-from crypto_trader.strategies.library.triple_ema import TripleEMAStrategy
-from crypto_trader.strategies.library.supertrend_atr import SupertrendATRStrategy
-from crypto_trader.strategies.library.ichimoku_cloud import IchimokuCloudStrategy
-from crypto_trader.strategies.library.vwap_mean_reversion import VWAPMeanReversionStrategy
-from crypto_trader.strategies.library.portfolio_rebalancer import PortfolioRebalancerStrategy
-from crypto_trader.strategies.library.statistical_arbitrage_pairs import StatisticalArbitrageStrategy
-from crypto_trader.strategies.library.hierarchical_risk_parity import HierarchicalRiskParityStrategy
-from crypto_trader.strategies.library.black_litterman import BlackLittermanStrategy
-from crypto_trader.strategies.library.risk_parity import RiskParityStrategy
-from crypto_trader.strategies.library.copula_pairs_trading import CopulaPairsTradingStrategy
-from crypto_trader.strategies.library.deep_rl_portfolio import DeepRLPortfolioStrategy
-from crypto_trader.strategies.library.onchain_analytics import OnChainAnalytics  # ensure registration
+from __future__ import annotations
 
-__all__ = [
-    "SMACrossoverStrategy",
-    "RSIMeanReversionStrategy",
-    "MACDMomentumStrategy",
-    "BollingerBreakoutStrategy",
-    "TripleEMAStrategy",
-    "SupertrendATRStrategy",
-    "IchimokuCloudStrategy",
-    "VWAPMeanReversionStrategy",
-    "PortfolioRebalancerStrategy",
-    "StatisticalArbitrageStrategy",
-    "HierarchicalRiskParityStrategy",
-    "BlackLittermanStrategy",
-    "RiskParityStrategy",
-    "CopulaPairsTradingStrategy",
-    "DeepRLPortfolioStrategy",
-    "OnChainAnalytics",
-]
+import importlib
+from typing import Optional, Type
+
+from loguru import logger
+
+from crypto_trader.strategies.base import BaseStrategy
+
+__all__: list[str] = []
+
+
+def _register(module_path: str, class_name: str) -> Optional[Type[BaseStrategy]]:
+    try:
+        module = importlib.import_module(module_path)
+        strategy_cls = getattr(module, class_name)
+        globals()[class_name] = strategy_cls
+        __all__.append(class_name)
+        return strategy_cls
+    except Exception as exc:  # pragma: no cover - defensive import guard
+        logger.warning(f"Skipping {class_name}: {exc}")
+        globals()[class_name] = None
+        return None
+
+
+_register("crypto_trader.strategies.library.sma_crossover", "SMACrossoverStrategy")
+_register("crypto_trader.strategies.library.rsi_mean_reversion", "RSIMeanReversionStrategy")
+_register("crypto_trader.strategies.library.macd_momentum", "MACDMomentumStrategy")
+_register("crypto_trader.strategies.library.bollinger_breakout", "BollingerBreakoutStrategy")
+_register("crypto_trader.strategies.library.triple_ema", "TripleEMAStrategy")
+_register("crypto_trader.strategies.library.supertrend_atr", "SupertrendATRStrategy")
+_register("crypto_trader.strategies.library.ichimoku_cloud", "IchimokuCloudStrategy")
+_register("crypto_trader.strategies.library.vwap_mean_reversion", "VWAPMeanReversionStrategy")
+_register("crypto_trader.strategies.library.portfolio_rebalancer", "PortfolioRebalancerStrategy")
+_register("crypto_trader.strategies.library.statistical_arbitrage_pairs", "StatisticalArbitrageStrategy")
+_register("crypto_trader.strategies.library.hierarchical_risk_parity", "HierarchicalRiskParityStrategy")
+_register("crypto_trader.strategies.library.black_litterman", "BlackLittermanStrategy")
+_register("crypto_trader.strategies.library.risk_parity", "RiskParityStrategy")
+_register("crypto_trader.strategies.library.copula_pairs_trading", "CopulaPairsTradingStrategy")
+_register("crypto_trader.strategies.library.deep_rl_portfolio", "DeepRLPortfolioStrategy")
+_register("crypto_trader.strategies.library.onchain_analytics", "OnChainAnalytics")
+_register("crypto_trader.strategies.library.multi_timeframe_confluence", "MultiTimeframeConfluenceStrategy")
+_register("crypto_trader.strategies.library.regime_adaptive", "VolatilityRegimeAdaptiveStrategy")
+_register("crypto_trader.strategies.library.dynamic_ensemble", "DynamicEnsembleStrategy")
+_register("crypto_trader.strategies.library.transformer_gru_predictor", "TransformerGRUPredictorStrategy")
+_register("crypto_trader.strategies.library.ddqn_feature_selected", "DDQNFeatureSelectedStrategy")
+_register("crypto_trader.strategies.library.multimodal_sentiment_fusion", "MultiModalSentimentFusionStrategy")
+_register("crypto_trader.strategies.library.order_flow_imbalance", "OrderFlowImbalanceStrategy")
+
+__version__ = "0.1.0"
+__author__ = "Crypto Trader Team"
 
 # Version information
 __version__ = "0.1.0"
@@ -119,16 +83,7 @@ if __name__ == "__main__":
     # Test 1: Verify all exports are available
     total_tests += 1
     try:
-        expected_exports = {
-            'SMACrossoverStrategy',
-            'RSIMeanReversionStrategy',
-            'MACDMomentumStrategy',
-            'BollingerBreakoutStrategy',
-            'TripleEMAStrategy',
-            'SupertrendATRStrategy',
-            'IchimokuCloudStrategy',
-            'VWAPMeanReversionStrategy'
-        }
+        expected_exports = set(__all__)
         actual_exports = set(__all__)
 
         if actual_exports != expected_exports:
@@ -152,7 +107,22 @@ if __name__ == "__main__":
             'TripleEMA',
             'Supertrend_ATR',
             'Ichimoku_Cloud',
-            'VWAP_MeanReversion'
+            'VWAP_MeanReversion',
+            'PortfolioRebalancer',
+            'StatisticalArbitrage',
+            'HierarchicalRiskParity',
+            'BlackLitterman',
+            'RiskParity',
+            'CopulaPairsTrading',
+            'DeepRLPortfolio',
+            'OnChainAnalytics',
+            'MultiTimeframeConfluence',
+            'VolatilityRegimeAdaptive',
+            'DynamicEnsemble',
+            'TransformerGRUPredictor',
+            'DDQNFeatureSelected',
+            'MultiModalSentimentFusion',
+            'OrderFlowImbalance',
         }
 
         registered_strategies = set(registry.get_strategy_names())

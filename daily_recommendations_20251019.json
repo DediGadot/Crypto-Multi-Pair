@@ -1,0 +1,28 @@
+{
+  "date": "2025-10-19",
+  "strategy_name": "MACD_Momentum",
+  "recommendations": [
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 50.0,
+      "entry_price": null,
+      "target_price": null,
+      "stop_loss": null,
+      "position_size_pct": null,
+      "reasoning": "No clear signal at current market conditions",
+      "risk_reward_ratio": null,
+      "timestamp": "2025-10-19 04:47:20.900534"
+    }
+  ],
+  "market_conditions": {
+    "date": "2025-10-19",
+    "time": "04:47:20",
+    "symbols_analyzed": 1,
+    "timeframe": "1h",
+    "lookback_days": 7,
+    "market_trend": "bearish"
+  },
+  "risk_level": "medium",
+  "generated_at": "2025-10-19T04:47:23.669648"
+}

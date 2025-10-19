@@ -1,0 +1,48 @@
+{
+  "timestamp": "2025-10-19T07:50:58.686170",
+  "needs_rebalance": true,
+  "reason": "calendar (0 days >= 30)",
+  "max_deviation": 0.12541437212771706,
+  "total_value": 24905.6025,
+  "recommendations": [
+    {
+      "symbol": "BTC/USDT",
+      "action": "SELL",
+      "current_weight": 0.5356727467243565,
+      "target_weight": 0.5,
+      "current_value": 13341.2525,
+      "target_value": 12452.80125,
+      "current_shares": 0.125,
+      "target_shares": 0.11667571363708168,
+      "trade_usd": -888.4512500000001,
+      "trade_shares": -0.00832428636291832,
+      "price": 106730.02
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "SELL",
+      "current_weight": 0.38974162540336055,
+      "target_weight": 0.3,
+      "current_value": 9706.75,
+      "target_value": 7471.6807499999995,
+      "current_shares": 2.5,
+      "target_shares": 1.924351804156901,
+      "trade_usd": -2235.0692500000005,
+      "trade_shares": -0.575648195843099,
+      "price": 3882.7
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "current_weight": 0.07458562787228294,
+      "target_weight": 0.2,
+      "current_value": 1857.5999999999997,
+      "target_value": 4981.120500000001,
+      "current_shares": 10.0,
+      "target_shares": 26.814817506459953,
+      "trade_usd": 3123.5205000000014,
+      "trade_shares": 16.814817506459953,
+      "price": 185.76
+    }
+  ]
+}

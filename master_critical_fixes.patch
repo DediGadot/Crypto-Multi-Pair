@@ -1,0 +1,127 @@
+--- a/master.py
++++ b/master.py
+@@ -91,30 +91,8 @@ warnings.filterwarnings('ignore')
+ app = typer.Typer(help="Master strategy analysis and ranking system")
+
+
+-
+-def _verify_strategy_can_initialize(strategy_name: str, config: Dict[str, Any]) -> bool:
+-    """
+-    Pre-flight check to ensure strategy can initialize before submitting to worker pool.
+-
+-    This prevents PermissionError cascades where strategies fail to initialize
+-    due to process pool issues.
+-    """
+-    try:
+-        from crypto_trader.strategies import get_strategy
+-        StrategyClass = get_strategy(strategy_name)
+-        if StrategyClass is None:
+-            logger.warning(f"Strategy {strategy_name} not found in registry")
+-            return False
+-
+-        # Try to create and initialize
+-        strategy = StrategyClass()
+-        strategy.initialize(config)
+-
+-        if not hasattr(strategy, '_initialized') or not strategy._initialized:
+-            logger.warning(f"Strategy {strategy_name} has _initialized=False after initialize()")
+-            return False
+-
+-        logger.debug(f"Pre-flight check passed for {strategy_name}")
+-        return True
+-
+-    except Exception as e:
+-        logger.error(f"Pre-flight check failed for {strategy_name}: {e}")
+-        return False
++# DELETED: _verify_strategy_can_initialize - was dead code (never called anywhere)
++# If pre-flight checks are needed in future, implement them WHERE they're actually used
+
+
+ class HTMLReportWriter:
+@@ -556,25 +534,34 @@ def _calculate_sharpe_ratio_safe(returns: pd.Series, periods_per_year: float) -
+     """
+     Calculate Sharpe ratio with proper edge case handling.
+
+     Args:
+         returns: Series of returns
+         periods_per_year: Annualization factor
+
+     Returns:
+-        Sharpe ratio (0.0 if undefined)
++        Sharpe ratio
++
++    Raises:
++        ValueError: If returns have zero/near-zero variance (indicates broken strategy)
+     """
+     if len(returns) == 0:
+-        return 0.0
++        raise ValueError("Cannot calculate Sharpe ratio: no returns data")
+
+     mean_return = returns.mean()
+     std_return = returns.std()
+
+-    # Handle edge cases
+-    if std_return <= 0:
+-        # No volatility
+-        if mean_return > 0:
+-            return 100.0  # Cap at high positive value
+-        elif mean_return < 0:
+-            return -100.0  # Cap at high negative value
+-        else:
+-            return 0.0  # No return, no volatility
++    # CRITICAL: Zero variance indicates a broken strategy - FAIL LOUDLY
++    if std_return <= 1e-8:
++        raise ValueError(
++            f"Cannot calculate Sharpe ratio: zero/near-zero variance (std={std_return:.2e}). "
++            f"This indicates constant returns, which suggests a broken strategy. "
++            f"Returns: mean={mean_return:.6f}, std={std_return:.2e}"
++        )
+
+     # Normal Sharpe calculation
+     sharpe = (mean_return * periods_per_year) / (std_return * np.sqrt(periods_per_year))
+
+-    # Cap extreme values
+-    return max(min(sharpe, 100.0), -100.0)
++    # Sanity check for extreme values (but don't cap - let them through for debugging)
++    if not np.isfinite(sharpe):
++        raise ValueError(
++            f"Sharpe ratio is non-finite ({sharpe}). "
++            f"Returns: mean={mean_return}, std={std_return}, periods={periods_per_year}"
++        )
++
++    return float(sharpe)
+
+
+@@ -2513,9 +2500,7 @@ class MasterAnalysis:
+         if not eligible_for_risk:
+             eligible_for_risk = strategy_scores
+
+-        f.write("**🎯 AGGRESSIVE INVESTOR** (maximize returns, accept high risk):
+-
+-")
++        f.write("**🎯 AGGRESSIVE INVESTOR** (maximize returns, accept high risk):\n\n")
+         aggressive_pick = _pick_with_fallback(beat_buyhold, strategy_scores, key=lambda x: x.avg_return, reverse=True)
+         if aggressive_pick:
+             f.write(f"→ **{aggressive_pick.strategy_name}**  \n")
+@@ -2524,9 +2509,7 @@ class MasterAnalysis:
+         else:
+             f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
+
+-        f.write("**🛡️  CONSERVATIVE INVESTOR** (minimize drawdown, accept lower returns):
+-
+-")
++        f.write("**🛡️  CONSERVATIVE INVESTOR** (minimize drawdown, accept lower returns):\n\n")
+         conservative_candidates = [s for s in eligible_for_risk if np.isfinite(s.avg_max_drawdown)]
+         if not conservative_candidates:
+             conservative_candidates = strategy_scores
+@@ -2543,9 +2526,7 @@ class MasterAnalysis:
+         else:
+             f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
+
+-        f.write("**⚖️  BALANCED INVESTOR** (best risk-adjusted returns):
+-
+-")
++        f.write("**⚖️  BALANCED INVESTOR** (best risk-adjusted returns):\n\n")
+         balanced_candidates = [s for s in eligible_for_risk if np.isfinite(s.avg_sharpe)]
+         if not balanced_candidates:
+             balanced_candidates = strategy_scores

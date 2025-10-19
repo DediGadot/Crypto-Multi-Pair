@@ -40,6 +40,7 @@ crypto-trader data validate BTCUSDT
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import pandas as pd
 import typer
 from loguru import logger
 from rich.console import Console
@@ -107,7 +108,9 @@ def fetch(
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
 
-        # Initialize data fetcher
+        if exchange.lower() != "binance":
+            console.print("[yellow]⚠ Only Binance is supported at the moment; defaulting to Binance data[/yellow]\n")
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -117,17 +120,22 @@ def fetch(
             task = progress.add_task("Connecting to exchange...", total=None)
 
             try:
-                fetcher = BinanceDataFetcher(exchange=exchange)
+                fetcher = BinanceDataFetcher()
                 progress.update(task, description="Fetching data...")
 
                 # Fetch data
-                df = fetcher.fetch_ohlcv(
+                df = fetcher.get_ohlcv(
                     symbol=symbol,
                     timeframe=timeframe,
                     start_date=start_date,
                     end_date=end_date
                 )
 
+                if df is None or df.empty:
+                    console.print(f"[yellow]⚠[/yellow] No data returned for {symbol} {timeframe}")
+                    raise typer.Exit(1)
+
+                df = df.sort_index()
                 progress.update(task, description="Processing data...", completed=True)
 
             except Exception as e:
@@ -158,7 +166,7 @@ def fetch(
         if save:
             try:
                 storage = OHLCVStorage()
-                storage.save_ohlcv(symbol, timeframe, df)
+                storage.save_ohlcv(df, symbol, timeframe)
                 console.print(f"\n[green]✓[/green] Data saved to database")
             except Exception as e:
                 console.print(f"\n[yellow]⚠[/yellow] Warning: Could not save to database: {e}")
@@ -211,6 +219,9 @@ def update(
     try:
         console.print(f"\n[bold blue]Updating {symbol} data[/bold blue]\n")
 
+        if exchange.lower() != "binance":
+            console.print("[yellow]⚠ Only Binance is supported at the moment; defaulting to Binance data[/yellow]\n")
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -220,28 +231,29 @@ def update(
 
             # Initialize components
             storage = OHLCVStorage()
-            fetcher = BinanceDataFetcher(exchange=exchange)
+            fetcher = BinanceDataFetcher()
 
             # Get last timestamp from storage
-            last_timestamp = storage.get_last_timestamp(symbol, timeframe)
+            last_timestamp = storage.get_latest_timestamp(symbol, timeframe)
 
             if last_timestamp:
                 progress.update(task, description="Fetching new candles...")
-                start_date = last_timestamp + timedelta(minutes=1)
-                end_date = datetime.now()
+                existing_df = storage.load_ohlcv(symbol, timeframe)
+                existing_count = len(existing_df) if existing_df is not None else 0
 
-                df = fetcher.fetch_ohlcv(
-                    symbol=symbol,
-                    timeframe=timeframe,
-                    start_date=start_date,
-                    end_date=end_date
-                )
+                updated = fetcher.update_data(symbol, timeframe)
 
-                if len(df) > 0:
-                    storage.save_ohlcv(symbol, timeframe, df)
-                    console.print(f"[green]✓[/green] Updated with [bold]{len(df)}[/bold] new candles")
+                if not updated:
+                    console.print("[red]✗[/red] Update failed; see logs for details")
                 else:
-                    console.print("[yellow]ℹ[/yellow] Data is already up to date")
+                    refreshed = storage.load_ohlcv(symbol, timeframe)
+                    refreshed = refreshed if refreshed is not None else pd.DataFrame()
+                    new_rows = max(len(refreshed) - existing_count, 0)
+
+                    if new_rows > 0:
+                        console.print(f"[green]✓[/green] Updated with [bold]{new_rows}[/bold] new candles")
+                    else:
+                        console.print("[yellow]ℹ[/yellow] Data is already up to date")
             else:
                 console.print(f"[yellow]⚠[/yellow] No existing data found for {symbol}")
                 console.print("  Use 'fetch' command to download initial data")
@@ -380,7 +392,12 @@ def validate(
         if check_gaps:
             df_sorted = df.sort_index()
             time_diffs = df_sorted.index.to_series().diff()
-            expected_diff = pd.Timedelta(timeframe)
+            try:
+                expected_diff = pd.to_timedelta(timeframe)
+            except ValueError:
+                expected_diff = pd.Timedelta(hours=1)
+                validation_issues.append(f"Unsupported timeframe '{timeframe}' for gap detection; defaulted to 1h")
+
             gaps = (time_diffs > expected_diff * 1.5).sum()
             if gaps > 0:
                 validation_issues.append(f"Data gaps detected: {gaps} gaps")

@@ -42,7 +42,10 @@ Symbol: BTCUSDT | Timeframe: 1h | Period: 90 days
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from pathlib import Path
+from dataclasses import asdict
+import json
 
+import pandas as pd
 import typer
 from loguru import logger
 from rich.console import Console
@@ -51,12 +54,101 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich import box
 
+from crypto_trader.core.config import BacktestConfig
+from crypto_trader.core.types import BacktestResult, Timeframe
 from crypto_trader.strategies.registry import get_registry
 from crypto_trader.backtesting.engine import BacktestEngine
 from crypto_trader.data.storage import OHLCVStorage as DataStorage
 from crypto_trader.data.providers import MockDataProvider
 
 console = Console()
+
+
+def _resolve_timeframe(value: str) -> Timeframe:
+    """Resolve CLI timeframe string to Timeframe enum with fallback."""
+    try:
+        return Timeframe(value)
+    except ValueError:
+        console.print(
+            f"[yellow]⚠ Unsupported timeframe '{value}' provided; defaulting to 1h[/yellow]"
+        )
+        return Timeframe.HOUR_1
+
+
+def _prepare_market_data(df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure market data has a timestamp column and sorted index."""
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    prepared = df.copy()
+    prepared.index = pd.to_datetime(prepared.index, utc=True)
+    prepared.sort_index(inplace=True)
+    prepared["timestamp"] = prepared.index
+    return prepared
+
+
+def _load_market_data(symbol: str, timeframe: str, days: int) -> pd.DataFrame:
+    """Load market data from storage with mock fallback."""
+    storage = DataStorage()
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=days)
+
+    df = storage.load_ohlcv(symbol, timeframe, start_date=start_date, end_date=end_date)
+
+    if df is None or df.empty:
+        provider = MockDataProvider()
+        df = provider.get_ohlcv(symbol, timeframe, limit=days * 24)
+
+    return _prepare_market_data(df)
+
+
+def _metrics_as_dict(result: BacktestResult) -> Dict[str, Any]:
+    """Convert BacktestResult metrics to a serializable dict with percentages."""
+    metrics = result.metrics
+    metrics_dict = asdict(metrics)
+    metrics_dict.update(
+        {
+            "total_return_percent": metrics.total_return * 100,
+            "max_drawdown_percent": metrics.max_drawdown * 100,
+            "win_rate_percent": metrics.win_rate * 100,
+            "sharpe_ratio": metrics.sharpe_ratio,
+            "sortino_ratio": metrics.sortino_ratio,
+        }
+    )
+    return metrics_dict
+
+
+def _build_report_payload(result: BacktestResult) -> Dict[str, Any]:
+    """Create a JSON-serializable payload for saving backtest reports."""
+    payload = {
+        "strategy_name": result.strategy_name,
+        "symbol": result.symbol,
+        "timeframe": result.timeframe.value,
+        "start_date": result.start_date.isoformat(),
+        "end_date": result.end_date.isoformat(),
+        "initial_capital": result.initial_capital,
+        "metrics": _metrics_as_dict(result),
+        "summary": result.summary(),
+        "metadata": result.metadata,
+    }
+
+    trades_preview = []
+    for trade in result.trades[:50]:
+        trades_preview.append(
+            {
+                "entry_time": trade.entry_time.isoformat(),
+                "exit_time": trade.exit_time.isoformat(),
+                "side": trade.side.value,
+                "entry_price": trade.entry_price,
+                "exit_price": trade.exit_price,
+                "quantity": trade.quantity,
+                "pnl": trade.pnl,
+                "pnl_percent": trade.pnl_percent,
+                "fees": trade.fees,
+            }
+        )
+    payload["trades_preview"] = trades_preview
+    return payload
 
 
 def load_all_strategies():
@@ -151,118 +243,88 @@ def run(
             BarColumn(),
             console=console
         ) as progress:
-            # Load strategies
             task = progress.add_task("Loading strategies...", total=None)
             load_all_strategies()
-
-            # Get strategy
             registry = get_registry()
+
             try:
                 strategy_class = registry.get_strategy(strategy_name)
             except KeyError:
                 console.print(f"[red]✗ Strategy '{strategy_name}' not found[/red]\n")
                 raise typer.Exit(1)
 
-            # Create strategy instance
             progress.update(task, description="Initializing strategy...")
             strategy = strategy_class(name=strategy_name)
+            strategy_config = json.loads(config) if config else {}
+            strategy.initialize(strategy_config)
 
-            # Parse config
-            if config:
-                import json
-                config_dict = json.loads(config)
-                strategy.initialize(config_dict)
-            else:
-                strategy.initialize({})
-
-            # Load data
             progress.update(task, description="Loading market data...")
-            try:
-                storage = OHLCVStorage()
-                df = storage.load_ohlcv(symbol, timeframe, days=days)
+            market_data = _load_market_data(symbol, timeframe, days)
+            if market_data.empty:
+                console.print(f"[red]✗ Unable to load market data for {symbol}[/red]\n")
+                raise typer.Exit(1)
 
-                if df is None or len(df) == 0:
-                    console.print(f"[yellow]⚠ No data found for {symbol}[/yellow]")
-                    console.print("  Using mock data...\n")
-                    provider = MockDataProvider()
-                    df = provider.get_ohlcv(symbol, timeframe, limit=days*24)
-            except Exception as e:
-                console.print(f"[yellow]⚠ Data loading failed: {e}[/yellow]")
-                console.print("  Using mock data...\n")
-                provider = MockDataProvider()
-                df = provider.get_ohlcv(symbol, timeframe, limit=days*24)
-
-            # Run backtest
             progress.update(task, description="Running backtest...")
-            engine = BacktestEngine(
+            engine = BacktestEngine()
+            timeframe_enum = _resolve_timeframe(timeframe)
+            backtest_config = BacktestConfig(
                 initial_capital=initial_capital,
-                fee_percent=fee_percent
+                trading_fee_percent=fee_percent
             )
 
-            results = engine.run_backtest(
+            result = engine.run_backtest(
                 strategy=strategy,
-                data=df,
-                symbol=symbol
+                data=market_data,
+                config=backtest_config,
+                symbol=symbol,
+                timeframe=timeframe_enum
             )
 
-        # Display results
         console.print("[green]✓[/green] Backtest completed\n")
 
-        # Create performance summary table
-        metrics = results.get('metrics', {})
+        metrics = result.metrics
+        total_return_pct = metrics.total_return * 100
+        win_rate_pct = metrics.win_rate * 100
+        max_drawdown_pct = metrics.max_drawdown * 100
 
         summary = Table(title="Performance Summary", show_header=True, box=box.ROUNDED)
         summary.add_column("Metric", style="cyan", no_wrap=True)
         summary.add_column("Value", style="green", justify="right")
-
-        # Key metrics
-        total_return = metrics.get('total_return_percent', 0)
-        return_style = "green" if total_return >= 0 else "red"
+        return_style = "green" if total_return_pct >= 0 else "red"
 
         summary.add_row("Initial Capital", f"${initial_capital:,.2f}")
-        summary.add_row("Final Value", f"${metrics.get('final_value', 0):,.2f}")
-        summary.add_row("Total Return", f"[{return_style}]{total_return:+.2f}%[/{return_style}]")
-        summary.add_row("Total Trades", str(metrics.get('total_trades', 0)))
-        summary.add_row("Win Rate", f"{metrics.get('win_rate', 0):.2f}%")
-        summary.add_row("Profit Factor", f"{metrics.get('profit_factor', 0):.2f}")
-        summary.add_row("Sharpe Ratio", f"{metrics.get('sharpe_ratio', 0):.2f}")
-        summary.add_row("Max Drawdown", f"{metrics.get('max_drawdown_percent', 0):.2f}%")
+        summary.add_row("Final Value", f"${metrics.final_capital:,.2f}")
+        summary.add_row("Total Return", f"[{return_style}]{total_return_pct:+.2f}%[/{return_style}]")
+        summary.add_row("Total Trades", str(metrics.total_trades))
+        summary.add_row("Win Rate", f"{win_rate_pct:.2f}%")
+        summary.add_row("Profit Factor", f"{metrics.profit_factor:.2f}")
+        summary.add_row("Sharpe Ratio", f"{metrics.sharpe_ratio:.2f}")
+        summary.add_row("Max Drawdown", f"{max_drawdown_pct:.2f}%")
 
         console.print(summary)
 
-        # Trade statistics
-        if metrics.get('total_trades', 0) > 0:
+        if metrics.total_trades > 0:
             console.print("\n[bold]Trade Statistics:[/bold]")
             trade_table = Table(show_header=True, box=box.SIMPLE)
             trade_table.add_column("Type", style="cyan")
             trade_table.add_column("Count", justify="right")
-            trade_table.add_column("Avg Profit", justify="right", style="green")
+            trade_table.add_column("Average", justify="right", style="green")
 
-            trade_table.add_row(
-                "Winning",
-                str(metrics.get('winning_trades', 0)),
-                f"${metrics.get('avg_win', 0):,.2f}"
-            )
-            trade_table.add_row(
-                "Losing",
-                str(metrics.get('losing_trades', 0)),
-                f"${metrics.get('avg_loss', 0):,.2f}"
-            )
+            trade_table.add_row("Winning", str(metrics.winning_trades), f"${metrics.avg_win:,.2f}")
+            trade_table.add_row("Losing", str(metrics.losing_trades), f"${metrics.avg_loss:,.2f}")
+            trade_table.add_row("Expectancy", "-", f"${metrics.expectancy:,.2f}")
 
             console.print(trade_table)
 
-        # Save report
         if save_report:
             try:
                 output_dir = Path(output) if output else Path("reports")
                 output_dir.mkdir(parents=True, exist_ok=True)
-
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
                 report_file = output_dir / f"backtest_{strategy_name}_{symbol}_{timestamp}.json"
 
-                import json
-                with open(report_file, 'w') as f:
-                    json.dump(results, f, indent=2, default=str)
+                with open(report_file, "w", encoding="utf-8") as f:
+                    json.dump(_build_report_payload(result), f, indent=2)
 
                 console.print(f"\n[green]✓[/green] Report saved to [cyan]{report_file}[/cyan]")
             except Exception as e:
@@ -320,25 +382,17 @@ def compare(
         console.print(f"\n[bold blue]Comparing {len(strategy_names)} Strategies[/bold blue]")
         console.print(f"Symbol: [cyan]{symbol}[/cyan] | Timeframe: [cyan]{timeframe}[/cyan] | Days: [cyan]{days}[/cyan]\n")
 
-        # Load data once
-        console.print("Loading market data...")
-        try:
-            storage = OHLCVStorage()
-            df = storage.load_ohlcv(symbol, timeframe, days=days)
+        market_data = _load_market_data(symbol, timeframe, days)
+        if market_data.empty:
+            console.print(f"[red]✗ Unable to load market data for {symbol}[/red]\n")
+            raise typer.Exit(1)
 
-            if df is None or len(df) == 0:
-                provider = MockDataProvider()
-                df = provider.get_ohlcv(symbol, timeframe, limit=days*24)
-        except Exception:
-            provider = MockDataProvider()
-            df = provider.get_ohlcv(symbol, timeframe, limit=days*24)
-
-        # Load strategies
         load_all_strategies()
         registry = get_registry()
+        timeframe_enum = _resolve_timeframe(timeframe)
+        backtest_config = BacktestConfig(initial_capital=initial_capital)
 
-        # Run backtests for each strategy
-        results_dict = {}
+        results: Dict[str, BacktestResult] = {}
 
         with Progress(
             SpinnerColumn(),
@@ -346,26 +400,29 @@ def compare(
             BarColumn(),
             console=console
         ) as progress:
-            for strategy_name in strategy_names:
-                task = progress.add_task(f"Backtesting {strategy_name}...", total=None)
-
+            for name in strategy_names:
+                task = progress.add_task(f"Backtesting {name}...", total=None)
                 try:
-                    strategy_class = registry.get_strategy(strategy_name)
-                    strategy = strategy_class(name=strategy_name)
+                    strategy_class = registry.get_strategy(name)
+                    strategy = strategy_class(name=name)
                     strategy.initialize({})
 
-                    engine = BacktestEngine(initial_capital=initial_capital)
-                    results = engine.run_backtest(strategy, df, symbol)
+                    engine = BacktestEngine()
+                    result = engine.run_backtest(
+                        strategy=strategy,
+                        data=market_data.copy(),
+                        config=backtest_config,
+                        symbol=symbol,
+                        timeframe=timeframe_enum
+                    )
+                    results[name] = result
+                except Exception as exc:
+                    console.print(f"[red]✗ Failed to backtest {name}: {exc}[/red]")
+                    logger.error(f"Strategy {name} backtest failed: {exc}")
+                finally:
+                    progress.update(task, completed=True)
 
-                    results_dict[strategy_name] = results.get('metrics', {})
-
-                except Exception as e:
-                    console.print(f"[red]✗ Failed to backtest {strategy_name}: {e}[/red]")
-                    logger.error(f"Strategy {strategy_name} backtest failed: {e}")
-                    continue
-
-        # Display comparison table
-        if not results_dict:
+        if not results:
             console.print("[red]✗ No successful backtests to compare[/red]\n")
             raise typer.Exit(1)
 
@@ -380,37 +437,36 @@ def compare(
         comp_table.add_column("Max DD %", justify="right")
         comp_table.add_column("Profit Factor", justify="right")
 
-        # Sort by return
-        sorted_strategies = sorted(
-            results_dict.items(),
-            key=lambda x: x[1].get('total_return_percent', 0),
+        sorted_results = sorted(
+            results.items(),
+            key=lambda item: item[1].metrics.total_return,
             reverse=True
         )
 
-        for strategy_name, metrics in sorted_strategies:
-            return_pct = metrics.get('total_return_percent', 0)
+        for name, result in sorted_results:
+            metrics = result.metrics
+            return_pct = metrics.total_return * 100
+            win_rate_pct = metrics.win_rate * 100
+            drawdown_pct = metrics.max_drawdown * 100
             return_style = "green" if return_pct >= 0 else "red"
 
             comp_table.add_row(
-                strategy_name,
-                f"[{return_style}]{return_pct:+.2f}[/{return_style}]",
-                f"{metrics.get('sharpe_ratio', 0):.2f}",
-                str(metrics.get('total_trades', 0)),
-                f"{metrics.get('win_rate', 0):.1f}%",
-                f"{metrics.get('max_drawdown_percent', 0):.2f}",
-                f"{metrics.get('profit_factor', 0):.2f}"
+                name,
+                f"[{return_style}]{return_pct:+.2f}%[/{return_style}]",
+                f"{metrics.sharpe_ratio:.2f}",
+                str(metrics.total_trades),
+                f"{win_rate_pct:.1f}%",
+                f"{drawdown_pct:.2f}%",
+                f"{metrics.profit_factor:.2f}"
             )
 
         console.print(comp_table)
         console.print()
 
-        # Highlight best performer
-        best_strategy = sorted_strategies[0][0]
-        best_return = sorted_strategies[0][1].get('total_return_percent', 0)
-
+        best_name, best_result = sorted_results[0]
         console.print(
-            f"[bold green]🏆 Best Performer:[/bold green] {best_strategy} "
-            f"([green]{best_return:+.2f}%[/green])\n"
+            f"[bold green]🏆 Best Performer:[/bold green] {best_name} "
+            f"([green]{best_result.metrics.total_return * 100:+.2f}%[/green])\n"
         )
 
     except Exception as e:
@@ -461,43 +517,37 @@ def optimize(
     try:
         console.print(f"\n[bold blue]Optimizing Strategy: {strategy_name}[/bold blue]\n")
 
-        # Parse parameter ranges
-        import json
         param_dict = json.loads(param_ranges)
-
         console.print(f"Parameter ranges: {param_dict}")
         console.print(f"Optimization metric: [cyan]{metric}[/cyan]\n")
 
-        # Calculate total combinations
         import itertools
+
         param_names = list(param_dict.keys())
         param_values = [param_dict[name] for name in param_names]
         combinations = list(itertools.product(*param_values))
 
+        if not combinations:
+            console.print("[red]✗ No parameter combinations to evaluate[/red]\n")
+            raise typer.Exit(1)
+
         console.print(f"Testing [bold]{len(combinations)}[/bold] parameter combinations...\n")
 
-        # Load data
-        try:
-            storage = OHLCVStorage()
-            df = storage.load_ohlcv(symbol, "1h", days=days)
-            if df is None or len(df) == 0:
-                provider = MockDataProvider()
-                df = provider.get_ohlcv(symbol, "1h", limit=days*24)
-        except Exception:
-            provider = MockDataProvider()
-            df = provider.get_ohlcv(symbol, "1h", limit=days*24)
+        market_data = _load_market_data(symbol, Timeframe.HOUR_1.value, days)
+        if market_data.empty:
+            console.print(f"[red]✗ Unable to load market data for {symbol}[/red]\n")
+            raise typer.Exit(1)
 
-        # Load strategy
         load_all_strategies()
         registry = get_registry()
         strategy_class = registry.get_strategy(strategy_name)
+        engine = BacktestEngine()
+        backtest_config = BacktestConfig(initial_capital=10000.0)
 
-        # Run optimization
-        best_result = None
         best_params = None
-        best_score = float('-inf')
-
-        results_list = []
+        best_result: Optional[BacktestResult] = None
+        best_score = float("-inf")
+        evaluation_rows = []
 
         with Progress(
             SpinnerColumn(),
@@ -508,83 +558,87 @@ def optimize(
             task = progress.add_task("Optimizing...", total=len(combinations))
 
             for combo in combinations:
-                # Create config
-                config = {name: value for name, value in zip(param_names, combo)}
-
+                strategy_params = {name: value for name, value in zip(param_names, combo)}
                 try:
-                    # Run backtest
                     strategy = strategy_class(name=strategy_name)
-                    strategy.initialize(config)
+                    strategy.initialize(strategy_params)
 
-                    engine = BacktestEngine(initial_capital=10000.0)
-                    results = engine.run_backtest(strategy, df, symbol)
+                    result = engine.run_backtest(
+                        strategy=strategy,
+                        data=market_data.copy(),
+                        config=backtest_config,
+                        symbol=symbol,
+                        timeframe=Timeframe.HOUR_1
+                    )
 
-                    metrics = results.get('metrics', {})
-                    score = metrics.get(metric, 0)
+                    metrics = result.metrics
+                    score = getattr(metrics, metric, None)
+                    if score is None:
+                        raise AttributeError(
+                            f"Metric '{metric}' not available on PerformanceMetrics"
+                        )
 
-                    results_list.append({
-                        'params': config,
-                        'score': score,
-                        'metrics': metrics
-                    })
+                    evaluation_rows.append(
+                        {
+                            "params": strategy_params,
+                            "score": score,
+                            "result": result,
+                        }
+                    )
 
                     if score > best_score:
                         best_score = score
-                        best_params = config
-                        best_result = metrics
+                        best_params = strategy_params
+                        best_result = result
 
-                except Exception as e:
-                    logger.warning(f"Optimization iteration failed: {e}")
+                except Exception as exc:
+                    logger.warning(f"Optimization iteration failed: {exc}")
 
                 progress.update(task, advance=1)
 
-        # Display results
-        if best_result:
-            console.print("\n[green]✓[/green] Optimization completed\n")
-
-            # Best parameters
-            console.print("[bold]Best Parameters:[/bold]")
-            param_panel = Panel(
-                "\n".join([f"{k}: [cyan]{v}[/cyan]" for k, v in best_params.items()]),
-                title="Optimal Configuration",
-                border_style="green"
-            )
-            console.print(param_panel)
-
-            # Best performance
-            console.print("\n[bold]Best Performance:[/bold]")
-            perf_table = Table(show_header=False, box=box.SIMPLE)
-            perf_table.add_column("Metric", style="cyan")
-            perf_table.add_column("Value", style="green")
-
-            perf_table.add_row("Optimization Metric", f"{metric}: {best_score:.2f}")
-            perf_table.add_row("Total Return", f"{best_result.get('total_return_percent', 0):+.2f}%")
-            perf_table.add_row("Sharpe Ratio", f"{best_result.get('sharpe_ratio', 0):.2f}")
-            perf_table.add_row("Total Trades", str(best_result.get('total_trades', 0)))
-
-            console.print(perf_table)
-
-            # Top 5 results
-            console.print("\n[bold]Top 5 Results:[/bold]")
-            top_table = Table(show_header=True, header_style="bold cyan")
-            top_table.add_column("Rank", justify="right")
-            top_table.add_column("Parameters", style="yellow")
-            top_table.add_column("Score", justify="right", style="green")
-
-            sorted_results = sorted(results_list, key=lambda x: x['score'], reverse=True)
-            for i, result in enumerate(sorted_results[:5], 1):
-                params_str = ", ".join([f"{k}={v}" for k, v in result['params'].items()])
-                top_table.add_row(
-                    str(i),
-                    params_str,
-                    f"{result['score']:.2f}"
-                )
-
-            console.print(top_table)
-            console.print()
-
-        else:
+        if not best_result:
             console.print("[red]✗ Optimization failed - no valid results[/red]\n")
+            return
+
+        console.print("\n[green]✓[/green] Optimization completed\n")
+
+        console.print("[bold]Best Parameters:[/bold]")
+        param_panel = Panel(
+            "\n".join(f"{k}: [cyan]{v}[/cyan]" for k, v in best_params.items()),
+            title="Optimal Configuration",
+            border_style="green",
+        )
+        console.print(param_panel)
+
+        metrics = best_result.metrics
+
+        console.print("\n[bold]Best Performance:[/bold]")
+        perf_table = Table(show_header=False, box=box.SIMPLE)
+        perf_table.add_column("Metric", style="cyan")
+        perf_table.add_column("Value", style="green")
+        perf_table.add_row("Optimization Metric", f"{metric}: {best_score:.2f}")
+        perf_table.add_row("Total Return", f"{metrics.total_return * 100:+.2f}%")
+        perf_table.add_row("Sharpe Ratio", f"{metrics.sharpe_ratio:.2f}")
+        perf_table.add_row("Total Trades", str(metrics.total_trades))
+
+        console.print(perf_table)
+
+        console.print("\n[bold]Top 5 Results:[/bold]")
+        top_table = Table(show_header=True, header_style="bold cyan")
+        top_table.add_column("Rank", justify="right")
+        top_table.add_column("Parameters", style="yellow")
+        top_table.add_column("Score", justify="right", style="green")
+
+        top_results = sorted(
+            evaluation_rows, key=lambda row: row["score"], reverse=True
+        )[:5]
+
+        for idx, row in enumerate(top_results, start=1):
+            params_str = ", ".join(f"{k}={v}" for k, v in row["params"].items())
+            top_table.add_row(str(idx), params_str, f"{row['score']:.2f}")
+
+        console.print(top_table)
+        console.print()
 
     except Exception as e:
         console.print(f"\n[red]✗ Optimization failed: {e}[/red]\n")
@@ -640,34 +694,84 @@ def report(
         console.print(f"Report: [cyan]{report_path.name}[/cyan]\n")
 
         if format == "console":
-            # Display report in console
-            metrics = data.get('metrics', {})
+            metrics = data.get("metrics", {})
 
-            # Overview
             console.print("[bold]Backtest Overview[/bold]")
             overview = Table(show_header=False, box=box.SIMPLE)
             overview.add_column("Field", style="cyan")
             overview.add_column("Value")
 
-            overview.add_row("Strategy", data.get('strategy_name', 'Unknown'))
-            overview.add_row("Symbol", data.get('symbol', 'Unknown'))
-            overview.add_row("Period", f"{data.get('start_date', 'N/A')} to {data.get('end_date', 'N/A')}")
+            overview.add_row("Strategy", data.get("strategy_name", "Unknown"))
+            overview.add_row("Symbol", data.get("symbol", "Unknown"))
+            overview.add_row("Timeframe", data.get("timeframe", "Unknown"))
+            overview.add_row(
+                "Period",
+                f"{data.get('start_date', 'N/A')} to {data.get('end_date', 'N/A')}",
+            )
 
             console.print(overview)
 
-            # Performance metrics
             console.print("\n[bold]Performance Metrics[/bold]")
-            metrics_table = Table(show_header=True, header_style="bold cyan")
+            metrics_table = Table(show_header=False, box=box.SIMPLE)
             metrics_table.add_column("Metric", style="yellow")
-            metrics_table.add_column("Value", style="green", justify="right")
+            metrics_table.add_column("Value", style="green")
 
-            for key, value in metrics.items():
-                if isinstance(value, float):
-                    metrics_table.add_row(key.replace('_', ' ').title(), f"{value:.2f}")
-                else:
-                    metrics_table.add_row(key.replace('_', ' ').title(), str(value))
+            def _format_number(value, suffix=""):
+                if isinstance(value, (int, float)):
+                    return f"{value:.2f}{suffix}"
+                return str(value)
+
+            metrics_table.add_row(
+                "Total Return",
+                f"{metrics.get('total_return_percent', metrics.get('total_return', 0) * 100):+.2f}%",
+            )
+            metrics_table.add_row(
+                "Max Drawdown",
+                f"{metrics.get('max_drawdown_percent', metrics.get('max_drawdown', 0) * 100):.2f}%",
+            )
+            metrics_table.add_row(
+                "Sharpe Ratio",
+                _format_number(metrics.get("sharpe_ratio", 0)),
+            )
+            metrics_table.add_row(
+                "Sortino Ratio",
+                _format_number(metrics.get("sortino_ratio", 0)),
+            )
+            metrics_table.add_row(
+                "Profit Factor",
+                _format_number(metrics.get("profit_factor", 0)),
+            )
+            metrics_table.add_row(
+                "Win Rate",
+                f"{metrics.get('win_rate_percent', metrics.get('win_rate', 0) * 100):.2f}%",
+            )
+            metrics_table.add_row(
+                "Total Trades",
+                str(metrics.get("total_trades", 0)),
+            )
 
             console.print(metrics_table)
+
+            trades_preview = data.get("trades_preview", [])
+            if trades_preview:
+                console.print("\n[bold]Sample Trades (first 5)[/bold]")
+                trades_table = Table(show_header=True, header_style="bold cyan")
+                trades_table.add_column("Entry", style="cyan")
+                trades_table.add_column("Exit", style="cyan")
+                trades_table.add_column("Side", justify="center")
+                trades_table.add_column("PnL", justify="right")
+                trades_table.add_column("PnL %", justify="right")
+
+                for trade in trades_preview[:5]:
+                    trades_table.add_row(
+                        trade.get("entry_time", ""),
+                        trade.get("exit_time", ""),
+                        trade.get("side", ""),
+                        f"${trade.get('pnl', 0):,.2f}",
+                        f"{trade.get('pnl_percent', 0):+.2f}%",
+                    )
+
+                console.print(trades_table)
 
         elif format in ["html", "pdf"]:
             console.print(f"[yellow]ℹ[/yellow] {format.upper()} export not yet implemented")

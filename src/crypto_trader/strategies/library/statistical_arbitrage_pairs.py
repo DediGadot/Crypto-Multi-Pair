@@ -71,13 +71,12 @@ from loguru import logger
 from crypto_trader.strategies.base import BaseStrategy, SignalType
 from crypto_trader.strategies.registry import register_strategy
 
-# Handle imports for both package and standalone execution
-try:
-    from .statistical_arbitrage.cointegration import CointegrationAnalyzer
-    from .statistical_arbitrage.regime_detection import RegimeDetector
-except ImportError:
-    from statistical_arbitrage.cointegration import CointegrationAnalyzer
-    from statistical_arbitrage.regime_detection import RegimeDetector
+from crypto_trader.strategies.library.statistical_arbitrage.cointegration import (
+    CointegrationAnalyzer,
+)
+from crypto_trader.strategies.library.statistical_arbitrage.regime_detection import (
+    RegimeDetector,
+)
 
 
 @register_strategy(

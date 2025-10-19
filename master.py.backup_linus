@@ -1,0 +1,2815 @@
+#!/usr/bin/env python3
+"""
+Master Strategy Analysis - Comprehensive Strategy Testing and Ranking
+
+This script provides a comprehensive analysis of all trading strategies across
+multiple time horizons, comparing them against buy-and-hold and generating
+detailed ranking reports.
+
+**Purpose**: Automatically discover, test, rank, and report on the best trading
+strategies for a given asset across multiple timeframes.
+
+**Key Features**:
+- Auto-discovery of all registered strategies
+- Parallel execution across multiple time horizons
+- Composite scoring based on risk-adjusted metrics
+- Comprehensive comparison reports
+- Interactive visualizations
+
+**Multi-Pair Optimizations (Phase 1 Fixes)**:
+- ✅ Shared Data Pool: Pre-fetch data once, share across all workers (4-10x speedup)
+- ✅ Proper Data Alignment: Use index intersection with data loss logging
+- ✅ Feature Augmentation: Apply alternative data features to multi-pair strategies
+- ✅ Increased Worker Pool: Support up to 4 workers for multi-pair mode
+- ✅ Zero Redundant API Calls: Eliminated hundreds of duplicate data fetches
+
+**Third-party packages**:
+- pandas: https://pandas.pydata.org/docs/
+- numpy: https://numpy.org/doc/stable/
+- concurrent.futures: https://docs.python.org/3/library/concurrent.futures.html
+- loguru: https://loguru.readthedocs.io/en/stable/
+- typer: https://typer.tiangolo.com/
+- plotly: https://plotly.com/python/
+
+**Sample Input**:
+```bash
+python master.py --symbol BTC/USDT
+python master.py --symbol ETH/USDT --quick
+python master.py --workers 8 --horizons 30 90 180 365
+```
+
+**Expected Output**:
+- MASTER_REPORT.txt: Executive summary with rankings
+- comparison_matrix.csv: Complete metrics matrix
+- best_strategy_report.html: Deep dive on winner
+- performance_heatmap.html: Visual comparison
+"""
+
+import sys
+from pathlib import Path
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple, Any
+from dataclasses import dataclass, asdict
+from concurrent.futures import ProcessPoolExecutor, as_completed, ThreadPoolExecutor
+import warnings
+import json
+
+# Add src directory to Python path
+script_dir = Path(__file__).resolve().parent
+src_dir = script_dir / "src"
+if src_dir.exists() and str(src_dir) not in sys.path:
+    sys.path.insert(0, str(src_dir))
+
+import typer
+import pandas as pd
+import numpy as np
+import pandas_ta as ta
+from loguru import logger
+from tqdm import tqdm
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend for server use
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from io import BytesIO
+import base64
+
+from crypto_trader.core.config import BacktestConfig
+from crypto_trader.core.types import BacktestResult, Timeframe
+from crypto_trader.data.fetchers import BinanceDataFetcher
+from crypto_trader.strategies import get_registry
+from crypto_trader.backtesting.engine import BacktestEngine
+from crypto_trader.features.factory import augment_with_features, DEFAULT_JOIN_CONFIG
+from crypto_trader.analysis.performance_store import PerformanceStore
+from crypto_trader.data.alt.onchain_ingestor import ingest_onchain
+from crypto_trader.data.alt.sentiment_ingestor import ingest_sentiment
+from crypto_trader.data.alt.orderflow_stream import ingest_orderflow
+
+# Suppress warnings
+warnings.filterwarnings('ignore')
+
+app = typer.Typer(help="Master strategy analysis and ranking system")
+
+
+
+def _verify_strategy_can_initialize(strategy_name: str, config: Dict[str, Any]) -> bool:
+    """
+    Pre-flight check to ensure strategy can initialize before submitting to worker pool.
+
+    This prevents PermissionError cascades where strategies fail to initialize
+    due to process pool issues.
+    """
+    try:
+        from crypto_trader.strategies import get_strategy
+        StrategyClass = get_strategy(strategy_name)
+        if StrategyClass is None:
+            logger.warning(f"Strategy {strategy_name} not found in registry")
+            return False
+
+        # Try to create and initialize
+        strategy = StrategyClass()
+        strategy.initialize(config)
+
+        if not hasattr(strategy, '_initialized') or not strategy._initialized:
+            logger.warning(f"Strategy {strategy_name} has _initialized=False after initialize()")
+            return False
+
+        logger.debug(f"Pre-flight check passed for {strategy_name}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Pre-flight check failed for {strategy_name}: {e}")
+        return False
+
+
+class HTMLReportWriter:
+    """Helper class for generating styled HTML reports."""
+
+    @staticmethod
+    def get_css() -> str:
+        """Return CSS styling for the report."""
+        return """
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: #f5f5f5;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                background: white;
+                padding: 40px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+
+            h1 {
+                color: #1a1a1a;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 15px;
+            }
+
+            h2 {
+                color: #2c3e50;
+                font-size: 2em;
+                margin-top: 40px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            h3 {
+                color: #34495e;
+                font-size: 1.5em;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            h4 {
+                color: #555;
+                font-size: 1.2em;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .metadata {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 30px;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .metadata p {
+                margin: 5px 0;
+            }
+
+            .metadata strong {
+                color: #2c3e50;
+                display: inline-block;
+                min-width: 180px;
+            }
+
+            hr {
+                border: none;
+                border-top: 1px solid #e0e0e0;
+                margin: 30px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            th {
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            tr:hover {
+                background: #f8f9fa;
+            }
+
+            tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .tier1 {
+                background: #e8f5e9 !important;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .tier2 {
+                background: #fff3e0 !important;
+                border-left: 4px solid #FF9800;
+            }
+
+            .tier3 {
+                background: #ffebee !important;
+                border-left: 4px solid #f44336;
+            }
+
+            .positive {
+                color: #4CAF50;
+                font-weight: 600;
+            }
+
+            .negative {
+                color: #f44336;
+                font-weight: 600;
+            }
+
+            .blockquote {
+                background: #fff8dc;
+                border-left: 5px solid #ffa500;
+                padding: 15px 20px;
+                margin: 20px 0;
+                border-radius: 0 5px 5px 0;
+            }
+
+            .blockquote.warning {
+                background: #fff3cd;
+                border-left-color: #ffc107;
+            }
+
+            .blockquote.info {
+                background: #d1ecf1;
+                border-left-color: #17a2b8;
+            }
+
+            .action-plan {
+                background: #e3f2fd;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #2196F3;
+            }
+
+            .action-plan ol {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .action-plan li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            .recommendation-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 20px 0;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .recommendation-box h4 {
+                color: white;
+                margin-top: 0;
+                font-size: 1.4em;
+            }
+
+            .recommendation-box ul {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .recommendation-box li {
+                margin: 8px 0;
+            }
+
+            .profile-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .profile-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .profile-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            }
+
+            .profile-card h4 {
+                margin-top: 0;
+                color: #667eea;
+            }
+
+            .academic-section {
+                background: #fafafa;
+                padding: 30px;
+                border-radius: 5px;
+                margin-top: 40px;
+                border-top: 3px solid #999;
+            }
+
+            .academic-section h2 {
+                color: #666;
+            }
+
+            .academic-section pre {
+                background: white;
+                padding: 15px;
+                border-left: 3px solid #999;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9em;
+                line-height: 1.5;
+            }
+
+            ul, ol {
+                margin-left: 30px;
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+
+            li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            strong {
+                color: #2c3e50;
+            }
+
+            em {
+                color: #555;
+                font-style: italic;
+            }
+
+            .emoji {
+                font-size: 1.2em;
+            }
+
+            @media print {
+                body {
+                    background: white;
+                    padding: 0;
+                }
+
+                .container {
+                    box-shadow: none;
+                    padding: 20px;
+                }
+
+                table {
+                    page-break-inside: avoid;
+                }
+
+                h2 {
+                    page-break-before: always;
+                }
+            }
+        </style>
+        """
+
+    @staticmethod
+    def escape_html(text: str) -> str:
+        """Escape HTML special characters."""
+        return (text
+                .replace('&', '&amp;')
+                .replace('<', '&lt;')
+                .replace('>', '&gt;')
+                .replace('"', '&quot;')
+                .replace("'", '&#x27;'))
+
+    @staticmethod
+    def format_percentage(value: float, with_sign: bool = True) -> str:
+        """Format percentage with color coding."""
+        if value is None or not np.isfinite(value):
+            return '<span class="negative">N/A</span>'
+        formatted = f"{value:+.1%}" if with_sign else f"{value:.1%}"
+        css_class = "positive" if value >= 0 else "negative"
+        return f'<span class="{css_class}">{formatted}</span>'
+
+    @staticmethod
+    def format_number(value: float, decimals: int = 2) -> str:
+        """Format a numeric value with fixed decimals, guarding NaN/Inf."""
+        if value is None or not np.isfinite(value):
+            return "N/A"
+        return f"{value:.{decimals}f}"
+
+    @staticmethod
+    def create_performance_heatmap(strategy_scores: List, horizons: List) -> str:
+        """Create performance heatmap showing strategy returns across horizons using Plotly."""
+        try:
+            import plotly.graph_objects as go
+
+            # Build matrix: rows=strategies, cols=horizons
+            strategy_names = [s.strategy_name for s in strategy_scores]
+            horizon_names = [h.name for h in horizons]
+
+            # Create return matrix
+            returns_matrix = []
+            for strat in strategy_scores:
+                row = []
+                for horizon in horizons:
+                    if horizon.name in strat.horizon_results:
+                        ret = strat.horizon_results[horizon.name]['return'] * 100  # Convert to percentage
+                        row.append(ret)
+                    else:
+                        row.append(None)
+                returns_matrix.append(row)
+
+            # Create heatmap
+            fig = go.Figure(data=go.Heatmap(
+                z=returns_matrix,
+                x=horizon_names,
+                y=strategy_names,
+                colorscale='RdYlGn',
+                zmid=0,
+                text=[[f"{v:.1f}%" if v is not None else "N/A" for v in row] for row in returns_matrix],
+                texttemplate='%{text}',
+                textfont={"size": 10},
+                colorbar=dict(title="Return (%)")
+            ))
+
+            fig.update_layout(
+                title="Strategy Performance Heatmap (Returns % by Time Horizon)",
+                xaxis_title="Time Horizon",
+                yaxis_title="Strategy",
+                height=400 + len(strategy_scores) * 30,
+                font=dict(size=11)
+            )
+
+            return fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+        except Exception as e:
+            logger.warning(f"Failed to create performance heatmap: {e}")
+            return f"<p>⚠️ Heatmap visualization failed: {str(e)}</p>"
+
+    @staticmethod
+    def create_sharpe_comparison_chart(strategy_scores: List) -> str:
+        """Create bar chart comparing Sharpe ratios across strategies."""
+        try:
+            import plotly.graph_objects as go
+
+            strategy_names = [s.strategy_name for s in strategy_scores]
+            sharpe_ratios = [s.avg_sharpe for s in strategy_scores]
+            colors = ['green' if sr > 1.0 else 'orange' if sr > 0 else 'red' for sr in sharpe_ratios]
+
+            fig = go.Figure(data=[
+                go.Bar(
+                    x=strategy_names,
+                    y=sharpe_ratios,
+                    marker_color=colors,
+                    text=[f"{sr:.2f}" for sr in sharpe_ratios],
+                    textposition='outside'
+                )
+            ])
+
+            fig.update_layout(
+                title="Sharpe Ratio Comparison (Higher is Better)",
+                xaxis_title="Strategy",
+                yaxis_title="Sharpe Ratio",
+                height=500,
+                xaxis={'tickangle': -45},
+                font=dict(size=11)
+            )
+
+            fig.add_hline(y=1.0, line_dash="dash", line_color="green",
+                         annotation_text="Good (>1.0)", annotation_position="right")
+            fig.add_hline(y=0, line_dash="dash", line_color="gray")
+
+            return fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+        except Exception as e:
+            logger.warning(f"Failed to create Sharpe comparison chart: {e}")
+            return f"<p>⚠️ Sharpe chart visualization failed: {str(e)}</p>"
+
+
+def _periods_per_year_from_timeframe(timeframe: str) -> float:
+    """
+    Return annualisation factor for a given timeframe string.
+    Defaults to hourly spacing if unknown.
+    """
+    mapping = {
+        "1m": 60 * 24 * 365,
+        "5m": 12 * 24 * 365,
+        "15m": 4 * 24 * 365,
+        "1h": 24 * 365,
+        "4h": 6 * 365,
+        "1d": 365,
+        "1w": 52,
+    }
+    return float(mapping.get(timeframe, 24 * 365))
+
+
+def _calculate_sharpe_ratio_safe(returns: pd.Series, periods_per_year: float) -> float:
+    """
+    Calculate Sharpe ratio with proper edge case handling.
+
+    Args:
+        returns: Series of returns
+        periods_per_year: Annualization factor
+
+    Returns:
+        Sharpe ratio (0.0 if undefined)
+    """
+    if len(returns) == 0:
+        return 0.0
+
+    mean_return = returns.mean()
+    std_return = returns.std()
+
+    # Handle edge cases
+    if std_return <= 0:
+        # No volatility
+        if mean_return > 0:
+            return 100.0  # Cap at high positive value
+        elif mean_return < 0:
+            return -100.0  # Cap at high negative value
+        else:
+            return 0.0  # No return, no volatility
+
+    # Normal Sharpe calculation
+    sharpe = (mean_return * periods_per_year) / (std_return * np.sqrt(periods_per_year))
+
+    # Cap extreme values
+    return max(min(sharpe, 100.0), -100.0)
+
+
+def _calculate_data_limit(
+    timeframe: str,
+    horizon_days: int,
+    warmup_multiplier: float = 1.0
+) -> int:
+    """
+    Calculate the number of candles needed for a given timeframe and horizon.
+
+    Args:
+        timeframe: Timeframe string (e.g., '1h', '1d')
+        horizon_days: Number of days in the horizon
+        warmup_multiplier: Multiplier for warmup period (default 1.0 = no warmup)
+                          Use 3.0 for multi-pair strategies (2x warmup + 1x test)
+                          Use 4.0 for advanced strategies (HRP, Statistical Arbitrage)
+
+    Returns:
+        Number of candles needed (includes warmup period)
+    """
+    timeframe_to_periods = {
+        "1m": 24 * 60,
+        "5m": 24 * 12,
+        "15m": 24 * 4,
+        "1h": 24,
+        "4h": 6,
+        "1d": 1,
+        "1w": 1 / 7
+    }
+    periods_per_day = timeframe_to_periods.get(timeframe, 24)  # Default to hourly
+
+    # Apply warmup multiplier for strategies that need historical context
+    total_days = int(horizon_days * warmup_multiplier)
+    return int(total_days * periods_per_day)
+
+
+def _slice_data_to_horizon(
+    data: pd.DataFrame,
+    timeframe: str,
+    horizon_days: int,
+    warmup_multiplier: float = 1.5
+) -> pd.DataFrame:
+    """
+    Slice data to the appropriate window for a given horizon.
+
+    Takes the LAST N candles corresponding to horizon_days × warmup_multiplier.
+    This ensures each horizon tests on the correct time period.
+
+    CRITICAL: Without this, all horizons would test on the same full dataset!
+
+    Args:
+        data: Full DataFrame with all available data
+        timeframe: Candle timeframe
+        horizon_days: Target horizon in days
+        warmup_multiplier: Multiplier for warmup period (e.g., 1.5 = 50% warmup)
+
+    Returns:
+        Sliced DataFrame with only the relevant window
+
+    Example:
+        Full data: 270 days (6480 candles at 1h)
+        horizon_days=30, warmup=1.5
+        Result: Last 45 days (1080 candles) - most recent data
+    """
+    required_candles = _calculate_data_limit(timeframe, horizon_days, warmup_multiplier)
+
+    if len(data) <= required_candles:
+        # Already have the right amount or less
+        return data
+
+    # Take the LAST required_candles rows (most recent data)
+    sliced = data.tail(required_candles).copy()
+
+    logger.debug(
+        f"Sliced data from {len(data)} to {len(sliced)} candles for {horizon_days}d horizon "
+        f"(warmup={warmup_multiplier}x)"
+    )
+
+    return sliced
+
+
+def _format_error_message(error: Exception, context: str = "", max_length: int = 500) -> str:
+    """
+    Format error messages consistently with optional truncation.
+
+    Args:
+        error: Exception object or error message
+        context: Additional context (e.g., strategy name, operation)
+        max_length: Maximum length for error message (0 = no truncation)
+
+    Returns:
+        Formatted error message string
+    """
+    error_str = str(error)
+
+    # Add context if provided
+    if context:
+        full_message = f"{context}: {error_str}"
+    else:
+        full_message = error_str
+
+    # Truncate if needed
+    if max_length > 0 and len(full_message) > max_length:
+        return full_message[:max_length-3] + "..."
+
+    return full_message
+
+
+def _compute_indicator_series(df: pd.DataFrame, indicator: str) -> Optional[pd.Series]:
+    """
+    Compute a technical indicator column for the provided DataFrame.
+    Supports a limited set used by built-in strategies.
+    """
+    normalized = indicator.upper()
+
+    try:
+        if normalized.startswith("SMA_"):
+            period = int(normalized.split("_")[1])
+            return df["close"].rolling(window=period, min_periods=period).mean()
+        if normalized.startswith("EMA_"):
+            period = int(normalized.split("_")[1])
+            return ta.ema(df["close"], length=period)
+        if normalized.startswith("RSI_"):
+            period = int(normalized.split("_")[1])
+            return ta.rsi(df["close"], length=period)
+        if normalized.startswith("ATR_"):
+            period = int(normalized.split("_")[1])
+            return ta.atr(df["high"], df["low"], df["close"], length=period)
+    except Exception as exc:
+        logger.warning(
+            f"Failed to compute indicator '{indicator}': {exc}"
+        )
+        return None
+
+    return None
+
+
+def _add_required_indicators(strategy: Any, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ensure all required indicators for the strategy are present on the DataFrame.
+    """
+    get_indicators = getattr(strategy, "get_required_indicators", None)
+    if get_indicators is None:
+        return data
+
+    try:
+        required = get_indicators()
+    except Exception as exc:
+        logger.warning(
+            f"Could not obtain required indicators for {strategy.name}: {exc}"
+        )
+        return data
+
+    if not required:
+        return data
+
+    df = data.copy()
+    for indicator in required:
+        if indicator in df.columns:
+            continue
+
+        series = _compute_indicator_series(df, indicator)
+        if series is None:
+            raise ValueError(
+                f"Unsupported indicator '{indicator}' for strategy '{strategy.name}'"
+            )
+        df[indicator] = series
+
+    return df
+
+
+# Global worker function for single-pair strategies
+def run_backtest_worker(
+    strategy_name: str,
+    data_dict: Dict[str, Any],
+    horizon_name: str,
+    horizon_days: int,
+    symbol: str,
+    timeframe: str,
+    default_params: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """Worker function for single-pair backtest execution."""
+    try:
+        # Import inside worker to avoid pickle issues
+        import sys
+        from pathlib import Path
+        import pandas as pd
+
+        # Ensure imports are available
+        script_dir = Path(__file__).resolve().parent
+        src_dir = script_dir / "src"
+        if src_dir.exists() and str(src_dir) not in sys.path:
+            sys.path.insert(0, str(src_dir))
+
+        from crypto_trader.strategies import get_registry
+        from crypto_trader.backtesting.engine import BacktestEngine
+        from crypto_trader.core.config import BacktestConfig
+        from crypto_trader.core.types import Timeframe
+
+        # Recreate DataFrame from dict
+        data = pd.DataFrame(data_dict)
+
+        # Get strategy class with error handling
+        try:
+            import crypto_trader.strategies.library  # noqa: F401
+        except ImportError as e:
+            return {
+                'strategy_name': strategy_name,
+                'horizon': horizon_name,
+                'error': f'Failed to import strategies library: {e}'
+            }
+
+        registry = get_registry()
+        strategy_class = registry.get_strategy(strategy_name)
+
+        # Normalize configuration parameters
+        config_params = default_params or {}
+
+        # Check strategy __init__ signature to instantiate correctly
+        import inspect
+        init_signature = inspect.signature(strategy_class.__init__)
+        params = list(init_signature.parameters.keys())
+
+        # If __init__ accepts name/config, pass them (e.g., old-style strategies)
+        if 'name' in params and 'config' in params:
+            strategy = strategy_class(name=strategy_name, config=config_params)
+        else:
+            # SOTA 2025 strategies: instantiate without args, then initialize
+            strategy = strategy_class()
+            # Only call initialize for strategies that have it
+            if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                strategy.initialize(config_params)
+
+        # Prepare data
+        data_with_timestamp = data.reset_index(drop=True)
+        if 'timestamp' not in data_with_timestamp.columns and hasattr(data, 'index'):
+            data_with_timestamp['timestamp'] = data.index
+
+        # Ensure timestamp column is datetime for downstream consumers
+        if 'timestamp' in data_with_timestamp.columns:
+            data_with_timestamp['timestamp'] = pd.to_datetime(data_with_timestamp['timestamp'])
+
+        # Add any required indicators the strategy expects
+        data_with_timestamp = _add_required_indicators(strategy, data_with_timestamp)
+        if 'timestamp' in data_with_timestamp.columns:
+            data_with_timestamp = data_with_timestamp.sort_values('timestamp').reset_index(drop=True)
+
+        # Create backtest config
+        config = BacktestConfig(
+            initial_capital=10000.0,
+            trading_fee_percent=0.001,
+            slippage_percent=0.0005,
+        )
+
+        # Create engine
+        engine = BacktestEngine()
+
+        # Convert timeframe string to enum
+        timeframe_mapping = {
+            "1m": Timeframe.MINUTE_1,
+            "5m": Timeframe.MINUTE_5,
+            "15m": Timeframe.MINUTE_15,
+            "1h": Timeframe.HOUR_1,
+            "4h": Timeframe.HOUR_4,
+            "1d": Timeframe.DAY_1,
+        }
+        timeframe_enum = timeframe_mapping.get(timeframe, Timeframe.HOUR_1)
+
+        # Run backtest
+        result = engine.run_backtest(
+            strategy=strategy,
+            data=data_with_timestamp,
+            config=config,
+            symbol=symbol.replace("/", ""),
+            timeframe=timeframe_enum,
+        )
+
+        # Extract and return serializable metrics
+        return {
+            'strategy_name': strategy_name,
+            'strategy_type': 'single_pair',
+            'symbol': symbol,
+            'horizon': horizon_name,
+            'horizon_days': horizon_days,
+            'total_return': result.metrics.total_return,
+            'sharpe_ratio': result.metrics.sharpe_ratio,
+            'max_drawdown': result.metrics.max_drawdown,
+            'win_rate': result.metrics.win_rate,
+            'total_trades': result.metrics.total_trades,
+            'profit_factor': result.metrics.profit_factor,
+            'final_capital': result.metrics.final_capital,
+        }
+
+    except Exception as e:
+        # Return error info with traceback for debugging
+        import traceback
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        error_trace = traceback.format_exc()
+        logger.debug(f"Worker error for {strategy_name} on {horizon_name}:\n{error_trace}")
+        return {
+            'strategy_name': strategy_name,
+            'horizon': horizon_name,
+            'error': error_msg
+        }
+
+
+# Global worker function for multi-pair strategies
+def run_multipair_backtest_worker(
+    strategy_name: str,
+    asset_symbols: List[str],
+    data_dicts: Dict[str, Dict[str, Any]],
+    horizon_name: str,
+    horizon_days: int,
+    timeframe: str,
+    default_params: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """
+    Worker function for multi-pair backtest execution.
+
+    Handles strategies like Portfolio Rebalancer and Statistical Arbitrage
+    that require multiple asset pairs.
+    """
+    try:
+        # Import inside worker to avoid pickle issues
+        import sys
+        from pathlib import Path
+        import pandas as pd
+        import yaml
+
+        # Ensure imports are available
+        script_dir = Path(__file__).resolve().parent
+        src_dir = script_dir / "src"
+        if src_dir.exists() and str(src_dir) not in sys.path:
+            sys.path.insert(0, str(src_dir))
+
+        from crypto_trader.data.fetchers import BinanceDataFetcher
+
+        # For multi-pair strategies, we need to use the pipeline
+        # Create a temporary config file
+        if strategy_name == "PortfolioRebalancer":
+            from tempfile import TemporaryDirectory
+
+            equal_weight = 1.0 / len(asset_symbols)
+            assets = [{'symbol': symbol, 'weight': equal_weight} for symbol in asset_symbols]
+
+            try:
+                with TemporaryDirectory(prefix="portfolio_backtest_") as tmp_dir:
+                    temp_path = Path(tmp_dir)
+                    output_dir = temp_path / "output"
+                    output_dir.mkdir(parents=True, exist_ok=True)
+
+                    config = {
+                        'run': {
+                            'name': f'portfolio_{horizon_name}',
+                            'mode': 'portfolio',
+                            'description': f'Portfolio Rebalancer backtest for {", ".join(asset_symbols)} over {horizon_days} days'
+                        },
+                        'data': {
+                            'timeframe': timeframe,
+                            'days': horizon_days
+                        },
+                        'portfolio': {
+                            'assets': assets,
+                            'rebalancing': {
+                                'enabled': True,
+                                'threshold': default_params.get('threshold', 0.10),
+                                'rebalance_method': default_params.get('rebalance_method', 'threshold'),
+                                'min_rebalance_interval_hours': default_params.get('min_rebalance_interval_hours', 24),
+                                'use_momentum_filter': default_params.get('use_momentum_filter', False)
+                            }
+                        },
+                        'capital': {
+                            'initial_capital': 10000.0
+                        },
+                        'costs': {
+                            'commission': 0.001,
+                            'slippage': 0.0005
+                        },
+                        'output': {
+                            'directory': str(output_dir),
+                            'save_trades': False,
+                            'save_equity_curve': False
+                        }
+                    }
+
+                    config_path = temp_path / "config.yaml"
+                    with open(config_path, "w", encoding="utf-8") as f:
+                        yaml.dump(config, f)
+
+                    # Import run_full_pipeline which has portfolio functionality
+                    import sys
+                    module_dir = str(Path(__file__).parent)
+                    if module_dir not in sys.path:
+                        sys.path.insert(0, module_dir)
+
+                    # Import the runner
+                    import importlib.util
+                    spec = importlib.util.spec_from_file_location(
+                        "pipeline", Path(__file__).parent / "run_full_pipeline.py"
+                    )
+                    pipeline_module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(pipeline_module)
+
+                    FullPipelineRunner = pipeline_module.FullPipelineRunner
+
+                    # Create runner
+                    runner = FullPipelineRunner(
+                        symbol="PORTFOLIO",
+                        timeframe=timeframe,
+                        days=horizon_days,
+                        initial_capital=10000.0,
+                        output_dir=str(output_dir)
+                    )
+
+                    # Run portfolio mode
+                    runner.run_portfolio_mode(str(config_path), generate_enhanced=False)
+
+                    # Load results from the generated files
+                    equity_file = output_dir / "data" / "portfolio_equity_curve.csv"
+                    if equity_file.exists():
+                        equity_df = pd.read_csv(equity_file)
+                        initial_value = equity_df['total_value'].iloc[0]
+                        final_value = equity_df['total_value'].iloc[-1]
+                        portfolio_return = (final_value - initial_value) / initial_value
+
+                        # Calculate Sharpe with proper annualisation
+                        returns = equity_df['total_value'].pct_change().dropna()
+                        periods_per_year = _periods_per_year_from_timeframe(timeframe)
+                        sharpe = _calculate_sharpe_ratio_safe(returns, periods_per_year)
+
+                        # Calculate max drawdown
+                        cumulative = equity_df['total_value'].values
+                        running_max = pd.Series(cumulative).cummax()
+                        drawdown = (cumulative - running_max) / running_max
+                        max_dd = float(abs(drawdown.min()))
+
+                        # Count rebalances
+                        rebalance_file = output_dir / "data" / "rebalance_events.csv"
+                        rebalance_count = 0
+                        if rebalance_file.exists():
+                            rebalance_df = pd.read_csv(rebalance_file)
+                            rebalance_count = len(rebalance_df)
+
+                        # Calculate win rate for portfolio (% of positive return periods)
+                        positive_periods = (returns > 0).sum()
+                        total_periods = len(returns)
+                        win_rate = float(positive_periods / total_periods) if total_periods > 0 else 0.0
+
+                        # Extract metrics
+                        return {
+                            'strategy_name': strategy_name,
+                            'strategy_type': 'multi_pair',
+                            'symbol': f"Portfolio[{len(asset_symbols)} assets]",
+                            'symbols': ', '.join(asset_symbols),
+                            'num_assets': len(asset_symbols),
+                            'horizon': horizon_name,
+                            'horizon_days': horizon_days,
+                            'total_return': portfolio_return,
+                            'sharpe_ratio': sharpe,
+                            'max_drawdown': max_dd,
+                            'win_rate': win_rate,
+                            'total_trades': rebalance_count,  # Count rebalances as "trades"
+                            'profit_factor': 0.0,  # N/A for portfolio
+                            'final_capital': final_value,
+                        }
+
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': 'Portfolio equity file not generated'
+                    }
+            except Exception as inner_e:
+                # Capture and format error with context
+                import traceback
+                error_details = traceback.format_exc()
+                error_msg = f'{str(inner_e)}\n{error_details}'
+                return {
+                    'strategy_name': strategy_name,
+                    'horizon': horizon_name,
+                    'error': _format_error_message(error_msg, 'Portfolio execution error', max_length=500)
+                }
+
+        elif strategy_name == "StatisticalArbitrage":
+            # Statistical arbitrage needs pairs
+            if len(asset_symbols) < 2:
+                return {
+                    'strategy_name': strategy_name,
+                    'horizon': horizon_name,
+                    'error': 'Statistical Arbitrage requires at least 2 assets'
+                }
+
+            # Use first two symbols as pair
+            pair = asset_symbols[:2]
+
+            try:
+                from crypto_trader.strategies import get_registry
+                from crypto_trader.strategies.base import SignalType
+                from crypto_trader.features.factory import augment_with_features, DEFAULT_JOIN_CONFIG
+
+                # Use pre-fetched data from shared pool (Bug #1 fix)
+                if pair[0] not in data_dicts or pair[1] not in data_dicts:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': f'Pre-fetched data not available for {pair[0]} or {pair[1]}'
+                    }
+
+                # Reconstruct DataFrames from dicts
+                asset1_data = pd.DataFrame(data_dicts[pair[0]])
+                asset2_data = pd.DataFrame(data_dicts[pair[1]])
+
+                # Set timestamp as index
+                asset1_data['timestamp'] = pd.to_datetime(asset1_data['timestamp'])
+                asset2_data['timestamp'] = pd.to_datetime(asset2_data['timestamp'])
+                asset1_data = asset1_data.set_index('timestamp')
+                asset2_data = asset2_data.set_index('timestamp')
+
+                # CRITICAL: Slice data to correct horizon window
+                # Without this, all horizons test on the same full dataset!
+                asset1_data = _slice_data_to_horizon(asset1_data, timeframe, horizon_days, warmup_multiplier=1.5)
+                asset2_data = _slice_data_to_horizon(asset2_data, timeframe, horizon_days, warmup_multiplier=1.5)
+
+                if len(asset1_data) < 100 or len(asset2_data) < 100:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': f'Insufficient data for {pair[0]} ({len(asset1_data)}) or {pair[1]} ({len(asset2_data)})'
+                    }
+
+                # Apply feature augmentation (Bug #3 fix)
+                asset1_data = augment_with_features(asset1_data, pair[0], timeframe, config=DEFAULT_JOIN_CONFIG)
+                asset2_data = augment_with_features(asset2_data, pair[1], timeframe, config=DEFAULT_JOIN_CONFIG)
+
+                # Align data on timestamps (Bug #2 fix - proper alignment with logging)
+                common_index = asset1_data.index.intersection(asset2_data.index)
+
+                # Log data loss if significant
+                initial_length = max(len(asset1_data), len(asset2_data))
+                data_loss_pct = (1 - len(common_index) / initial_length) * 100
+
+                if data_loss_pct > 5:  # More than 5% data loss
+                    logger.warning(
+                        f"StatisticalArbitrage {pair[0]}/{pair[1]}: Data alignment lost {initial_length - len(common_index)} rows "
+                        f"({data_loss_pct:.1f}% of data). {pair[0]} had {len(asset1_data)} rows, "
+                        f"{pair[1]} had {len(asset2_data)} rows, aligned: {len(common_index)} rows"
+                    )
+
+                combined_data = pd.DataFrame({
+                    'timestamp': common_index,
+                    f'{pair[0].replace("/", "_")}_close': asset1_data.loc[common_index, 'close'].values,
+                    f'{pair[1].replace("/", "_")}_close': asset2_data.loc[common_index, 'close'].values
+                })
+
+                if len(combined_data) < 100:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': 'Insufficient aligned data after merge'
+                    }
+
+                # Get strategy class and instantiate
+                try:
+                    import crypto_trader.strategies.library  # noqa: F401
+                except ImportError as e:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': f'Failed to import strategies library: {e}'
+                    }
+
+                registry = get_registry()
+                strategy_class = registry.get_strategy(strategy_name)
+                config_params = default_params or {}
+
+                # Check strategy __init__ signature to instantiate correctly
+                import inspect
+                init_signature = inspect.signature(strategy_class.__init__)
+                params = list(init_signature.parameters.keys())
+
+                # If __init__ accepts name/config, pass them (e.g., StatisticalArbitrage)
+                if 'name' in params and 'config' in params:
+                    strategy = strategy_class(name=strategy_name, config=config_params)
+                    # Old-style strategies already configured via __init__
+                else:
+                    # SOTA 2025 strategies: instantiate without args
+                    strategy = strategy_class()
+
+                # Initialize with parameters (ensure minimums: lookback >= 50, z_score_window >= 20)
+                # Only call initialize for strategies that have it
+                if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                    strategy.initialize({
+                        'pair1_symbol': pair[0],
+                        'pair2_symbol': pair[1],
+                        'lookback_period': max(50, min(180, horizon_days)),
+                        'entry_threshold': config_params.get('entry_threshold', 2.0),
+                        'exit_threshold': config_params.get('exit_threshold', 0.5),
+                        'z_score_window': max(20, min(90, horizon_days // 2))
+                    })
+
+                # Generate signals
+                signals = strategy.generate_signals(combined_data)
+
+                # Validate signals DataFrame
+                if signals is None or signals.empty:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': 'Strategy generated empty signals'
+                    }
+
+                if 'signal' not in signals.columns:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': 'No signal column generated'
+                    }
+
+                # Check if all signals are HOLD (indicates pairs not cointegrated)
+                if (signals['signal'] == SignalType.HOLD.value).all():
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': f'Pairs {pair[0]}/{pair[1]} not cointegrated - no trading opportunity'
+                    }
+
+                # Simulate backtest from signals
+                initial_capital = 10000.0
+                capital = initial_capital
+                position = None  # 'LONG' or 'SHORT'
+                entry_price_ratio = None
+                trades = []
+                equity_curve = [capital]
+
+                commission = 0.001  # 0.1%
+                slippage = 0.0005  # 0.05%
+
+                # Ensure signals and combined_data are aligned
+                min_length = min(len(signals), len(combined_data))
+                if len(signals) != len(combined_data):
+                    logger.warning(
+                        f"StatisticalArbitrage: signals length ({len(signals)}) != "
+                        f"data length ({len(combined_data)}). Using min length {min_length}."
+                    )
+
+                for i in range(min_length):
+                    signal = signals['signal'].iloc[i]
+                    price1 = combined_data.iloc[i][f'{pair[0].replace("/", "_")}_close']
+                    price2 = combined_data.iloc[i][f'{pair[1].replace("/", "_")}_close']
+
+                    if pd.isna(price1) or pd.isna(price2):
+                        equity_curve.append(capital)
+                        continue
+
+                    current_ratio = price1 / price2
+
+                    # Entry logic
+                    if position is None:
+                        if signal == SignalType.BUY.value:
+                            # Long spread (buy asset1, sell asset2)
+                            position = 'LONG'
+                            entry_price_ratio = current_ratio
+                            # Apply costs
+                            capital *= (1 - commission - slippage)
+                        elif signal == SignalType.SELL.value:
+                            # Short spread (sell asset1, buy asset2)
+                            position = 'SHORT'
+                            entry_price_ratio = current_ratio
+                            # Apply costs
+                            capital *= (1 - commission - slippage)
+
+                    # Exit logic
+                    elif position is not None:
+                        should_exit = False
+                        pnl_pct = 0.0
+
+                        if signal == SignalType.SELL.value and position == 'LONG':
+                            # Exit long position
+                            should_exit = True
+                            pnl_pct = (current_ratio - entry_price_ratio) / entry_price_ratio
+                        elif signal == SignalType.BUY.value and position == 'SHORT':
+                            # Exit short position
+                            should_exit = True
+                            pnl_pct = (entry_price_ratio - current_ratio) / entry_price_ratio
+
+                        if should_exit:
+                            # Apply PnL
+                            capital *= (1 + pnl_pct)
+                            # Apply exit costs
+                            capital *= (1 - commission - slippage)
+
+                            trades.append({
+                                'entry_ratio': entry_price_ratio,
+                                'exit_ratio': current_ratio,
+                                'type': position,
+                                'pnl_pct': pnl_pct,
+                                'profitable': pnl_pct > 0
+                            })
+
+                            position = None
+                            entry_price_ratio = None
+
+                    equity_curve.append(capital)
+
+                # Calculate metrics
+                final_capital = capital
+                total_return = (final_capital - initial_capital) / initial_capital
+
+                # Calculate Sharpe ratio
+                if len(equity_curve) > 1:
+                    returns = pd.Series(equity_curve).pct_change().dropna()
+                    periods_per_year = _periods_per_year_from_timeframe(timeframe)
+                    sharpe_ratio = _calculate_sharpe_ratio_safe(returns, periods_per_year)
+                else:
+                    sharpe_ratio = 0.0
+
+                # Calculate max drawdown
+                equity_series = pd.Series(equity_curve)
+                running_max = equity_series.cummax()
+                drawdown = (equity_series - running_max) / running_max
+                max_drawdown = abs(drawdown.min()) if len(drawdown) > 0 else 0.0
+
+                # Calculate win rate and profit factor
+                if trades:
+                    winning_trades = [t for t in trades if t['profitable']]
+                    losing_trades = [t for t in trades if not t['profitable']]
+
+                    win_rate = len(winning_trades) / len(trades)
+
+                    gross_profit = sum(t['pnl_pct'] for t in winning_trades) if winning_trades else 0.0
+                    gross_loss = abs(sum(t['pnl_pct'] for t in losing_trades)) if losing_trades else 0.0
+                    profit_factor = gross_profit / gross_loss if gross_loss > 0 else (1.0 if gross_profit > 0 else 0.0)
+                else:
+                    win_rate = 0.0
+                    profit_factor = 0.0
+
+                # Return results
+                return {
+                    'strategy_name': strategy_name,
+                    'strategy_type': 'multi_pair',
+                    'symbol': f"Pair[{pair[0]}/{pair[1]}]",
+                    'symbols': f'{pair[0]} / {pair[1]}',
+                    'num_assets': 2,
+                    'horizon': horizon_name,
+                    'horizon_days': horizon_days,
+                    'total_return': total_return,
+                    'sharpe_ratio': sharpe_ratio,
+                    'max_drawdown': max_drawdown,
+                    'win_rate': win_rate,
+                    'total_trades': len(trades),
+                    'profit_factor': profit_factor,
+                    'final_capital': final_capital,
+                }
+
+            except Exception as inner_e:
+                # Capture and format error with context
+                import traceback
+                error_details = traceback.format_exc()
+                error_msg = f'{str(inner_e)}\n{error_details}'
+                return {
+                    'strategy_name': strategy_name,
+                    'horizon': horizon_name,
+                    'error': _format_error_message(error_msg, 'Statistical Arbitrage execution error', max_length=500)
+                }
+
+        elif strategy_name in ["HierarchicalRiskParity", "BlackLitterman", "RiskParity", "CopulaPairsTrading", "DeepRLPortfolio"]:
+            # New SOTA 2025 portfolio strategies
+            # These strategies return portfolio weights (not buy/sell signals)
+            if len(asset_symbols) < 2:
+                return {
+                    'strategy_name': strategy_name,
+                    'horizon': horizon_name,
+                    'error': f'{strategy_name} requires at least 2 assets'
+                }
+
+            try:
+                from crypto_trader.strategies import get_registry
+                from crypto_trader.features.factory import augment_with_features, DEFAULT_JOIN_CONFIG
+                import crypto_trader.strategies.library  # noqa: F401
+
+                # Use pre-fetched data from shared pool (Bug #1 fix)
+                asset_data = {}
+                for symbol in asset_symbols:
+                    if symbol not in data_dicts:
+                        return {
+                            'strategy_name': strategy_name,
+                            'horizon': horizon_name,
+                            'error': f'Pre-fetched data not available for {symbol}'
+                        }
+
+                    # Reconstruct DataFrame from dict
+                    data = pd.DataFrame(data_dicts[symbol])
+                    data['timestamp'] = pd.to_datetime(data['timestamp'])
+                    data = data.set_index('timestamp')
+
+                    # CRITICAL: Slice data to correct horizon window
+                    # Without this, all horizons test on the same full dataset!
+                    data = _slice_data_to_horizon(data, timeframe, horizon_days, warmup_multiplier=1.5)
+
+                    if len(data) < 100:
+                        return {
+                            'strategy_name': strategy_name,
+                            'horizon': horizon_name,
+                            'error': f'Insufficient data for {symbol} ({len(data)} rows)'
+                        }
+
+                    # Apply feature augmentation (Bug #3 fix)
+                    data = augment_with_features(data, symbol, timeframe, config=DEFAULT_JOIN_CONFIG)
+                    asset_data[symbol] = data
+
+                # Combine data into single DataFrame using proper index alignment (Bug #2 fix)
+                # Find common timestamps across ALL assets
+                common_index = asset_data[asset_symbols[0]].index
+                for symbol in asset_symbols[1:]:
+                    common_index = common_index.intersection(asset_data[symbol].index)
+
+                # Log data loss if significant
+                initial_lengths = [len(asset_data[s]) for s in asset_symbols]
+                max_length = max(initial_lengths)
+                data_loss_pct = (1 - len(common_index) / max_length) * 100
+
+                if data_loss_pct > 5:  # More than 5% data loss
+                    lengths_str = ', '.join([f"{s}:{len(asset_data[s])}" for s in asset_symbols])
+                    logger.warning(
+                        f"{strategy_name}: Data alignment lost {max_length - len(common_index)} rows "
+                        f"({data_loss_pct:.1f}% of data). Asset lengths: {lengths_str}, aligned: {len(common_index)}"
+                    )
+
+                # Build combined DataFrame with aligned data
+                combined_data = pd.DataFrame(index=common_index)
+                combined_data['timestamp'] = common_index
+
+                # Align all asset data to the common index
+                for symbol in asset_symbols:
+                    col_name = symbol.replace('/', '_') + '_close'
+                    combined_data[col_name] = asset_data[symbol].loc[common_index, 'close'].values
+
+                if len(combined_data) < 100:
+                    return {
+                        'strategy_name': strategy_name,
+                        'horizon': horizon_name,
+                        'error': 'Insufficient aligned data after merge'
+                    }
+
+                # Get strategy class and instantiate
+                registry = get_registry()
+                strategy_class = registry.get_strategy(strategy_name)
+                config_params = default_params or {}
+
+                # Check strategy __init__ signature to instantiate correctly
+                import inspect
+                init_signature = inspect.signature(strategy_class.__init__)
+                params = list(init_signature.parameters.keys())
+
+                # If __init__ accepts name/config, pass them (e.g., StatisticalArbitrage)
+                if 'name' in params and 'config' in params:
+                    strategy = strategy_class(name=strategy_name, config=config_params)
+                else:
+                    # SOTA 2025 strategies: instantiate without args
+                    strategy = strategy_class()
+
+                # Initialize with appropriate parameters
+                # Only call initialize for strategies that have it
+                if hasattr(strategy, 'initialize') and callable(getattr(strategy, 'initialize')):
+                    if strategy_name == "CopulaPairsTrading":
+                        # Copula pairs trading uses first two assets
+                        # Ensure minimum lookback of 30 for stable copula estimation
+                        strategy.initialize({
+                            'asset_pairs': [(asset_symbols[0], asset_symbols[1])],
+                            'lookback_period': max(30, min(90, horizon_days)),
+                            'entry_threshold': config_params.get('entry_threshold', 2.0),
+                            'exit_threshold': config_params.get('exit_threshold', 0.5),
+                            'position_size': 0.5
+                        })
+                    else:
+                        # Portfolio strategies (HRP, Black-Litterman, Risk Parity, Deep RL)
+                        # Ensure minimum lookback of 30 for stable covariance estimation
+                        strategy.initialize({
+                            'asset_symbols': asset_symbols,
+                            'lookback_period': max(30, min(90, horizon_days)),
+                            'rebalance_freq': 7
+                        })
+
+                # Generate signals (returns weights or positions)
+                signals = strategy.generate_signals(combined_data)
+
+                # Simulate portfolio performance
+                initial_capital = 10000.0
+                capital = initial_capital
+
+                if strategy_name == "CopulaPairsTrading":
+                    # Pairs trading uses position columns (long/short)
+                    position_cols = [col for col in signals.columns if col.startswith('position_')]
+
+                    if len(position_cols) == 0:
+                        return {
+                            'strategy_name': strategy_name,
+                            'horizon': horizon_name,
+                            'error': 'No position columns generated'
+                        }
+
+                    # Track equity from position changes
+                    equity_curve = [capital]
+                    commission = 0.001
+                    previous_positions = {col: 0.0 for col in position_cols}
+
+                    # Ensure signals and combined_data are aligned
+                    min_length = min(len(signals), len(combined_data))
+                    if len(signals) != len(combined_data):
+                        logger.warning(
+                            f"CopulaPairsTrading: signals length ({len(signals)}) != "
+                            f"data length ({len(combined_data)}). Using min length {min_length}."
+                        )
+
+                    for i in range(1, min_length):
+                        period_commission = 0.0
+
+                        # Calculate P&L from positions
+                        for pos_col in position_cols:
+                            asset_col = pos_col.replace('position_', '')
+                            if asset_col in combined_data.columns:
+                                price_curr = combined_data.iloc[i][asset_col]
+                                price_prev = combined_data.iloc[i-1][asset_col]
+
+                                # Check for NaN or invalid prices
+                                if pd.isna(price_curr) or pd.isna(price_prev) or price_prev <= 0:
+                                    continue
+
+                                position = signals.iloc[i][pos_col]
+                                prev_position = previous_positions[pos_col]
+
+                                # Only apply commission when position CHANGES
+                                if position != prev_position:
+                                    position_change = abs(position - prev_position)
+                                    period_commission += commission * position_change
+
+                                # Calculate P&L from holding position
+                                if position != 0:
+                                    pnl_pct = (price_curr - price_prev) / price_prev * position
+                                    capital *= (1 + pnl_pct)
+
+                                previous_positions[pos_col] = position
+
+                        # Apply commission once per period (sum of all position changes)
+                        capital *= (1 - period_commission)
+                        equity_curve.append(capital)
+
+                else:
+                    # Portfolio strategies use weight columns
+                    weight_cols = [col for col in signals.columns if col.startswith('weight_')]
+
+                    if len(weight_cols) == 0:
+                        return {
+                            'strategy_name': strategy_name,
+                            'horizon': horizon_name,
+                            'error': 'No weight columns generated'
+                        }
+
+                    # Calculate portfolio returns from weights
+                    equity_curve = [capital]
+                    commission = 0.001  # 0.1%
+                    previous_weights = {col: signals.iloc[0][col] for col in weight_cols}
+
+                    # Ensure signals and combined_data are aligned
+                    min_length = min(len(signals), len(combined_data))
+                    if len(signals) != len(combined_data):
+                        logger.warning(
+                            f"{strategy_name}: signals length ({len(signals)}) != "
+                            f"data length ({len(combined_data)}). Using min length {min_length}."
+                        )
+
+                    for i in range(1, min_length):
+                        # Calculate weighted portfolio return
+                        portfolio_return = 0.0
+                        for weight_col in weight_cols:
+                            asset_col = weight_col.replace('weight_', '')
+                            if asset_col in combined_data.columns:
+                                price_curr = combined_data.iloc[i][asset_col]
+                                price_prev = combined_data.iloc[i-1][asset_col]
+
+                                # Check for NaN or invalid prices
+                                if pd.isna(price_curr) or pd.isna(price_prev) or price_prev <= 0:
+                                    continue
+
+                                weight = signals.iloc[i][weight_col]
+                                asset_return = (price_curr - price_prev) / price_prev
+                                portfolio_return += weight * asset_return
+
+                        # Apply portfolio return
+                        capital *= (1 + portfolio_return)
+
+                        # Check if rebalancing occurred (weights changed)
+                        weights_changed = False
+                        rebalance_cost = 0.0
+                        for weight_col in weight_cols:
+                            curr_weight = signals.iloc[i][weight_col]
+                            prev_weight = previous_weights[weight_col]
+                            weight_change = abs(curr_weight - prev_weight)
+                            if weight_change > 0.01:  # Significant change (>1%)
+                                weights_changed = True
+                                rebalance_cost += commission * weight_change
+                                previous_weights[weight_col] = curr_weight
+
+                        # Apply rebalancing cost only when weights change
+                        if weights_changed:
+                            capital *= (1 - rebalance_cost)
+
+                        equity_curve.append(capital)
+
+                # Calculate metrics
+                final_capital = capital
+                total_return = (final_capital - initial_capital) / initial_capital
+
+                # Calculate Sharpe ratio
+                if len(equity_curve) > 1:
+                    returns = pd.Series(equity_curve).pct_change().dropna()
+                    periods_per_year = _periods_per_year_from_timeframe(timeframe)
+                    sharpe_ratio = _calculate_sharpe_ratio_safe(returns, periods_per_year)
+                else:
+                    sharpe_ratio = 0.0
+
+                # Calculate max drawdown
+                equity_series = pd.Series(equity_curve)
+                running_max = equity_series.cummax()
+                drawdown = (equity_series - running_max) / running_max
+                max_drawdown = abs(drawdown.min()) if len(drawdown) > 0 else 0.0
+
+                # Calculate win rate for portfolio (% of positive return periods)
+                positive_periods = (returns > 0).sum()
+                total_periods = len(returns)
+                win_rate = float(positive_periods / total_periods) if total_periods > 0 else 0.0
+
+                # Return results
+                return {
+                    'strategy_name': strategy_name,
+                    'strategy_type': 'multi_pair',
+                    'symbol': f"Portfolio[{len(asset_symbols)} assets]",
+                    'symbols': ', '.join(asset_symbols),
+                    'num_assets': len(asset_symbols),
+                    'horizon': horizon_name,
+                    'horizon_days': horizon_days,
+                    'total_return': total_return,
+                    'sharpe_ratio': sharpe_ratio,
+                    'max_drawdown': max_drawdown,
+                    'win_rate': win_rate,
+                    'total_trades': 0,  # Count rebalances if needed
+                    'profit_factor': 0.0,  # N/A for portfolio
+                    'final_capital': final_capital,
+                }
+
+            except Exception as inner_e:
+                # Capture and format error with context
+                import traceback
+                error_details = traceback.format_exc()
+                error_msg = f'{str(inner_e)}\n{error_details}'
+                return {
+                    'strategy_name': strategy_name,
+                    'horizon': horizon_name,
+                    'error': _format_error_message(error_msg, f'{strategy_name} execution error', max_length=500)
+                }
+
+        else:
+            return {
+                'strategy_name': strategy_name,
+                'horizon': horizon_name,
+                'error': f'Unknown multi-pair strategy: {strategy_name}'
+            }
+
+    except Exception as e:
+        # Return error info with traceback for debugging
+        import traceback
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        error_trace = traceback.format_exc()
+        logger.debug(f"Multi-pair worker error for {strategy_name} on {horizon_name}:\n{error_trace}")
+        return {
+            'strategy_name': strategy_name,
+            'horizon': horizon_name,
+            'error': error_msg
+        }
+
+
+
+
+@dataclass
+class HorizonConfig:
+    """Configuration for a time horizon test."""
+    name: str
+    days: int
+    description: str
+
+
+@dataclass
+class StrategyScore:
+    """Aggregated scoring for a strategy."""
+    strategy_name: str
+    composite_score: float
+    avg_return: float
+    avg_sharpe: float
+    avg_max_drawdown: float
+    avg_win_rate: float
+    horizons_beat_buyhold: int
+    total_horizons: int
+    horizon_results: Dict[str, Dict[str, float]]
+
+
+class MasterStrategyAnalyzer:
+    """
+    Comprehensive strategy analysis engine.
+
+    Tests all registered strategies across multiple time horizons,
+    compares to buy-and-hold, and generates ranking reports.
+    """
+
+    def __init__(
+        self,
+        symbol: str = "BTC/USDT",
+        timeframe: str = "1h",
+        horizons: Optional[List[int]] = None,
+        workers: int = 4,
+        quick_mode: bool = False,
+        multi_pair: bool = False,
+        output_dir: str = "master_results"
+    ):
+        """
+        Initialize the master analyzer.
+
+        Args:
+            symbol: Trading pair (e.g., 'BTC/USDT') - for single-pair strategies
+            timeframe: Candle timeframe (default: '1h')
+            horizons: List of time horizons in days (default: [30, 90, 180, 365, 730])
+            workers: Number of parallel workers (default: 4)
+            quick_mode: If True, use fewer horizons for faster testing
+            multi_pair: If True, test multi-pair strategies (Portfolio, Statistical Arbitrage)
+            output_dir: Directory for saving results
+        """
+        self.symbol = symbol
+        self.timeframe = timeframe
+        # Limit workers for multi-pair mode (now using shared data pool, can use more workers)
+        self.workers = min(workers, 4) if multi_pair else workers
+        self.quick_mode = quick_mode
+        self.multi_pair = multi_pair
+
+        # Define time horizons
+        if horizons:
+            self.horizons = [HorizonConfig(f"{d}d", d, f"{d} days") for d in horizons]
+        elif quick_mode:
+            self.horizons = [
+                HorizonConfig("30d", 30, "30 days"),
+                HorizonConfig("90d", 90, "90 days"),
+                HorizonConfig("180d", 180, "180 days"),
+            ]
+        else:
+            self.horizons = [
+                HorizonConfig("30d", 30, "30 days"),
+                HorizonConfig("90d", 90, "90 days"),
+                HorizonConfig("180d", 180, "180 days"),
+                HorizonConfig("365d", 365, "1 year"),
+                HorizonConfig("730d", 730, "2 years"),
+            ]
+
+        # Setup output directory
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.output_dir = Path(f"{output_dir}_{timestamp}")
+        self.output_dir.mkdir(exist_ok=True, parents=True)
+        self.details_dir = self.output_dir / "detailed_results"
+        self.details_dir.mkdir(exist_ok=True)
+
+        # Configure logging
+        log_file = self.output_dir / "master_analysis.log"
+        logger.add(log_file, level="DEBUG")
+
+        # Initialize components
+        self.fetcher = BinanceDataFetcher()
+        self.engine = BacktestEngine()
+        self.performance_store = PerformanceStore()
+
+        # Results storage
+        self.all_results: List[Dict[str, Any]] = []
+        self.buy_hold_results: Dict[str, Dict[str, float]] = {}
+
+        logger.info(f"MasterStrategyAnalyzer initialized:")
+        logger.info(f"  Symbol: {symbol}")
+        logger.info(f"  Timeframe: {timeframe}")
+        logger.info(f"  Horizons: {[h.name for h in self.horizons]}")
+        logger.info(f"  Workers: {workers}")
+        logger.info(f"  Multi-pair mode: {multi_pair}")
+
+    def discover_strategies(self) -> Tuple[List[Tuple[str, type]], List[str]]:
+        """
+        Discover all registered strategies.
+
+        Returns:
+            Tuple of (single_pair_strategies, multi_pair_strategy_names)
+        """
+        # Import strategies to ensure registration
+        import crypto_trader.strategies.library  # noqa: F401
+
+        registry = get_registry()
+        strategy_names = registry.get_strategy_names()
+
+        single_pair_strategies = []
+        multi_pair_strategies = []
+
+        for name in strategy_names:
+            # Separate multi-pair strategies
+            if ("Portfolio" in name or "Statistical" in name or
+                "HierarchicalRiskParity" in name or "BlackLitterman" in name or
+                "RiskParity" in name or "Copula" in name or "DeepRL" in name):
+                if self.multi_pair:
+                    multi_pair_strategies.append(name)
+                continue
+
+            try:
+                strategy_class = registry.get_strategy(name)
+                single_pair_strategies.append((name, strategy_class))
+            except Exception as e:
+                logger.warning(f"Could not load strategy {name}: {e}")
+
+        logger.info(f"Discovered {len(single_pair_strategies)} single-pair strategies: {[s[0] for s in single_pair_strategies]}")
+        if self.multi_pair:
+            logger.info(f"Discovered {len(multi_pair_strategies)} multi-pair strategies: {multi_pair_strategies}")
+
+        return single_pair_strategies, multi_pair_strategies
+
+    def get_asset_combinations(self) -> List[List[str]]:
+        """
+        Get asset combinations for multi-pair strategies.
+
+        Returns:
+            List of asset symbol lists
+        """
+        if self.quick_mode:
+            return [
+                ["BTC/USDT", "ETH/USDT"],
+                ["BTC/USDT", "ETH/USDT", "BNB/USDT"],
+            ]
+        else:
+            return [
+                ["BTC/USDT", "ETH/USDT"],
+                ["BTC/USDT", "ETH/USDT", "BNB/USDT"],
+                ["BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT"],
+                ["BTC/USDT", "ETH/USDT", "ADA/USDT", "XRP/USDT"],
+            ]
+
+    def fetch_data(self, days: int) -> pd.DataFrame:
+        """
+        Fetch historical data for specified time period.
+
+        Args:
+            days: Number of days of historical data
+
+        Returns:
+            DataFrame with OHLCV data
+        """
+        # Calculate limit based on timeframe
+        limit = _calculate_data_limit(self.timeframe, days)
+
+        data = None
+        try:
+            data = self.fetcher.get_ohlcv(self.symbol, self.timeframe, limit=limit)
+        except Exception as e:
+            # Fallback to mock data provider if exchange is unavailable (offline)
+            logger.warning(f"Primary data fetch failed ({e}); falling back to MockDataProvider")
+            try:
+                from crypto_trader.data.providers import MockDataProvider
+                mock = MockDataProvider()
+                data = mock.get_ohlcv(self.symbol, self.timeframe, limit=limit)
+            except Exception as e2:
+                raise ValueError(f"No data fetched for {self.symbol}: {e2}")
+
+        if data is None or len(data) == 0:
+            raise ValueError(f"No data fetched for {self.symbol}")
+
+        logger.debug(f"Fetched {len(data)} candles for {days} days")
+
+        self._prepare_feature_pillars()
+
+        # Join alternative data features (safe no-op if none available)
+        try:
+            with_features = augment_with_features(
+                market_df=data,
+                symbol=self.symbol,
+                timeframe=self.timeframe,
+                config=DEFAULT_JOIN_CONFIG,
+            )
+            logger.info(
+                f"Joined features: added {len([c for c in with_features.columns if c not in data.columns])} cols"
+            )
+            return with_features
+        except Exception as fe:
+            logger.warning(f"Feature join failed; continuing with OHLCV only: {fe}")
+            return data
+
+    def _prepare_feature_pillars(self) -> None:
+        """Ensure alternative data pillars are materialized before feature join."""
+        try:
+            ingest_onchain(symbol=self.symbol, timeframe=self.timeframe, prefer_local_csv=True)
+        except Exception as exc:
+            logger.debug(f"On-chain ingestion skipped: {exc}")
+
+        try:
+            ingest_sentiment(symbol=self.symbol, timeframe=self.timeframe, prefer_local_csv=True)
+        except Exception as exc:
+            logger.debug(f"Sentiment ingestion skipped: {exc}")
+
+        try:
+            ingest_orderflow(symbol=self.symbol, timeframe=self.timeframe, prefer_local_csv=True)
+        except Exception as exc:
+            logger.debug(f"Order flow ingestion skipped: {exc}")
+
+    def _record_performance(self, result: Dict[str, Any]) -> None:
+        """Persist single backtest result for ensemble weighting."""
+        payload = dict(result)
+        payload.setdefault("symbol", result.get("symbol", self.symbol))
+        payload.setdefault("timeframe", result.get("timeframe", self.timeframe))
+        try:
+            self.performance_store.record(payload)
+        except Exception as exc:
+            logger.debug(f"Performance store update skipped: {exc}")
+
+
+    def _get_default_params(self, strategy_name: str) -> Dict[str, Any]:
+        """Get default parameters for a strategy."""
+        defaults = {
+            "SMA_Crossover": {"fast_period": 50, "slow_period": 200},
+            "RSI_MeanReversion": {"rsi_period": 14, "oversold": 30, "overbought": 70},
+            "MACD_Momentum": {"fast_period": 12, "slow_period": 26, "signal_period": 9},
+            "BollingerBreakout": {"period": 20, "std_dev": 2.0},
+            "TripleEMA": {"fast_period": 8, "medium_period": 21, "slow_period": 55},
+            "Supertrend_ATR": {"atr_period": 10, "multiplier": 3.0},
+            "Ichimoku_Cloud": {},
+            "VWAP_MeanReversion": {"deviation_threshold": 0.02},
+            "MultiTimeframeConfluence": {
+                "min_confluence": 4,
+                "ema_fast": 20,
+                "ema_slow": 50,
+            },
+            "OnChainAnalytics": {},
+            "VolatilityRegimeAdaptive": {
+                "regime_map": {
+                    "mean_reverting": "RSI_MeanReversion",
+                    "trending": "Supertrend_ATR",
+                    "volatile": "OnChainAnalytics",
+                },
+            },
+            "DynamicEnsemble": {
+                "strategies": [
+                    "MultiTimeframeConfluence",
+                    "OnChainAnalytics",
+                    "Supertrend_ATR",
+                    "RSI_MeanReversion",
+                ],
+                "confidence_threshold": 0.1,
+            },
+            "TransformerGRUPredictor": {
+                "model_path": "models/transformer_gru.ckpt",
+                "buy_threshold": 0.02,
+                "sell_threshold": 0.02,
+            },
+            "DDQNFeatureSelected": {
+                "model_path": "models/ddqn_policy.zip",
+                "feature_file": "models/ddqn_features.json",
+                "symbol": self.symbol,
+                "timeframe": self.timeframe,
+            },
+            "MultiModalSentimentFusion": {
+                "buy_threshold": 0.2,
+                "sell_threshold": -0.2,
+            },
+            "OrderFlowImbalance": {
+                "delta_threshold": 80.0,
+                "imbalance_threshold": 0.2,
+                "vpin_threshold": 0.6,
+            },
+        }
+        return defaults.get(strategy_name, {})
+
+    def _timeframe_to_enum(self) -> Timeframe:
+        """Convert string timeframe to Timeframe enum."""
+        mapping = {
+            "1m": Timeframe.MINUTE_1,
+            "5m": Timeframe.MINUTE_5,
+            "15m": Timeframe.MINUTE_15,
+            "1h": Timeframe.HOUR_1,
+            "4h": Timeframe.HOUR_4,
+            "1d": Timeframe.DAY_1,
+        }
+        return mapping.get(self.timeframe, Timeframe.HOUR_1)
+
+    def calculate_buy_hold(self, data: pd.DataFrame, horizon: HorizonConfig) -> Dict[str, float]:
+        """
+        Calculate buy-and-hold benchmark for a horizon.
+
+        Args:
+            data: Historical OHLCV data
+            horizon: Time horizon configuration
+
+        Returns:
+            Dictionary with buy-and-hold metrics
+        """
+        initial_price = data['close'].iloc[0]
+        final_price = data['close'].iloc[-1]
+        buy_hold_return = (final_price - initial_price) / initial_price
+
+        # Calculate simple metrics
+        returns = data['close'].pct_change().dropna()
+        volatility = returns.std()
+
+        # Annualize based on timeframe
+        periods_per_year = _periods_per_year_from_timeframe(self.timeframe)
+        sharpe = (returns.mean() * periods_per_year) / (volatility * np.sqrt(periods_per_year)) if volatility > 0 else 0
+
+        # Max drawdown
+        cumulative = (1 + returns).cumprod()
+        running_max = cumulative.cummax()
+        drawdown = (cumulative - running_max) / running_max
+        max_drawdown = drawdown.min()
+
+        return {
+            'total_return': buy_hold_return,
+            'sharpe_ratio': sharpe,
+            'max_drawdown': abs(max_drawdown),
+            'final_price': final_price,
+        }
+
+    def run_parallel_analysis(self) -> None:
+        """Run parallel backtests for all strategies and horizons."""
+        # Memory monitoring
+        try:
+            import psutil
+            import os
+            process = psutil.Process(os.getpid())
+            initial_memory_mb = process.memory_info().rss / 1024 / 1024
+            memory_monitoring = True
+        except ImportError:
+            logger.warning("psutil not installed - memory monitoring disabled. Install with: pip install psutil")
+            memory_monitoring = False
+            initial_memory_mb = 0
+
+        logger.info("\n" + "=" * 80)
+        logger.info("RUNNING PARALLEL STRATEGY ANALYSIS")
+        if memory_monitoring:
+            logger.info(f"Initial memory usage: {initial_memory_mb:.1f} MB")
+        logger.info("=" * 80)
+
+        # Discover strategies
+        single_pair_strategies, multi_pair_strategies = self.discover_strategies()
+
+        # Calculate total jobs
+        single_pair_jobs = len(single_pair_strategies) * len(self.horizons)
+
+        # For multi-pair, each strategy × horizon × asset_combinations
+        multi_pair_jobs = 0
+        if self.multi_pair and multi_pair_strategies:
+            asset_combinations = self.get_asset_combinations()
+            multi_pair_jobs = len(multi_pair_strategies) * len(self.horizons) * len(asset_combinations)
+
+        total_jobs = single_pair_jobs + multi_pair_jobs
+        logger.info(f"\nTotal jobs: {total_jobs} ({single_pair_jobs} single-pair + {multi_pair_jobs} multi-pair)")
+        logger.info(f"Parallel workers: {self.workers}")
+
+        # Fetch data for each horizon (cache to avoid refetching)
+        horizon_data = {}
+        logger.info("\nFetching historical data for all horizons...")
+        for horizon in self.horizons:
+            try:
+                data = self.fetch_data(horizon.days)
+                horizon_data[horizon.name] = data
+                logger.success(f"  ✓ {horizon.name}: {len(data)} candles")
+
+                # Calculate buy-and-hold benchmark
+                self.buy_hold_results[horizon.name] = self.calculate_buy_hold(data, horizon)
+            except Exception as e:
+                logger.error(f"  ✗ {horizon.name}: {e}")
+
+        # Pre-fetch multi-pair data (shared data pool optimization)
+        multi_pair_data = {}
+        if self.multi_pair and multi_pair_strategies:
+            logger.info("\n" + "=" * 80)
+            logger.info("PRE-FETCHING MULTI-PAIR DATA (Shared Data Pool)")
+            logger.info("=" * 80)
+
+            # Collect all unique symbols needed across all asset combinations
+            asset_combinations = self.get_asset_combinations()
+            all_symbols = set()
+            for combo in asset_combinations:
+                all_symbols.update(combo)
+
+            logger.info(f"Pre-fetching data for {len(all_symbols)} unique assets: {', '.join(all_symbols)}")
+
+            # Calculate max limit needed across all horizons
+            max_horizon_days = max(h.days for h in self.horizons)
+            max_limit = _calculate_data_limit(
+                self.timeframe,
+                max_horizon_days,
+                warmup_multiplier=1.5  # 50% extra for warmup
+            )
+
+            # Fetch once, reuse for all workers
+            for symbol in all_symbols:
+                try:
+                    data = self.fetcher.get_ohlcv(symbol, self.timeframe, limit=max_limit)
+                    if data is not None and len(data) > 0:
+                        # Serialize to dict for worker processes
+                        multi_pair_data[symbol] = {
+                            'timestamp': data.index.tolist() if hasattr(data.index, 'tolist') else list(range(len(data))),
+                            **{col: data[col].tolist() for col in data.columns}
+                        }
+                        logger.success(f"  ✓ {symbol}: {len(data)} candles")
+                    else:
+                        logger.warning(f"  ⚠ {symbol}: No data available")
+                except Exception as e:
+                    logger.error(f"  ✗ {symbol}: {e}")
+
+            logger.success(f"✓ Pre-fetched {len(multi_pair_data)} assets. Will share with all workers (zero redundant fetches!)")
+
+            # Estimate memory saved
+            estimated_calls_saved = (len(multi_pair_strategies) * len(self.horizons) *
+                                    len(asset_combinations) * len(all_symbols) - len(all_symbols))
+            logger.info(f"  Memory optimization: ~{estimated_calls_saved} redundant API calls eliminated")
+
+        # Run backtests in parallel
+        logger.info("\nRunning parallel backtests...")
+
+        single_jobs = []
+        for strategy_name, _ in single_pair_strategies:
+            for horizon in self.horizons:
+                if horizon.name not in horizon_data:
+                    continue
+                data = horizon_data[horizon.name]
+                data_dict = {
+                    'timestamp': data.index.tolist() if hasattr(data.index, 'tolist') else list(range(len(data))),
+                    **{col: data[col].tolist() for col in data.columns}
+                }
+                default_params = self._get_default_params(strategy_name)
+                single_jobs.append(
+                    (
+                        strategy_name,
+                        data_dict,
+                        horizon.name,
+                        horizon.days,
+                        self.symbol,
+                        self.timeframe,
+                        default_params,
+                    )
+                )
+
+        multi_jobs = []
+        if self.multi_pair and multi_pair_strategies:
+            asset_combinations = self.get_asset_combinations()
+            for strategy_name in multi_pair_strategies:
+                for horizon in self.horizons:
+                    for asset_symbols in asset_combinations:
+                        default_params = self._get_default_params(strategy_name)
+                        multi_jobs.append(
+                            (strategy_name, asset_symbols, horizon.name, horizon.days, default_params)
+                        )
+
+        completed = 0
+
+        def _handle_result(result: Optional[Dict[str, Any]], strategy_name: str, horizon_name: str, job_type: str) -> None:
+            nonlocal completed
+            if result and 'error' not in result:
+                self.all_results.append(result)
+                self._record_performance(result)
+            elif result and 'error' in result:
+                logger.error(
+                    f"Backtest failed for {strategy_name} ({job_type}) on {horizon_name}: {result['error']}"
+                )
+            completed += 1
+
+        def _run_parallel(pbar_obj) -> None:
+            try:
+                with ProcessPoolExecutor(max_workers=self.workers) as executor:
+                    futures = {}
+                    for job in single_jobs:
+                        future = executor.submit(run_backtest_worker, *job)
+                        futures[future] = (job[0], job[2], 'single')
+                    for job in multi_jobs:
+                        strategy_name, asset_symbols, horizon_name, horizon_days, default_params = job
+                        future = executor.submit(
+                            run_multipair_backtest_worker,
+                            strategy_name,
+                            asset_symbols,
+                            multi_pair_data,
+                            horizon_name,
+                            horizon_days,
+                            self.timeframe,
+                            default_params,
+                        )
+                        futures[future] = (strategy_name, horizon_name, 'multi')
+
+                    for future in as_completed(futures):
+                        strategy_name, horizon_name, job_type = futures[future]
+                        try:
+                            result = future.result()
+                        except Exception as exc:
+                            logger.error(f"Job failed for {strategy_name} ({job_type}) on {horizon_name}: {exc}")
+                            result = None
+                        _handle_result(result, strategy_name, horizon_name, job_type)
+                        pbar_obj.update(1)
+            except (PermissionError, OSError) as pool_error:
+                logger.warning(f"Process pool unavailable ({pool_error}); falling back to ThreadPoolExecutor")
+                from concurrent.futures import ThreadPoolExecutor
+
+                with ThreadPoolExecutor(max_workers=self.workers) as executor:
+                    futures = {}
+                    for job in single_jobs:
+                        future = executor.submit(run_backtest_worker, *job)
+                        futures[future] = (job[0], job[2], 'single')
+                    for job in multi_jobs:
+                        strategy_name, asset_symbols, horizon_name, horizon_days, default_params = job
+                        future = executor.submit(
+                            run_multipair_backtest_worker,
+                            strategy_name,
+                            asset_symbols,
+                            multi_pair_data,
+                            horizon_name,
+                            horizon_days,
+                            self.timeframe,
+                            default_params,
+                        )
+                        futures[future] = (strategy_name, horizon_name, 'multi')
+
+                    for future in as_completed(futures):
+                        strategy_name, horizon_name, job_type = futures[future]
+                        try:
+                            result = future.result()
+                        except Exception as exc:
+                            logger.error(f"Job failed for {strategy_name} ({job_type}) on {horizon_name}: {exc}")
+                            result = None
+                        _handle_result(result, strategy_name, horizon_name, job_type)
+                        pbar_obj.update(1)
+
+        def _run_serial(pbar_obj) -> None:
+            for job in single_jobs:
+                result = run_backtest_worker(*job)
+                _handle_result(result, job[0], job[2], 'single')
+                pbar_obj.update(1)
+            for job in multi_jobs:
+                strategy_name, asset_symbols, horizon_name, horizon_days, default_params = job
+                result = run_multipair_backtest_worker(
+                    strategy_name,
+                    asset_symbols,
+                    multi_pair_data,
+                    horizon_name,
+                    horizon_days,
+                    self.timeframe,
+                    default_params,
+                )
+                _handle_result(result, strategy_name, horizon_name, 'multi')
+                pbar_obj.update(1)
+
+        with tqdm(total=total_jobs, desc="Progress") as pbar:
+            try:
+                _run_parallel(pbar)
+            except (PermissionError, OSError) as exc:
+                logger.warning(f"Process pool unavailable ({exc}); falling back to serial execution")
+                _run_serial(pbar)
+
+        # Final memory report
+        if memory_monitoring:
+            final_memory_mb = process.memory_info().rss / 1024 / 1024
+            memory_used_mb = final_memory_mb - initial_memory_mb
+            logger.info(f"\n📊 Memory Usage Report:")
+            logger.info(f"  Initial: {initial_memory_mb:.1f} MB")
+            logger.info(f"  Final: {final_memory_mb:.1f} MB")
+            logger.info(f"  Used: {memory_used_mb:+.1f} MB")
+
+        logger.success(f"\n✓ Completed {len(self.all_results)} successful backtests out of {total_jobs}")
+
+    def compute_composite_scores(self) -> List[StrategyScore]:
+        """
+        Compute composite scores for all strategies.
+
+        Returns:
+            List of StrategyScore objects sorted by composite score
+        """
+        logger.info("\nComputing composite scores...")
+
+        if not self.all_results:
+            logger.error("No results to score")
+            return []
+
+        # Convert to DataFrame for easier manipulation
+        df = pd.DataFrame(self.all_results)
+
+        # Group by strategy
+        strategy_scores = []
+
+        for strategy_name in df['strategy_name'].unique():
+            strategy_df = df[df['strategy_name'] == strategy_name]
+
+            # Aggregate metrics across horizons
+            avg_return = strategy_df['total_return'].mean()
+            avg_sharpe = strategy_df['sharpe_ratio'].mean()
+            avg_max_drawdown = strategy_df['max_drawdown'].mean()
+            avg_win_rate = strategy_df['win_rate'].mean()
+
+            # Count horizons where strategy beat buy-and-hold
+            # For multi-pair strategies with multiple asset combinations,
+            # we check if ANY configuration beat buy-hold for each horizon
+            horizons_beat = 0
+            horizon_results = {}
+
+            # Group by horizon first to handle multiple configurations
+            for horizon_name in strategy_df['horizon'].unique():
+                horizon_rows = strategy_df[strategy_df['horizon'] == horizon_name]
+
+                # Skip empty horizons (shouldn't happen but be safe)
+                if horizon_rows.empty:
+                    logger.warning(f"No results for {strategy_name} on {horizon_name}, skipping")
+                    continue
+
+                buyhold_return = self.buy_hold_results.get(horizon_name, {}).get('total_return', 0)
+
+                # Get best result for this horizon (across all configurations)
+                best_return = horizon_rows['total_return'].max()
+                best_row = horizon_rows.loc[horizon_rows['total_return'].idxmax()]
+
+                horizon_results[horizon_name] = {
+                    'return': best_return,
+                    'sharpe': best_row['sharpe_ratio'],
+                    'drawdown': best_row['max_drawdown'],
+                    'win_rate': best_row['win_rate'],
+                    'trades': best_row['total_trades'],
+                    'vs_buyhold': best_return - buyhold_return,
+                    'beat_buyhold': best_return > buyhold_return,
+                }
+
+                # Count this horizon as "won" if best configuration beat buy-hold
+                if best_return > buyhold_return:
+                    horizons_beat += 1
+
+            # Normalize metrics to 0-1 scale for composite scoring
+            # Use min-max normalization across all strategies
+            all_returns = df['total_return'].values
+            all_sharpes = df['sharpe_ratio'].values
+            all_drawdowns = df['max_drawdown'].values
+            all_win_rates = df['win_rate'].values
+
+            norm_return = self._normalize(avg_return, all_returns)
+            norm_sharpe = self._normalize(avg_sharpe, all_sharpes)
+            norm_drawdown = 1 - self._normalize(avg_max_drawdown, all_drawdowns)  # Lower is better
+            norm_win_rate = self._normalize(avg_win_rate, all_win_rates)
+
+            # Composite score with weights
+            composite_score = (
+                0.35 * norm_sharpe +      # 35% Sharpe (risk-adjusted)
+                0.30 * norm_return +      # 30% Return
+                0.20 * norm_drawdown +    # 20% Drawdown (inverted)
+                0.15 * norm_win_rate      # 15% Win rate
+            )
+
+            strategy_scores.append(StrategyScore(
+                strategy_name=strategy_name,
+                composite_score=composite_score,
+                avg_return=avg_return,
+                avg_sharpe=avg_sharpe,
+                avg_max_drawdown=avg_max_drawdown,
+                avg_win_rate=avg_win_rate,
+                horizons_beat_buyhold=horizons_beat,
+                total_horizons=len(self.horizons),
+                horizon_results=horizon_results,
+            ))
+
+        # Sort by composite score with tie-breakers (horizons beat buyhold, return, sharpe)
+        strategy_scores.sort(
+            key=lambda x: (
+                x.composite_score,
+                x.horizons_beat_buyhold,
+                x.avg_return,
+                x.avg_sharpe
+            ),
+            reverse=True
+        )
+
+        logger.success(f"✓ Computed scores for {len(strategy_scores)} strategies")
+        return strategy_scores
+
+    def _normalize(self, value: float, array: np.ndarray) -> float:
+        """Normalize value to 0-1 scale using min-max normalization."""
+        finite = array[np.isfinite(array)]
+        if finite.size == 0:
+            return 0.5
+        min_val = finite.min()
+        max_val = finite.max()
+        target = value if np.isfinite(value) else float(min_val)
+        if np.isclose(max_val, min_val):
+            return 0.5
+        normalized = (target - min_val) / (max_val - min_val)
+        return float(np.clip(normalized, 0.0, 1.0))
+
+    def _format_metric(self, value: Optional[float], fmt: str = "{:.2f}", fallback: str = "N/A") -> str:
+        """Format a numeric metric, guarding against NaN/Inf."""
+        if value is None:
+            return fallback
+        if isinstance(value, (float, np.floating)):
+            if not np.isfinite(value):
+                return fallback
+        return fmt.format(value)
+
+    def _format_percent(self, value: Optional[float], decimals: int = 1, signed: bool = True, fallback: str = "N/A") -> str:
+        """Format a percentage value with optional sign handling and safety."""
+        if value is None or (isinstance(value, (float, np.floating)) and not np.isfinite(value)):
+            return fallback
+        sign_char = "+" if signed else ""
+        fmt = "{:" + sign_char + f".{decimals}%}}"
+        return fmt.format(value)
+
+    def _safe_mean(self, values: List[float]) -> float:
+        """Compute mean ignoring non-finite values."""
+        finite = [v for v in values if np.isfinite(v)]
+        if not finite:
+            return float("nan")
+        return float(np.mean(finite))
+
+    def _safe_median(self, values: List[float]) -> float:
+        """Compute median ignoring non-finite values."""
+        finite = [v for v in values if np.isfinite(v)]
+        if not finite:
+            return float("nan")
+        return float(np.median(finite))
+
+    def _write_practical_recommendations(self, f, strategy_scores: List[StrategyScore], avg_buyhold: float) -> None:
+        """Write practical trading recommendations based on beating buy-and-hold."""
+        f.write("## 🎯 PRACTICAL STRATEGY RECOMMENDATIONS\n\n")
+        f.write("*Based on actual performance vs buy-and-hold benchmark*\n\n")
+        f.write("---\n\n")
+
+        # Categorize strategies by how many horizons they beat buy-and-hold
+        beat_buyhold = [s for s in strategy_scores if s.horizons_beat_buyhold >= 3]
+        close_to_buyhold = [s for s in strategy_scores if 0 < s.horizons_beat_buyhold < 3]
+        underperformed = [s for s in strategy_scores if s.horizons_beat_buyhold == 0]
+
+        # Sort each category by average return
+        beat_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        close_to_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        underperformed.sort(key=lambda x: x.avg_return, reverse=True)
+
+        # TIER 1: Strategies that consistently beat buy-and-hold
+        f.write("### 🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD\n\n")
+        if beat_buyhold:
+            f.write("✅ These strategies beat buy-and-hold on **3+ time horizons**  \n")
+            f.write("**RECOMMENDED for actual trading**\n\n")
+
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
+            for rank, strat in enumerate(beat_buyhold, 1):
+                return_str = self._format_percent(strat.avg_return, 1)
+                sharpe_str = self._format_metric(strat.avg_sharpe)
+                drawdown_str = self._format_percent(strat.avg_max_drawdown, 1, signed=False)
+                f.write(f"| {rank} | {strat.strategy_name} | {return_str} | ")
+                f.write(f"{sharpe_str} | {drawdown_str} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
+
+            best = beat_buyhold[0]
+            f.write(f"\n#### 💡 TOP RECOMMENDATION: {best.strategy_name}\n\n")
+            f.write(f"- **Returns:** {self._format_percent(best.avg_return, 1)} (vs {self._format_percent(avg_buyhold, 1)} buy-and-hold)\n")
+            f.write(f"- **Sharpe Ratio:** {self._format_metric(best.avg_sharpe)} (risk-adjusted performance)\n")
+            f.write(f"- **Max Drawdown:** {self._format_percent(best.avg_max_drawdown, 1, signed=False)} (worst peak-to-trough loss)\n")
+            f.write(f"- **Beat buy-and-hold** on {best.horizons_beat_buyhold}/{best.total_horizons} time horizons\n")
+
+            best_horizon_name, best_horizon_data = max(best.horizon_results.items(), key=lambda x: x[1]['return'])
+            f.write(f"- **Best horizon:** {best_horizon_name} ({self._format_percent(best_horizon_data['return'], 1)})\n")
+
+            f.write("\n**ACTION PLAN:**\n\n")
+            f.write("1. Start with paper trading to validate performance\n")
+            f.write("2. Use conservative position sizing (2-5% of portfolio)\n")
+            stop_loss_value = best.avg_max_drawdown * 2 if np.isfinite(best.avg_max_drawdown) else None
+            stop_loss_text = self._format_percent(stop_loss_value, 1, signed=False) if stop_loss_value is not None else "N/A"
+            f.write(f"3. Set stop-loss at {stop_loss_text} (2× max drawdown)\n")
+            f.write("4. Monitor weekly and compare to buy-and-hold baseline\n\n")
+        else:
+            f.write("❌ **NO strategies consistently beat buy-and-hold** (3+ horizons)  \n")
+            f.write("Consider sticking with passive buy-and-hold strategy\n\n")
+
+        # TIER 2: Sometimes beats buy-and-hold
+        f.write("### ⚠️  TIER 2: SOMETIMES BEATS BUY-AND-HOLD\n\n")
+        if close_to_buyhold:
+            f.write("⚡ These strategies beat buy-and-hold on **1-2 time horizons**  \n")
+            f.write("Use with **CAUTION** - performance is inconsistent\n\n")
+
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
+            for rank, strat in enumerate(close_to_buyhold, 1):
+                return_str = self._format_percent(strat.avg_return, 1)
+                sharpe_str = self._format_metric(strat.avg_sharpe)
+                drawdown_str = self._format_percent(strat.avg_max_drawdown, 1, signed=False)
+                f.write(f"| {rank} | {strat.strategy_name} | {return_str} | ")
+                f.write(f"{sharpe_str} | {drawdown_str} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
+
+            f.write("\n> 💡 These may work for specific time horizons or market conditions.  \n")
+            f.write("> Check **TIME HORIZON ANALYSIS** section for details.\n\n")
+        else:
+            f.write("None found\n\n")
+
+        # TIER 3: Never beats buy-and-hold
+        f.write("### ❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD\n\n")
+        if underperformed:
+            f.write("🚫 These strategies **NEVER** beat buy-and-hold on any time horizon  \n")
+            f.write("**NOT RECOMMENDED** for trading - use buy-and-hold instead\n\n")
+
+            f.write("| Rank | Strategy | Avg Return | Sharpe | Drawdown | Won |\n")
+            f.write("|------|----------|------------|--------|----------|-----|\n")
+            for rank, strat in enumerate(underperformed, 1):
+                return_str = self._format_percent(strat.avg_return, 1)
+                sharpe_str = self._format_metric(strat.avg_sharpe)
+                drawdown_str = self._format_percent(strat.avg_max_drawdown, 1, signed=False)
+                f.write(f"| {rank} | {strat.strategy_name} | {return_str} | ")
+                f.write(f"{sharpe_str} | {drawdown_str} | ")
+                f.write(f"{strat.horizons_beat_buyhold}/{strat.total_horizons} |\n")
+
+            f.write("\n> 💡 Even if returns are positive, buy-and-hold performed better.\n\n")
+        else:
+            f.write("None found\n\n")
+
+        # Investment profile recommendations
+        f.write("### 👤 RECOMMENDATIONS BY INVESTOR PROFILE\n\n")
+
+        def _pick_with_fallback(primary, fallback, key, reverse=False):
+            pool = primary if primary else fallback
+            return (sorted(pool, key=key, reverse=reverse)[0] if pool else None)
+
+        eligible_for_risk = beat_buyhold + close_to_buyhold
+        if not eligible_for_risk:
+            eligible_for_risk = strategy_scores
+
+        f.write("**🎯 AGGRESSIVE INVESTOR** (maximize returns, accept high risk):
+
+")
+        aggressive_pick = _pick_with_fallback(beat_buyhold, strategy_scores, key=lambda x: x.avg_return, reverse=True)
+        if aggressive_pick:
+            f.write(f"→ **{aggressive_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {self._format_percent(aggressive_pick.avg_return, 1)} | ")
+            f.write(f"Drawdown: {self._format_percent(aggressive_pick.avg_max_drawdown, 1, signed=False)}\n\n")
+        else:
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
+
+        f.write("**🛡️  CONSERVATIVE INVESTOR** (minimize drawdown, accept lower returns):
+
+")
+        conservative_candidates = [s for s in eligible_for_risk if np.isfinite(s.avg_max_drawdown)]
+        if not conservative_candidates:
+            conservative_candidates = strategy_scores
+        conservative_pick = _pick_with_fallback(conservative_candidates, strategy_scores, key=lambda x: (x.avg_max_drawdown, -x.avg_return))
+        if conservative_pick and aggressive_pick and conservative_pick.strategy_name == aggressive_pick.strategy_name:
+            alternatives = [s for s in conservative_candidates if s.strategy_name != aggressive_pick.strategy_name]
+            if alternatives:
+                conservative_pick = min(alternatives, key=lambda x: (x.avg_max_drawdown, -x.avg_return))
+
+        if conservative_pick:
+            f.write(f"→ **{conservative_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {self._format_percent(conservative_pick.avg_return, 1)} | ")
+            f.write(f"Drawdown: {self._format_percent(conservative_pick.avg_max_drawdown, 1, signed=False)}\n\n")
+        else:
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
+
+        f.write("**⚖️  BALANCED INVESTOR** (best risk-adjusted returns):
+
+")
+        balanced_candidates = [s for s in eligible_for_risk if np.isfinite(s.avg_sharpe)]
+        if not balanced_candidates:
+            balanced_candidates = strategy_scores
+        balanced_pick = _pick_with_fallback(balanced_candidates, strategy_scores, key=lambda x: x.avg_sharpe, reverse=True)
+
+        if balanced_pick:
+            restricted = {pick.strategy_name for pick in (aggressive_pick, conservative_pick) if pick}
+            if balanced_pick.strategy_name in restricted:
+                alternatives = [s for s in balanced_candidates if s.strategy_name not in restricted]
+                if alternatives:
+                    balanced_pick = max(alternatives, key=lambda x: x.avg_sharpe)
+        if balanced_pick:
+            f.write(f"→ **{balanced_pick.strategy_name}**  \n")
+            f.write(f"   Returns: {self._format_percent(balanced_pick.avg_return, 1)} | ")
+            f.write(f"Sharpe: {self._format_metric(balanced_pick.avg_sharpe)}\n\n")
+        else:
+            f.write("→ **Buy-and-hold** (no active strategies beat benchmark)\n\n")
+
+        # Time horizon specific recommendations
+        f.write("### ⏰ BEST STRATEGY BY TIME HORIZON\n\n")
+        f.write("*Choose strategy based on your investment timeline:*\n\n")
+
+        for horizon in self.horizons:
+            # Find best strategy that beat buy-hold for this horizon
+            best_for_horizon = None
+            best_return = -float('inf')
+
+            for score in strategy_scores:
+                if horizon.name in score.horizon_results:
+                    result = score.horizon_results[horizon.name]
+                    # Must have beaten buy-hold
+                    if result['vs_buyhold'] > 0 and result['return'] > best_return:
+                        best_return = result['return']
+                        best_for_horizon = score.strategy_name
+
+            buyhold = self.buy_hold_results.get(horizon.name, {}).get('total_return', 0)
+
+            if best_for_horizon:
+                return_str = self._format_percent(best_return, 1)
+                diff_str = self._format_percent(best_return - buyhold, 1)
+                f.write(f"- **{horizon.name}** → {best_for_horizon} ({return_str})  \n")
+                f.write(f"  Beat buy-and-hold by {diff_str}\n\n")
+            else:
+                f.write(f"- **{horizon.name}** → Buy-and-hold (no strategy beat benchmark)\n\n")
+
+    def _write_practical_recommendations_html(self, f, strategy_scores: List[StrategyScore], avg_buyhold: float) -> None:
+        """Write practical trading recommendations in HTML format."""
+        f.write("<h2>🎯 PRACTICAL STRATEGY RECOMMENDATIONS</h2>\n")
+        f.write("<p><em>Based on actual performance vs buy-and-hold benchmark</em></p>\n")
+        f.write("<hr>\n\n")
+
+        # Categorize strategies
+        beat_buyhold = [s for s in strategy_scores if s.horizons_beat_buyhold >= 3]
+        close_to_buyhold = [s for s in strategy_scores if 0 < s.horizons_beat_buyhold < 3]
+        underperformed = [s for s in strategy_scores if s.horizons_beat_buyhold == 0]
+
+        beat_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        close_to_buyhold.sort(key=lambda x: x.avg_return, reverse=True)
+        underperformed.sort(key=lambda x: x.avg_return, reverse=True)
+
+        # TIER 1
+        f.write("<h3>🏆 TIER 1: CONSISTENTLY BEATS BUY-AND-HOLD</h3>\n")
+        if beat_buyhold:
+            f.write("<p>✅ These strategies beat buy-and-hold on <strong>3+ time horizons</strong><br>\n")
+            f.write("<strong>RECOMMENDED for actual trading</strong></p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(beat_buyhold, 1):
+                f.write(f"        <tr class='tier1'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_number(strat.avg_sharpe)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_max_drawdown, with_sign=False)}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            best = beat_buyhold[0]
+            f.write("<div class='recommendation-box'>\n")
+            f.write(f"<h4>💡 TOP RECOMMENDATION: {best.strategy_name}</h4>\n")
+            f.write("<ul>\n")
+            f.write(f"    <li><strong>Returns:</strong> {HTMLReportWriter.format_percentage(best.avg_return)} (vs {HTMLReportWriter.format_percentage(avg_buyhold)} buy-and-hold)</li>\n")
+            f.write(f"    <li><strong>Sharpe Ratio:</strong> {HTMLReportWriter.format_number(best.avg_sharpe)}</li>\n")
+            f.write(f"    <li><strong>Max Drawdown:</strong> {HTMLReportWriter.format_percentage(best.avg_max_drawdown, with_sign=False)}</li>\n")
+            f.write(f"    <li><strong>Beat buy-and-hold</strong> on {best.horizons_beat_buyhold}/{best.total_horizons} time horizons</li>\n")
+
+            best_horizon_name, best_horizon_result = max(best.horizon_results.items(), key=lambda x: x[1]['return'])
+            f.write(f"    <li><strong>Best horizon:</strong> {best_horizon_name} ({HTMLReportWriter.format_percentage(best_horizon_result['return'])})</li>\n")
+
+            f.write("</ul>\n\n")
+            f.write("<h4>ACTION PLAN:</h4>\n")
+            f.write("<ol>\n")
+            f.write("    <li>Start with paper trading to validate performance</li>\n")
+            f.write("    <li>Use conservative position sizing (2-5% of portfolio)</li>\n")
+            stop_loss_value_html = best.avg_max_drawdown * 2 if np.isfinite(best.avg_max_drawdown) else None
+            stop_loss_html = HTMLReportWriter.format_percentage(stop_loss_value_html, with_sign=False) if stop_loss_value_html is not None else 'N/A'
+            f.write(f"    <li>Set stop-loss at {stop_loss_html} (2× max drawdown)</li>\n")
+            f.write("    <li>Monitor weekly and compare to buy-and-hold baseline</li>\n")
+            f.write("</ol>\n")
+            f.write("</div>\n\n")
+        else:
+            f.write("<p>❌ <strong>NO strategies consistently beat buy-and-hold</strong> (3+ horizons)<br>\n")
+            f.write("Consider sticking with passive buy-and-hold strategy</p>\n\n")
+
+        f.write("<h3>⚠️ TIER 2: SOMETIMES BEATS BUY-AND-HOLD</h3>\n")
+        if close_to_buyhold:
+            f.write("<p>⚡ These strategies beat buy-and-hold on <strong>1-2 time horizons</strong><br>\n")
+            f.write("Use with <strong>CAUTION</strong> - performance is inconsistent</p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(close_to_buyhold, 1):
+                f.write(f"        <tr class='tier2'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_number(strat.avg_sharpe)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_max_drawdown, with_sign=False)}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            f.write("<div class='blockquote info'>\n")
+            f.write("    <p>💡 These may work for specific time horizons or market conditions. Check <strong>TIME HORIZON ANALYSIS</strong> section for details.</p>\n")
+            f.write("</div>\n\n")
+        else:
+            f.write("<p>None found</p>\n\n")
+
+        f.write("<h3>❌ TIER 3: DOES NOT BEAT BUY-AND-HOLD</h3>\n")
+        if underperformed:
+            f.write("<p>🚫 These strategies <strong>NEVER</strong> beat buy-and-hold on any time horizon<br>\n")
+            f.write("<strong>NOT RECOMMENDED</strong> for trading - use buy-and-hold instead</p>\n\n")
+
+            f.write("<table>\n")
+            f.write("    <thead>\n")
+            f.write("        <tr>\n")
+            f.write("            <th>Rank</th><th>Strategy</th><th>Avg Return</th><th>Sharpe</th><th>Drawdown</th><th>Won</th>\n")
+            f.write("        </tr>\n")
+            f.write("    </thead>\n")
+            f.write("    <tbody>\n")
+
+            for rank, strat in enumerate(underperformed, 1):
+                f.write(f"        <tr class='tier3'>\n")
+                f.write(f"            <td>{rank}</td>\n")
+                f.write(f"            <td><strong>{strat.strategy_name}</strong></td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_return)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_number(strat.avg_sharpe)}</td>\n")
+                f.write(f"            <td>{HTMLReportWriter.format_percentage(strat.avg_max_drawdown, with_sign=False)}</td>\n")
+                f.write(f"            <td>{strat.horizons_beat_buyhold}/{strat.total_horizons}</td>\n")
+                f.write(f"        </tr>\n")
+
+            f.write("    </tbody>\n")
+            f.write("</table>\n\n")
+
+            f.write("<div class='blockquote info'>\n")
+            f.write("    <p>💡 Even if returns are positive, buy-and-hold performed better.</p>\n")
+            f.write("</div>\n\n")
+        else:
+            f.write("<p>None found</p>\n\n")
+
+        f.write("<h3>👤 RECOMMENDATIONS BY INVESTOR PROFILE</h3>\n")
+        f.write("<div class='profile-section'>\n")
+
+        def _html_pick_with_fallback(primary, fallback, key, reverse=False):
+            pool = primary if primary else fallback
+            return (sorted(pool, key=key, reverse=reverse)[0] if pool else None)
+
+        eligible_for_risk_html = beat_buyhold + close_to_buyhold
+        if not eligible_for_risk_html:
+            eligible_for_risk_html = strategy_scores
+
+        aggressive_pick_html = _html_pick_with_fallback(
+            beat_buyhold,
+            strategy_scores,
+            key=lambda x: x.avg_return,
+            reverse=True
+        )
+
+        conservative_candidates_html = [s for s in eligible_for_risk_html if np.isfinite(s.avg_max_drawdown)]
+        if not conservative_candidates_html:
+            conservative_candidates_html = strategy_scores
+
+        conservative_pick_html = _html_pick_with_fallback(
+            conservative_candidates_html,
+            strategy_scores,
+            key=lambda x: (x.avg_max_drawdown, -x.avg_return)
+        )
+        if conservative_pick_html and aggressive_pick_html and conservative_pick_html.strategy_name == aggressive_pick_html.strategy_name:
+            alternatives = [s for s in conservative_candidates_html if s.strategy_name != aggressive_pick_html.strategy_name]
+            if alternatives:
+                conservative_pick_html = min(alternatives, key=lambda x: (x.avg_max_drawdown, -x.avg_return))
+
+        balanced_candidates_html = [s for s in eligible_for_risk_html if np.isfinite(s.avg_sharpe)]
+        if not balanced_candidates_html:
+            balanced_candidates_html = strategy_scores
+
+        balanced_pick_html = _html_pick_with_fallback(
+            balanced_candidates_html,
+            strategy_scores,
+            key=lambda x: x.avg_sharpe,
+            reverse=True
+        )
+        restricted_names_html = {pick.strategy_name for pick in (aggressive_pick_html, conservative_pick_html) if pick}
+        if balanced_pick_html and balanced_pick_html.strategy_name in restricted_names_html:
+            alternatives = [s for s in balanced_candidates_html if s.strategy_name not in restricted_names_html]
+            if alternatives:
+                balanced_pick_html = max(alternatives, key=lambda x: x.avg_sharpe)
+
+        def _render_profile_card(title: str, description: str, pick: Optional[StrategyScore], trailing: str) -> None:
+            f.write("    <div class='profile-card'>\n")
+            f.write(f"        <h4>{title}</h4>\n")
+            f.write(f"        <p><em>{description}</em></p>\n")
+            if pick:
+                f.write(f"        <p><strong>→ {pick.strategy_name}</strong></p>\n")
+                f.write(f"        <p>Returns: {HTMLReportWriter.format_percentage(pick.avg_return, with_sign=False)} | {trailing}</p>\n")
+            else:
+                f.write("        <p><strong>→ Buy-and-hold</strong> (no active strategies beat benchmark)</p>\n")
+            f.write("    </div>\n")
+
+        trailing_aggressive = "Drawdown: " + HTMLReportWriter.format_percentage(
+            aggressive_pick_html.avg_max_drawdown, with_sign=False
+        ) if aggressive_pick_html else "Drawdown: N/A"
+        trailing_conservative = "Drawdown: " + HTMLReportWriter.format_percentage(
+            conservative_pick_html.avg_max_drawdown, with_sign=False
+        ) if conservative_pick_html else "Drawdown: N/A"
+        trailing_balanced = "Sharpe: " + HTMLReportWriter.format_number(
+            balanced_pick_html.avg_sharpe
+        ) if balanced_pick_html else "Sharpe: N/A"
+
+        _render_profile_card(
+            "🎯 AGGRESSIVE INVESTOR",
+            "Maximize returns, accept high risk",
+            aggressive_pick_html,
+            trailing_aggressive
+        )
+        _render_profile_card(
+            "🛡️ CONSERVATIVE INVESTOR",
+            "Minimize drawdown, accept lower returns",
+            conservative_pick_html,
+            trailing_conservative
+        )
+        _render_profile_card(
+            "⚖️ BALANCED INVESTOR",
+            "Best risk-adjusted returns",
+            balanced_pick_html,
+            trailing_balanced
+        )
+
+        f.write("</div>\n\n")

@@ -1,0 +1,73 @@
+# Portfolio Rebalancing Configuration Example
+# This file demonstrates a complete configuration for the Portfolio Rebalancing Advisor
+
+portfolio:
+  # List of assets with target allocations
+  assets:
+    - symbol: BTC/USDT
+      target_weight: 0.5  # 50% of portfolio
+    - symbol: ETH/USDT
+      target_weight: 0.3  # 30% of portfolio
+    - symbol: SOL/USDT
+      target_weight: 0.2  # 20% of portfolio
+  
+  # Current holdings (number of shares/coins held)
+  holdings:
+    BTC/USDT: 0.125    # Currently holding 0.125 BTC
+    ETH/USDT: 2.5      # Currently holding 2.5 ETH
+    SOL/USDT: 10.0     # Currently holding 10 SOL
+
+rebalancing:
+  # Rebalancing method: "threshold", "calendar", or "hybrid"
+  method: hybrid
+  
+  # Deviation threshold (0.15 = 15%) - triggers rebalancing when any asset deviates by this much
+  threshold: 0.15
+  
+  # Minimum hours between rebalancing events (prevents over-trading)
+  min_interval_hours: 24
+  
+  # Calendar-based rebalancing period in days
+  calendar_period_days: 30
+  
+  # Momentum filter settings (skips rebalancing during strong trends)
+  momentum_filter:
+    enabled: false        # Set to true to enable momentum filter
+    threshold: 0.2        # Skip rebalancing if portfolio return > 20% over lookback period
+    lookback_days: 30     # Period to calculate momentum
+
+state:
+  # Timestamp of last rebalancing event (ISO format)
+  # null means never rebalanced (will trigger initial allocation)
+  last_rebalance: null
+  
+  # Initial capital in USD (used only when starting fresh with zero holdings)
+  initial_capital: 10000.0
+
+exchange:
+  # Exchange to fetch prices from (must be supported by ccxt)
+  name: binance
+  
+  # Quote currency for trading pairs
+  quote_currency: USDT
+
+# ========================================
+# USAGE NOTES:
+# ========================================
+# 
+# 1. Weights must sum to 1.0 (100%)
+# 
+# 2. Rebalancing Methods:
+#    - threshold: Rebalances when deviation exceeds threshold
+#    - calendar: Rebalances on fixed schedule
+#    - hybrid: Rebalances on threshold OR calendar (recommended)
+#
+# 3. Recommended Settings:
+#    - Threshold: 0.15 (15%) - empirically optimal
+#    - Min interval: 24 hours for crypto
+#    - Calendar period: 30 days
+#
+# 4. After executing trades, update holdings and run:
+#    uv run python portfolio_rebalancer_advisor.py update
+#
+# ========================================

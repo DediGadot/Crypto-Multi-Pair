@@ -116,7 +116,8 @@ class BinanceDataFetcher(DataProvider):
         # Load available symbols and timeframes
         self._load_markets()
 
-        logger.info(f"Initialized {self.name} fetcher with {len(self._symbols)} symbols")
+        symbol_count = len(self._symbols) if self._symbols else 0
+        logger.info(f"Initialized {self.name} fetcher with {symbol_count} symbols")
 
     def _load_markets(self) -> None:
         """Load available markets and timeframes from exchange."""

@@ -233,6 +233,65 @@ class OHLCVStorage:
 
         return df.index.max().to_pydatetime()
 
+    def list_datasets(
+        self,
+        symbol: Optional[str] = None,
+        timeframe: Optional[str] = None
+    ) -> list[dict]:
+        """
+        Enumerate stored datasets with basic statistics.
+
+        Args:
+            symbol: Optional symbol filter (e.g., "BTC/USDT")
+            timeframe: Optional timeframe filter (e.g., "1h")
+
+        Returns:
+            List of dictionaries describing each dataset
+        """
+        datasets: list[dict] = []
+
+        if not self.base_path.exists():
+            return datasets
+
+        for symbol_dir in sorted(self.base_path.iterdir()):
+            if not symbol_dir.is_dir():
+                continue
+
+            raw_symbol = symbol_dir.name
+            resolved_symbol = raw_symbol.replace("_", "/")
+            if symbol:
+                requested_symbol = symbol.upper().replace("/", "")
+                resolved_symbol_norm = resolved_symbol.upper().replace("/", "")
+                if requested_symbol != resolved_symbol_norm:
+                    continue
+
+            for csv_file in sorted(symbol_dir.glob("*.csv")):
+                tf = csv_file.stem
+                if timeframe and timeframe != tf:
+                    continue
+
+                df = self.load_ohlcv(resolved_symbol, tf)
+                if df is None or df.empty:
+                    continue
+
+                size_bytes = csv_file.stat().st_size
+                size_label = (
+                    f"{size_bytes / (1024 * 1024):.2f} MB"
+                    if size_bytes >= 1024 * 1024
+                    else f"{size_bytes / 1024:.1f} KB"
+                )
+
+                datasets.append({
+                    "symbol": resolved_symbol,
+                    "timeframe": tf,
+                    "candles": len(df),
+                    "start_date": df.index.min().to_pydatetime(),
+                    "end_date": df.index.max().to_pydatetime(),
+                    "size": size_label
+                })
+
+        return datasets
+
     def delete_data(self, symbol: str, timeframe: str) -> bool:
         """
         Delete stored data for a given symbol and timeframe.

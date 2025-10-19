@@ -69,6 +69,15 @@ dependencies = [
     "stable-baselines3>=2.3.0",  # PPO, A2C, SAC agents
     "gymnasium>=0.29.0",         # RL environments
     "torch>=2.0.0",              # PyTorch for neural networks
+    # SOTA 2025 additions
+    "pytorch-lightning>=2.0.0",  # Training framework for Transformer-GRU
+    "transformers>=4.35.0",      # FinBERT sentiment and transformer utilities
+    "xgboost>=2.0.0",            # Feature selection for DDQN strategy
+    "shap>=0.44.0",              # Explainability-driven feature ranking
+    "praw>=7.7.0",               # Reddit sentiment ingestion
+    "tweepy>=4.14.0",            # Twitter/X sentiment ingestion
+    "ccxtpro>=0.9.0",            # Websocket order book streaming
+    "psutil>=5.9.0",             # Resource monitoring for master analysis
 ]
 
 [project.optional-dependencies]
