@@ -1119,6 +1119,7 @@ def run_backtest_worker(
             "1h": Timeframe.HOUR_1,
             "4h": Timeframe.HOUR_4,
             "1d": Timeframe.DAY_1,
+            "1w": Timeframe.WEEK_1,
         }
         timeframe_enum = timeframe_mapping.get(timeframe, Timeframe.HOUR_1)
         logger.debug(f"[WORKER-{worker_id}] Timeframe: {timeframe} -> {timeframe_enum}")
@@ -2323,6 +2324,7 @@ class MasterStrategyAnalyzer:
             "1h": Timeframe.HOUR_1,
             "4h": Timeframe.HOUR_4,
             "1d": Timeframe.DAY_1,
+            "1w": Timeframe.WEEK_1,
         }
         return mapping.get(self.timeframe, Timeframe.HOUR_1)
 
@@ -3122,7 +3124,7 @@ class MasterStrategyAnalyzer:
             )
 
             engine = BacktestEngine()
-            timeframe_enum = self._convert_timeframe_to_enum()
+            timeframe_enum = self._timeframe_to_enum()
             result = engine.run_backtest(strategy, data, config, self.symbol, timeframe_enum)
 
             # Calculate buy-and-hold equity curve
