@@ -1,0 +1,91 @@
+================================================================================
+WINDOWED TRAIN/TEST ANALYSIS REPORT
+================================================================================
+
+Symbol: BTC/USDT
+Timeframe: 1h
+Test Set: 1.0 years
+Horizons: [30, 90, 180]
+Strategies Tested: 20
+Total Windows: 33
+
+================================================================================
+TRAIN/TEST SPLIT METHODOLOGY
+================================================================================
+
+Training Set: All data before 2024-10-20
+Test Set: 2024-10-20 to 2025-10-20
+Non-overlapping windows within each set
+Statistics: mean, median, std dev, percentiles (25th, 75th)
+
+================================================================================
+TOP STRATEGIES BY TEST SET PERFORMANCE
+================================================================================
+
+1. SMA_Crossover: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=1.49±1.69, Test Sharpe=2.12±1.49
+   180d: Train Sharpe=1.49±0.84, Test Sharpe=2.33±0.00
+
+2. OnChainAnalytics: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+3. MultiTimeframeConfluence: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+4. VolatilityRegimeAdaptive: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+5. DynamicEnsemble: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+6. TransformerGRUPredictor: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+7. DDQNFeatureSelected: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+8. MultiModalSentimentFusion: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+9. OrderFlowImbalance: Sharpe = inf
+   30d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   90d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+   180d: Train Sharpe=inf±nan, Test Sharpe=inf±nan
+
+10. Ichimoku_Cloud: Sharpe = 1.99
+   30d: Train Sharpe=1.69±3.00, Test Sharpe=1.59±3.12
+   90d: Train Sharpe=1.36±1.42, Test Sharpe=1.78±1.40
+   180d: Train Sharpe=1.38±1.21, Test Sharpe=2.60±0.00
+
+
+================================================================================
+GENERALIZATION ANALYSIS
+================================================================================
+
+Strategies with best train-to-test consistency (low overfitting):
+
+1. SMA_Crossover: Gap = +nan ✗ Significant overfit
+2. BollingerBreakout: Gap = +0.53 ✓ Generalizes well
+3. Ichimoku_Cloud: Gap = +0.51 ✓ Generalizes well
+4. VWAP_MeanReversion: Gap = +0.46 ✓ Generalizes well
+5. RSI_MeanReversion: Gap = +0.33 ✓ Generalizes well
+6. TripleEMA: Gap = +0.26 ✓ Generalizes well
+7. MACD_Momentum: Gap = +0.23 ✓ Generalizes well
+8. Supertrend_ATR: Gap = -0.02 ○ Slight overfit
+9. OnChainAnalytics: Gap = +nan ✗ Significant overfit
+10. MultiTimeframeConfluence: Gap = +nan ✗ Significant overfit

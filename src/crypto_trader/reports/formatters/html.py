@@ -319,6 +319,79 @@ class HTMLFormatter:
                 font-size: 1.2em;
             }
 
+            /* Interactive Section Styles */
+            .interactive-section {
+                margin-top: 50px;
+                padding: 30px;
+                background: #f9f9f9;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+            }
+
+            .interactive-section h2 {
+                color: #2c3e50;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 10px;
+            }
+
+            .interactive-section h3 {
+                color: #34495e;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            .interactive-section p em {
+                color: #666;
+                font-size: 0.95em;
+            }
+
+            .interactive-charts {
+                margin-top: 20px;
+            }
+
+            /* Stats Table Styles */
+            .stats-table {
+                margin: 20px auto;
+                border-collapse: collapse;
+                width: 90%;
+                max-width: 900px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                background: white;
+            }
+
+            .stats-table thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stats-table th {
+                padding: 15px;
+                color: white;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            .stats-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+                text-align: left;
+            }
+
+            .stats-table tbody tr:hover {
+                background: #f8f9fa;
+            }
+
+            .stats-table tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .stats-table td b {
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
             @media print {
                 body {
                     background: white;
@@ -335,6 +408,10 @@ class HTMLFormatter:
                 }
 
                 h2 {
+                    page-break-before: always;
+                }
+
+                .interactive-section {
                     page-break-before: always;
                 }
             }

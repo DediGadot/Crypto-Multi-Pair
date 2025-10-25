@@ -61,6 +61,7 @@ from crypto_trader.data.alt.onchain_ingestor import ingest_onchain
 from crypto_trader.data.alt.sentiment_ingestor import ingest_sentiment
 from crypto_trader.data.alt.orderflow_stream import ingest_orderflow
 from crypto_trader.reports.formatters.html import HTMLFormatter
+from crypto_trader.reports.formatters.plotly_interactive import generate_interactive_section_html
 
 # Aliases for backward compatibility with extracted code
 HTMLReportWriter = HTMLFormatter
@@ -256,6 +257,10 @@ class MasterStrategyAnalyzer:
         logger.debug(f"[INIT] Initializing performance store...")
         self.performance_store = PerformanceStore()
 
+        # BUGFIX (Bug #7): Add lock for thread-safe performance store updates
+        import threading
+        self._perf_lock = threading.Lock()
+
         # Results storage
         self.all_results: List[Dict[str, Any]] = []
         self.buy_hold_results: Dict[str, Dict[str, float]] = {}
@@ -345,6 +350,8 @@ class MasterStrategyAnalyzer:
         limit = _calculate_data_limit(self.timeframe, days)
         logger.debug(f"[DATA-FETCH] Calculated limit: {limit} candles for {days} days at {self.timeframe}")
 
+        # BUGFIX (Bug #11): NEVER silently fall back to mock data
+        # Backtesting requires REAL market data - fake data gives fake results
         data = None
         try:
             logger.debug(f"[DATA-FETCH] Fetching from Binance: {self.symbol} @ {self.timeframe}")
@@ -353,17 +360,19 @@ class MasterStrategyAnalyzer:
             fetch_duration = time.perf_counter() - fetch_start
             logger.info(f"[DATA-FETCH] ✓ Primary fetch completed in {fetch_duration:.2f}s")
         except Exception as e:
-            # Fallback to mock data provider if exchange is unavailable (offline)
-            logger.warning(f"[DATA-FETCH] Primary data fetch failed ({type(e).__name__}: {e})")
-            logger.warning(f"[DATA-FETCH] Falling back to MockDataProvider...")
-            try:
-                from crypto_trader.data.providers import MockDataProvider
-                mock = MockDataProvider()
-                data = mock.get_ohlcv(self.symbol, self.timeframe, limit=limit)
-                logger.success(f"[DATA-FETCH] ✓ Fallback successful")
-            except Exception as e2:
-                logger.error(f"[DATA-FETCH] ✗ Fallback failed: {e2}")
-                raise ValueError(f"No data fetched for {self.symbol}: {e2}")
+            # DO NOT fall back to mock data - fail loudly
+            logger.error(f"[DATA-FETCH] ✗ Failed to fetch real market data: {type(e).__name__}: {e}")
+            logger.error(f"[DATA-FETCH] Backtesting requires actual historical prices")
+            logger.error(f"[DATA-FETCH] Check:")
+            logger.error(f"[DATA-FETCH]   1. Internet connection")
+            logger.error(f"[DATA-FETCH]   2. Binance API status (status.binance.com)")
+            logger.error(f"[DATA-FETCH]   3. Symbol {self.symbol} is valid and trading")
+            logger.error(f"[DATA-FETCH]   4. No rate limiting (429 errors)")
+            raise ValueError(
+                f"Cannot fetch real market data for {self.symbol}. "
+                f"Backtesting with fake data would produce meaningless results. "
+                f"Original error: {type(e).__name__}: {e}"
+            )
 
         if data is None or len(data) == 0:
             logger.error(f"[DATA-FETCH] ✗ No data available for {self.symbol}")
@@ -422,71 +431,72 @@ class MasterStrategyAnalyzer:
             logger.debug(f"Order flow ingestion skipped: {exc}")
 
     def _record_performance(self, result: Dict[str, Any]) -> None:
-        """Persist single backtest result for ensemble weighting."""
+        """
+        Persist single backtest result for ensemble weighting.
+
+        BUGFIX (Bug #7): Thread-safe with lock to prevent corruption from parallel workers.
+        """
         payload = dict(result)
         payload.setdefault("symbol", result.get("symbol", self.symbol))
         payload.setdefault("timeframe", result.get("timeframe", self.timeframe))
         try:
-            self.performance_store.record(payload)
+            with self._perf_lock:  # Thread-safe write
+                self.performance_store.record(payload)
         except Exception as exc:
             logger.debug(f"Performance store update skipped: {exc}")
 
 
     def _get_default_params(self, strategy_name: str) -> Dict[str, Any]:
-        """Get default parameters for a strategy."""
-        defaults = {
-            "SMA_Crossover": {"fast_period": 50, "slow_period": 200},
-            "RSI_MeanReversion": {"rsi_period": 14, "oversold": 30, "overbought": 70},
-            "MACD_Momentum": {"fast_period": 12, "slow_period": 26, "signal_period": 9},
-            "BollingerBreakout": {"period": 20, "std_dev": 2.0},
-            "TripleEMA": {"fast_period": 8, "medium_period": 21, "slow_period": 55},
-            "Supertrend_ATR": {"atr_period": 10, "multiplier": 3.0},
-            "Ichimoku_Cloud": {},
-            "VWAP_MeanReversion": {"deviation_threshold": 0.02},
-            "MultiTimeframeConfluence": {
-                "min_confluence": 4,
-                "ema_fast": 20,
-                "ema_slow": 50,
-            },
-            "OnChainAnalytics": {},
-            "VolatilityRegimeAdaptive": {
-                "regime_map": {
-                    "mean_reverting": "RSI_MeanReversion",
-                    "trending": "Supertrend_ATR",
-                    "volatile": "OnChainAnalytics",
-                },
-            },
-            "DynamicEnsemble": {
-                "strategies": [
-                    "MultiTimeframeConfluence",
-                    "OnChainAnalytics",
-                    "Supertrend_ATR",
-                    "RSI_MeanReversion",
-                ],
-                "confidence_threshold": 0.1,
-            },
-            "TransformerGRUPredictor": {
-                "model_path": "models/transformer_gru.ckpt",
-                "buy_threshold": 0.02,
-                "sell_threshold": 0.02,
-            },
-            "DDQNFeatureSelected": {
-                "model_path": "models/ddqn_policy.zip",
-                "feature_file": "models/ddqn_features.json",
-                "symbol": self.symbol,
-                "timeframe": self.timeframe,
-            },
-            "MultiModalSentimentFusion": {
-                "buy_threshold": 0.2,
-                "sell_threshold": -0.2,
-            },
-            "OrderFlowImbalance": {
-                "delta_threshold": 80.0,
-                "imbalance_threshold": 0.2,
-                "vpin_threshold": 0.6,
-            },
-        }
-        return defaults.get(strategy_name, {})
+        """
+        Get default parameters for a strategy by introspecting the class.
+
+        BUGFIX (Bug #10): Query strategy class instead of maintaining hardcoded defaults.
+
+        Args:
+            strategy_name: Name of registered strategy
+
+        Returns:
+            Dictionary of default parameters, or empty dict if introspection fails
+        """
+        try:
+            from crypto_trader.strategies import get_registry
+            registry = get_registry()
+
+            # Get the strategy class
+            strategy_class = registry.get_strategy(strategy_name)
+
+            # Try to instantiate without args and get defaults
+            # Most strategies have sensible defaults in their __init__
+            try:
+                temp_strategy = strategy_class()
+                # Call initialize with empty config to set defaults
+                if hasattr(temp_strategy, 'initialize'):
+                    temp_strategy.initialize({})
+                # Get the parameters
+                if hasattr(temp_strategy, 'get_parameters'):
+                    defaults = temp_strategy.get_parameters()
+                    logger.debug(f"Introspected defaults for {strategy_name}: {defaults}")
+                    return defaults
+            except Exception as e_init:
+                # Some strategies may require args, try with name
+                try:
+                    temp_strategy = strategy_class(name=strategy_name)
+                    if hasattr(temp_strategy, 'initialize'):
+                        temp_strategy.initialize({})
+                    if hasattr(temp_strategy, 'get_parameters'):
+                        defaults = temp_strategy.get_parameters()
+                        logger.debug(f"Introspected defaults for {strategy_name}: {defaults}")
+                        return defaults
+                except Exception as e_retry:
+                    logger.debug(f"Could not introspect {strategy_name}: {e_retry}")
+
+            # If all else fails, return empty dict (strategies will use their internal defaults)
+            logger.debug(f"Using empty params for {strategy_name} (will use strategy's internal defaults)")
+            return {}
+
+        except Exception as e:
+            logger.warning(f"Failed to get defaults for {strategy_name}: {e}")
+            return {}
 
     def _timeframe_to_enum(self) -> Timeframe:
         """Convert string timeframe to Timeframe enum."""
@@ -1564,6 +1574,172 @@ class MasterStrategyAnalyzer:
         buffer.close()
         return img_str
 
+    def _prepare_interactive_data(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Prepare data for interactive visualizations by collecting all strategy results.
+
+        Returns:
+            Dictionary mapping strategy names to their complete data including:
+            - timestamps: List of datetime objects
+            - equity_strategy: Strategy equity curve values
+            - equity_buyhold: Buy-and-hold equity curve values
+            - prices: Asset prices
+            - trades: List of trade dictionaries
+            - metrics: Performance metrics dictionary
+        """
+        logger.info("Preparing interactive visualization data for all strategies...")
+
+        interactive_data = {}
+
+        # Group results by strategy name
+        strategy_results = {}
+        for result in self.all_results:
+            strategy_name = result['strategy_name']
+            if strategy_name not in strategy_results:
+                strategy_results[strategy_name] = []
+            strategy_results[strategy_name].append(result)
+
+        # Process each strategy
+        for strategy_name, results in strategy_results.items():
+            try:
+                # Use the longest horizon for this strategy
+                longest_result = max(results, key=lambda r: r.get('days', 0))
+                horizon_days = longest_result.get('days', 30)
+
+                # Fetch data for this horizon
+                data = self.fetch_data(horizon_days)
+
+                # Re-run backtest to get full equity curve
+                registry = get_registry()
+                strategy_dict = registry.list_strategies()
+                strategy_entries = [(name, metadata['class']) for name, metadata in strategy_dict.items()
+                                  if name == strategy_name]
+
+                if not strategy_entries:
+                    logger.warning(f"Could not load strategy {strategy_name}")
+                    continue
+
+                _, strategy_class = strategy_entries[0]
+
+                # Skip multi-pair strategies for now (need different data handling)
+                if hasattr(strategy_class, 'REQUIRES_MULTI_PAIR') and strategy_class.REQUIRES_MULTI_PAIR:
+                    logger.debug(f"Skipping multi-pair strategy {strategy_name} for interactive viz")
+                    continue
+
+                # Initialize strategy
+                default_params = strategy_class.get_default_params() if hasattr(strategy_class, 'get_default_params') else {}
+                strategy = strategy_class(name=strategy_name, config=default_params)
+                strategy.initialize(strategy.config)
+
+                # Augment data
+                try:
+                    data = augment_with_features(data, self.symbol, self.timeframe, config=DEFAULT_JOIN_CONFIG)
+                except Exception as e:
+                    logger.warning(f"Feature augmentation failed for {strategy_name}: {e}")
+
+                # Run backtest
+                config = BacktestConfig(
+                    initial_capital=10000.0,
+                    trading_fee_percent=0.001,
+                    slippage_percent=0.0005,
+                    max_position_size=0.95
+                )
+
+                engine = BacktestEngine()
+                timeframe_enum = self._timeframe_to_enum()
+                backtest_result = engine.run_backtest(strategy, data, config, self.symbol, timeframe_enum)
+
+                # Extract timestamps and equity curves
+                timestamps = []
+                equity_strategy = []
+                equity_buyhold = []
+                prices = []
+
+                initial_price = data['close'].iloc[0]
+
+                for i in range(len(data)):
+                    timestamp = data['timestamp'].iloc[i] if 'timestamp' in data.columns else data.index[i]
+                    timestamps.append(pd.to_datetime(timestamp))
+
+                    # Get strategy equity at this point
+                    if i < len(backtest_result.equity_curve):
+                        equity_strategy.append(backtest_result.equity_curve[i])
+                    else:
+                        equity_strategy.append(equity_strategy[-1] if equity_strategy else config.initial_capital)
+
+                    # Calculate buy-and-hold equity
+                    current_price = data['close'].iloc[i]
+                    buyhold_value = config.initial_capital * (current_price / initial_price)
+                    equity_buyhold.append(buyhold_value)
+
+                    prices.append(current_price)
+
+                # Extract trades
+                trades = []
+                for trade in backtest_result.trades:
+                    trades.append({
+                        'entry_time': pd.to_datetime(trade.entry_time),
+                        'exit_time': pd.to_datetime(trade.exit_time),
+                        'entry_price': float(trade.entry_price),
+                        'exit_price': float(trade.exit_price),
+                        'side': trade.side.value,
+                        'pnl_percent': float(trade.pnl_percent)
+                    })
+
+                # Calculate metrics
+                metrics = {
+                    'total_return': float(backtest_result.metrics.total_return),
+                    'sharpe_ratio': float(backtest_result.metrics.sharpe_ratio),
+                    'max_drawdown': float(backtest_result.metrics.max_drawdown),
+                    'win_rate': float(backtest_result.metrics.win_rate),
+                    'num_trades': int(backtest_result.metrics.total_trades),
+                    'profit_factor': float(backtest_result.metrics.profit_factor) if hasattr(backtest_result.metrics, 'profit_factor') else 0.0
+                }
+
+                # Store data
+                interactive_data[strategy_name] = {
+                    'timestamps': timestamps,
+                    'equity_strategy': equity_strategy,
+                    'equity_buyhold': equity_buyhold,
+                    'prices': prices,
+                    'trades': trades,
+                    'metrics': metrics
+                }
+
+                logger.debug(f"Prepared interactive data for {strategy_name}")
+
+            except Exception as e:
+                logger.warning(f"Could not prepare interactive data for {strategy_name}: {e}")
+                continue
+
+        logger.info(f"✓ Prepared interactive data for {len(interactive_data)} strategies")
+        return interactive_data
+
+    def _generate_interactive_section(self, interactive_data: Dict[str, Dict[str, Any]]) -> str:
+        """
+        Generate HTML for the interactive visualization section.
+
+        Args:
+            interactive_data: Dictionary mapping strategy names to their visualization data
+
+        Returns:
+            HTML string containing the interactive section
+        """
+        if not interactive_data:
+            return "<p><em>No interactive visualizations available</em></p>"
+
+        try:
+            html_content = generate_interactive_section_html(
+                all_results=interactive_data,
+                symbol=self.symbol
+            )
+            return html_content
+        except Exception as e:
+            logger.error(f"Failed to generate interactive section: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            return f"<p>⚠️ Interactive visualizations unavailable: {str(e)}</p>"
+
     def generate_master_report(self, strategy_scores: List[StrategyScore]) -> None:
         """Generate comprehensive master report in HTML format."""
         logger.info("\nGenerating master report...")
@@ -1718,6 +1894,23 @@ class MasterStrategyAnalyzer:
             sharpe_chart_html = HTMLReportWriter.create_sharpe_comparison_chart(strategy_scores)
             f.write(sharpe_chart_html)
             f.write("\n\n")
+
+            # === NEW: Interactive Time Series Visualizations ===
+            try:
+                logger.info("Generating interactive time series visualizations...")
+                interactive_data = self._prepare_interactive_data()
+                if interactive_data:
+                    interactive_section_html = self._generate_interactive_section(interactive_data)
+                    f.write(interactive_section_html)
+                    f.write("\n\n")
+                    logger.success("✓ Interactive visualizations added to report")
+                else:
+                    logger.warning("No interactive data available - skipping interactive section")
+            except Exception as e:
+                logger.error(f"Failed to add interactive section: {e}")
+                f.write("<div class='blockquote warning'>\n")
+                f.write("    <p>⚠️ Interactive visualizations unavailable</p>\n")
+                f.write("</div>\n\n")
 
             # Detailed analysis of best strategy
             f.write(f"<h2>🔍 DETAILED ANALYSIS: {best.strategy_name} (Best Overall)</h2>\n")

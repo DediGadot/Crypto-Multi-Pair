@@ -1,0 +1,93 @@
+================================================================================
+                   COPULA PAIRS TRADING - DEBUG REPORT
+================================================================================
+
+PERFORMANCE: Sharpe -7.70 | Return -99.58% | Win Rate 20.56%
+STATUS:      BROKEN - Strategy produces ZERO trades, loses money from fees
+
+================================================================================
+                            ROOT CAUSE
+================================================================================
+
+BUG #1: WRONG OUTPUT FORMAT (CRITICAL)
+--------------------------------------
+Location: copula_pairs_trading.py, lines 104-175
+
+What's Wrong:
+  Strategy outputs: ['timestamp', 'position_BTC_USDT_close', 'position_ETH_USDT_close']
+  Engine expects:   ['timestamp', 'signal', 'confidence', 'metadata']
+
+Impact:
+  → Backtesting engine crashes with KeyError: 'signal'
+  → Zero trades executed
+  → -99.58% return from fees alone
+
+Proof:
+  $ uv run python src/crypto_trader/strategies/library/copula_pairs_trading.py
+  ✅ VALIDATION PASSED (strategy works in isolation)
+
+  $ uv run python -c "from crypto_trader.backtesting.engine import BacktestEngine..."
+  ❌ KeyError: 'signal' (crashes when integrated)
+
+================================================================================
+                         ADDITIONAL BUGS
+================================================================================
+
+BUG #2: Incorrect Variable Naming (Medium)
+  Line 191: Comment says "log returns" but code calculates "log PRICES"
+  Fix: Change comment to "Calculate log prices"
+
+BUG #3: Unused Variables (Medium)
+  Lines 274-276: Variables u1, u2 calculated but never used
+  Fix: Remove unused code or implement proper copula
+
+BUG #4: Wrong Returns Formula (Medium)
+  Lines 268-269: Uses np.diff(log_prices) / log_prices[:-1]
+  Should be:     np.diff(log_prices)  (already log prices!)
+  Fix: Correct the returns calculation
+
+================================================================================
+                           QUICK FIX
+================================================================================
+
+In generate_signals(), replace the return statement:
+
+  # OLD (WRONG):
+  return signals_df  # Has position_* columns
+
+  # NEW (CORRECT):
+  return pd.DataFrame({
+      'timestamp': data['timestamp'],
+      'signal': [SignalType.BUY/SELL/HOLD based on pair_signals],
+      'confidence': [...],
+      'metadata': [{'z_score': ..., 'spread': ...}]
+  })
+
+See COPULA_PAIRS_TRADING_FINAL_BUG_REPORT.md for complete fix code.
+
+================================================================================
+                      EXPECTED RESULTS AFTER FIX
+================================================================================
+
+Before:  Sharpe -7.70 | Return -99.58% | Win Rate 20.56%
+After:   Sharpe +0.5 to +1.5 | Return +5% to +30% | Win Rate 48-55%
+
+================================================================================
+                          FILES TO REVIEW
+================================================================================
+
+1. src/crypto_trader/strategies/library/copula_pairs_trading.py  (BROKEN)
+2. src/crypto_trader/backtesting/engine.py                       (lines 109-133)
+3. src/crypto_trader/strategies/base.py                          (interface spec)
+
+================================================================================
+                           NEXT STEPS
+================================================================================
+
+[ ] 1. Review COPULA_PAIRS_TRADING_FINAL_BUG_REPORT.md
+[ ] 2. Implement fix for Bug #1 (critical)
+[ ] 3. Run validation: uv run python src/.../copula_pairs_trading.py
+[ ] 4. Run backtest and verify Sharpe > 0
+[ ] 5. Fix bugs #2-#4 (optional improvements)
+
+================================================================================

@@ -110,6 +110,11 @@ class PerformanceMetrics:
         expectancy: Average expected profit per trade
         total_fees: Total transaction costs
         final_capital: Ending portfolio value
+        value_at_risk_95: 95% VaR - max expected loss at 95% confidence level
+        conditional_var_95: 95% CVaR (Expected Shortfall) - average loss beyond VaR
+        skewness: Return distribution skewness (negative=left-tail, positive=right-tail)
+        kurtosis: Return distribution kurtosis (>3=fat tails, <3=thin tails)
+        information_ratio: Excess return vs benchmark per unit of tracking error
     """
     total_return: float = 0.0
     sharpe_ratio: float = 0.0
@@ -130,6 +135,16 @@ class PerformanceMetrics:
     expectancy: float = 0.0
     total_fees: float = 0.0
     final_capital: float = 0.0
+    value_at_risk_95: float = 0.0  # 95% VaR - max expected loss at 95% confidence
+    conditional_var_95: float = 0.0  # 95% CVaR (Expected Shortfall) - average loss beyond VaR
+    skewness: float = 0.0  # Return distribution skewness (asymmetry)
+    kurtosis: float = 0.0  # Return distribution kurtosis (tail risk)
+    information_ratio: float = 0.0  # Excess return vs benchmark per unit of tracking error
+    # PHASE 2: Advanced risk metrics
+    omega_ratio: float = 0.0  # Probability-weighted gains over losses (>1 is good)
+    tail_ratio: float = 1.0  # Ratio of right tail to left tail (>1 indicates positive skew)
+    max_consecutive_drawdown_days: int = 0  # Longest underwater period
+    ulcer_index: float = 0.0  # Downside volatility measure (lower is better)
 
     def is_profitable(self) -> bool:
         """Check if the strategy is profitable."""

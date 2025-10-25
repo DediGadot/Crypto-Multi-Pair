@@ -1,0 +1,20 @@
+================================================================================
+MULTI-PAIR WINDOWED TRAIN/TEST ANALYSIS SUMMARY
+================================================================================
+
+Pairs: BTC/USDT, ETH/USDT, BNB/USDT
+Timeframe: 1h
+Test Set: 2.0 years
+Horizons: 30d, 90d, 180d
+Strategies: 4
+Total Windows: 3
+Success Rate: 204/204 (100.0%)
+
+================================================================================
+TOP STRATEGIES BY PORTFOLIO SHARPE
+================================================================================
+
+1. HierarchicalRiskParity: 0.77
+2. BlackLitterman: 0.77
+3. RiskParity: 0.77
+4. CopulaPairsTrading: -0.08

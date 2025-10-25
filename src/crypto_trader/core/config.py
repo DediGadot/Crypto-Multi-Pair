@@ -159,6 +159,11 @@ class BacktestConfig(BaseSettings):
         enable_short_selling: Allow short positions
         compound_returns: Reinvest profits
         commission_type: Commission calculation type (fixed or percentage)
+        enable_dynamic_sizing: Enable dynamic position sizing based on volatility
+        volatility_window: Rolling window for volatility calculation (default: 20)
+        target_volatility: Target annualized volatility (default: 0.15 = 15%)
+        max_leverage: Maximum leverage multiplier (default: 2.5)
+        volatility_floor: Minimum volatility for scaling (default: 0.05 = 5%)
     """
     initial_capital: float = Field(
         default=10000.0,
@@ -194,6 +199,35 @@ class BacktestConfig(BaseSettings):
     commission_type: str = Field(
         default="percentage",
         description="Commission type"
+    )
+    # PHASE 1: Dynamic position sizing with volatility scaling
+    enable_dynamic_sizing: bool = Field(
+        default=True,
+        description="Enable dynamic position sizing based on volatility"
+    )
+    volatility_window: int = Field(
+        default=20,
+        ge=5,
+        le=100,
+        description="Rolling window for volatility calculation"
+    )
+    target_volatility: float = Field(
+        default=0.15,
+        gt=0.0,
+        le=0.5,
+        description="Target annualized volatility (default: 15%)"
+    )
+    max_leverage: float = Field(
+        default=2.5,
+        ge=1.0,
+        le=5.0,
+        description="Maximum leverage multiplier"
+    )
+    volatility_floor: float = Field(
+        default=0.05,
+        gt=0.0,
+        le=0.2,
+        description="Minimum volatility for scaling (5%)"
     )
 
     model_config = SettingsConfigDict(

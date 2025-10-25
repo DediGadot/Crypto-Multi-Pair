@@ -161,7 +161,11 @@ class BinanceDataFetcher(DataProvider):
         limit: Optional[int] = None
     ) -> List:
         """
-        Fetch OHLCV data with retry logic.
+        Fetch OHLCV data - FAIL FAST, NO RETRIES.
+
+        HARD STOP: All retries have been removed. If the exchange API fails,
+        we stop immediately. Network issues and rate limits must be handled
+        at the infrastructure level, not hidden with retry logic.
 
         Args:
             symbol: Trading pair symbol
@@ -173,42 +177,63 @@ class BinanceDataFetcher(DataProvider):
             List of OHLCV candles from exchange
 
         Raises:
-            Exception: If all retry attempts fail
+            ccxt.RateLimitExceeded: Rate limit hit - fix your rate limiting
+            ccxt.NetworkError: Network failure - fix your network
+            ccxt.ExchangeError: Exchange API error - check API status
+            Exception: Any other error - investigate immediately
         """
-        for attempt in range(self.max_retries):
-            try:
-                self.rate_limiter.wait_if_needed()
+        try:
+            self.rate_limiter.wait_if_needed()
 
-                ohlcv = self.exchange.fetch_ohlcv(
-                    symbol=symbol,
-                    timeframe=timeframe,
-                    since=since,
-                    limit=limit
-                )
+            ohlcv = self.exchange.fetch_ohlcv(
+                symbol=symbol,
+                timeframe=timeframe,
+                since=since,
+                limit=limit
+            )
 
-                logger.debug(f"Fetched {len(ohlcv)} candles for {symbol} {timeframe}")
-                return ohlcv
+            logger.debug(f"Fetched {len(ohlcv)} candles for {symbol} {timeframe}")
+            return ohlcv
 
-            except ccxt.RateLimitExceeded as e:
-                wait_time = 2 ** attempt  # Exponential backoff
-                logger.warning(f"Rate limit exceeded, waiting {wait_time}s (attempt {attempt + 1}/{self.max_retries})")
-                time.sleep(wait_time)
+        except ccxt.RateLimitExceeded as e:
+            # HARD STOP: Rate limit means rate limiter is broken
+            logger.error(f"FATAL: Rate limit exceeded for {symbol} {timeframe}")
+            logger.error(f"Rate limiter configuration: {self.rate_limiter.max_requests} req/min")
+            logger.error(f"This should never happen if rate limiting is working correctly")
+            raise RuntimeError(
+                f"FATAL: Rate limit exceeded for {symbol} {timeframe}. "
+                f"Rate limiter is misconfigured or exchange limits have changed. "
+                f"Fix rate limiting configuration before continuing."
+            ) from e
 
-            except ccxt.NetworkError as e:
-                wait_time = 2 ** attempt
-                logger.warning(f"Network error: {e}, retrying in {wait_time}s (attempt {attempt + 1}/{self.max_retries})")
-                time.sleep(wait_time)
+        except ccxt.NetworkError as e:
+            # HARD STOP: Network error means infrastructure problem
+            logger.error(f"FATAL: Network error fetching {symbol} {timeframe}")
+            logger.error(f"Network connectivity is required for data fetching")
+            raise RuntimeError(
+                f"FATAL: Network error for {symbol} {timeframe}. "
+                f"Check network connectivity, DNS resolution, and firewall settings. "
+                f"Original error: {e}"
+            ) from e
 
-            except ccxt.ExchangeError as e:
-                logger.error(f"Exchange error: {e}")
-                raise
+        except ccxt.ExchangeError as e:
+            # HARD STOP: Exchange error means API problem
+            logger.error(f"FATAL: Exchange API error for {symbol} {timeframe}")
+            logger.error(f"Exchange may be down or symbol/timeframe invalid")
+            raise RuntimeError(
+                f"FATAL: Exchange error for {symbol} {timeframe}. "
+                f"Check exchange API status and verify symbol/timeframe validity. "
+                f"Original error: {e}"
+            ) from e
 
-            except Exception as e:
-                logger.error(f"Unexpected error: {e}")
-                if attempt == self.max_retries - 1:
-                    raise
-
-        raise Exception(f"Failed to fetch data after {self.max_retries} attempts")
+        except Exception as e:
+            # HARD STOP: Unexpected error
+            logger.error(f"FATAL: Unexpected error fetching {symbol} {timeframe}")
+            raise RuntimeError(
+                f"FATAL: Unexpected error fetching {symbol} {timeframe}. "
+                f"This is a bug in the data fetcher or CCXT integration. "
+                f"Original error: {e}"
+            ) from e
 
     def _convert_to_dataframe(self, ohlcv_data: List) -> pd.DataFrame:
         """
@@ -228,8 +253,9 @@ class BinanceDataFetcher(DataProvider):
             columns=['timestamp', 'open', 'high', 'low', 'close', 'volume']
         )
 
-        # Convert timestamp to datetime
-        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        # Convert timestamp to datetime with UTC timezone (BUGFIX: was timezone-naive)
+        # Binance timestamps are in UTC, so we explicitly set tz='UTC'
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms', utc=True)
         df.set_index('timestamp', inplace=True)
 
         return df

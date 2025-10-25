@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Multi-Pair Windowed Analysis Report</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: #f5f5f5;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                background: white;
+                padding: 40px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+
+            h1 {
+                color: #1a1a1a;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 15px;
+            }
+
+            h2 {
+                color: #2c3e50;
+                font-size: 2em;
+                margin-top: 40px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            h3 {
+                color: #34495e;
+                font-size: 1.5em;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            h4 {
+                color: #555;
+                font-size: 1.2em;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            .metadata {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 30px;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .metadata p {
+                margin: 5px 0;
+            }
+
+            .metadata strong {
+                color: #2c3e50;
+                display: inline-block;
+                min-width: 180px;
+            }
+
+            hr {
+                border: none;
+                border-top: 1px solid #e0e0e0;
+                margin: 30px 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            th {
+                padding: 15px;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            tr:hover {
+                background: #f8f9fa;
+            }
+
+            tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .tier1 {
+                background: #e8f5e9 !important;
+                border-left: 4px solid #4CAF50;
+            }
+
+            .tier2 {
+                background: #fff3e0 !important;
+                border-left: 4px solid #FF9800;
+            }
+
+            .tier3 {
+                background: #ffebee !important;
+                border-left: 4px solid #f44336;
+            }
+
+            .positive {
+                color: #4CAF50;
+                font-weight: 600;
+            }
+
+            .negative {
+                color: #f44336;
+                font-weight: 600;
+            }
+
+            .blockquote {
+                background: #fff8dc;
+                border-left: 5px solid #ffa500;
+                padding: 15px 20px;
+                margin: 20px 0;
+                border-radius: 0 5px 5px 0;
+            }
+
+            .blockquote.warning {
+                background: #fff3cd;
+                border-left-color: #ffc107;
+            }
+
+            .blockquote.info {
+                background: #d1ecf1;
+                border-left-color: #17a2b8;
+            }
+
+            .action-plan {
+                background: #e3f2fd;
+                padding: 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+                border-left: 4px solid #2196F3;
+            }
+
+            .action-plan ol {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .action-plan li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            .recommendation-box {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 20px 0;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .recommendation-box h4 {
+                color: white;
+                margin-top: 0;
+                font-size: 1.4em;
+            }
+
+            .recommendation-box ul {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+
+            .recommendation-box li {
+                margin: 8px 0;
+            }
+
+            .profile-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
+            }
+
+            .profile-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            .profile-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            }
+
+            .profile-card h4 {
+                margin-top: 0;
+                color: #667eea;
+            }
+
+            .academic-section {
+                background: #fafafa;
+                padding: 30px;
+                border-radius: 5px;
+                margin-top: 40px;
+                border-top: 3px solid #999;
+            }
+
+            .academic-section h2 {
+                color: #666;
+            }
+
+            .academic-section pre {
+                background: white;
+                padding: 15px;
+                border-left: 3px solid #999;
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: 'Courier New', monospace;
+                font-size: 0.9em;
+                line-height: 1.5;
+            }
+
+            ul, ol {
+                margin-left: 30px;
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+
+            li {
+                margin: 8px 0;
+                line-height: 1.8;
+            }
+
+            strong {
+                color: #2c3e50;
+            }
+
+            em {
+                color: #555;
+                font-style: italic;
+            }
+
+            .emoji {
+                font-size: 1.2em;
+            }
+
+            /* Interactive Section Styles */
+            .interactive-section {
+                margin-top: 50px;
+                padding: 30px;
+                background: #f9f9f9;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+            }
+
+            .interactive-section h2 {
+                color: #2c3e50;
+                border-bottom: 3px solid #4CAF50;
+                padding-bottom: 10px;
+            }
+
+            .interactive-section h3 {
+                color: #34495e;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            .interactive-section p em {
+                color: #666;
+                font-size: 0.95em;
+            }
+
+            .interactive-charts {
+                margin-top: 20px;
+            }
+
+            /* Stats Table Styles */
+            .stats-table {
+                margin: 20px auto;
+                border-collapse: collapse;
+                width: 90%;
+                max-width: 900px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                background: white;
+            }
+
+            .stats-table thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stats-table th {
+                padding: 15px;
+                color: white;
+                text-align: left;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85em;
+                letter-spacing: 0.5px;
+            }
+
+            .stats-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+                text-align: left;
+            }
+
+            .stats-table tbody tr:hover {
+                background: #f8f9fa;
+            }
+
+            .stats-table tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            .stats-table td b {
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            @media print {
+                body {
+                    background: white;
+                    padding: 0;
+                }
+
+                .container {
+                    box-shadow: none;
+                    padding: 20px;
+                }
+
+                table {
+                    page-break-inside: avoid;
+                }
+
+                h2 {
+                    page-break-before: always;
+                }
+
+                .interactive-section {
+                    page-break-before: always;
+                }
+            }
+        </style>
+        
+</head>
+<body>
+<div class='container'>
+<h1>🚀 Multi-Pair Windowed Train/Test Analysis</h1>
+<div class='metadata'>
+<p><strong>Trading Pairs:</strong> BTC/USDT, ETH/USDT</p>
+<p><strong>Timeframe:</strong> 1h</p>
+<p><strong>Test Period:</strong> 0.5 years</p>
+<p><strong>Horizons:</strong> 30d, 90d</p>
+<p><strong>Strategies Tested:</strong> 5</p>
+<p><strong>Total Windows:</strong> 1</p>
+<p><strong>Success Rate:</strong> 150/150 (100.0%)</p>
+<p><strong>Report Generated:</strong> 2025-10-22 12:44:37</p>
+</div>
+<div class='blockquote' style='background-color: #f0f7ff; border-left: 4px solid #2E86DE;'>
+<h2>📋 Executive Summary</h2>
+<p><strong>Best Performing Strategy:</strong> RSI_MeanReversion (Avg Test Sharpe: 0.47)</p>
+<p><strong>Strategy Performance Distribution:</strong></p>
+<ul>
+<li><span class='positive'>Excellent</span> (Sharpe ≥ 1.0): 0 strategies</li>
+<li>Good (0.5 ≤ Sharpe < 1.0): 0 strategies</li>
+<li><span class='negative'>Underperforming</span> (Sharpe < 0.5): 5 strategies</li>
+</ul>
+<p><strong>Overfitting Risk Analysis:</strong></p>
+<ul>
+<li><span class='positive'>No High Risk</span>: All strategies have train/test gap ≤ 0.5</li>
+<li><span class='positive'>Low Risk</span>: 5 strategies show robust generalization (gap ≤ 0.2)</li>
+</ul>
+<p><strong>Key Insights:</strong></p>
+<ul>
+<li><span class='positive'>✓ Perfect Execution</span>: All 150 backtest jobs completed successfully</li>
+<li>📊 Multi-Asset Portfolio: Testing across 2 trading pairs provides diversification insights</li>
+<li>🔬 Robust Testing: 2 time horizons (30d, 90d) validate strategy performance</li>
+</ul>
+<p><strong>Recommendations:</strong></p>
+<ul>
+<li><strong>Caution:</strong> No strategies achieved Sharpe ≥ 0.5 - consider parameter tuning or alternative approaches</li>
+<li><strong>Diversification:</strong> Review correlation matrix below to optimize asset allocation</li>
+</ul>
+</div>
+<h2>🏆 Top Strategies by Portfolio Sharpe Ratio</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Strategy</th>
+<th>Avg Test Sharpe</th>
+<th>Avg Train Sharpe</th>
+<th>Overfitting Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class='tier3'>
+<td>1</td>
+<td><strong>RSI_MeanReversion</strong></td>
+<td>0.47</td>
+<td>-0.07</td>
+<td><span class='positive'>Low (-0.55)</span></td>
+</tr>
+<tr class='tier3'>
+<td>2</td>
+<td><strong>SMA_Crossover</strong></td>
+<td>0.32</td>
+<td>0.17</td>
+<td><span class='positive'>Low (-0.15)</span></td>
+</tr>
+<tr class='tier3'>
+<td>3</td>
+<td><strong>TripleEMA</strong></td>
+<td>0.19</td>
+<td>0.10</td>
+<td><span class='positive'>Low (-0.09)</span></td>
+</tr>
+<tr class='tier3'>
+<td>4</td>
+<td><strong>BollingerBreakout</strong></td>
+<td>0.13</td>
+<td>-0.37</td>
+<td><span class='positive'>Low (-0.50)</span></td>
+</tr>
+<tr class='tier3'>
+<td>5</td>
+<td><strong>MACD_Momentum</strong></td>
+<td>-0.16</td>
+<td>-1.54</td>
+<td><span class='positive'>Low (-1.38)</span></td>
+</tr>
+</tbody>
+</table>
+<h2>🔬 Advanced Portfolio Analytics</h2>
+<p><em>Interactive visualizations showing correlation structure, risk decomposition, and advanced risk metrics</em></p>
+<h3>Cross-Asset Correlation Matrix</h3>
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>                <div id="1d2be0e8-067f-4fbd-8bc9-b3186c66c33f" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("1d2be0e8-067f-4fbd-8bc9-b3186c66c33f")) {                    Plotly.newPlot(                        "1d2be0e8-067f-4fbd-8bc9-b3186c66c33f",                        [{"colorbar":{"ticktext":["-1.0","-0.5","0.0","0.5","1.0"],"tickvals":[-1,-0.5,0,0.5,1],"title":{"text":"Correlation"}},"colorscale":[[0.0,"rgb(5,48,97)"],[0.1,"rgb(33,102,172)"],[0.2,"rgb(67,147,195)"],[0.3,"rgb(146,197,222)"],[0.4,"rgb(209,229,240)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(253,219,199)"],[0.7,"rgb(244,165,130)"],[0.8,"rgb(214,96,77)"],[0.9,"rgb(178,24,43)"],[1.0,"rgb(103,0,31)"]],"hovertemplate":"%{y} vs %{x}\u003cbr\u003eCorrelation: %{z:.3f}\u003cextra\u003e\u003c\u002fextra\u003e","text":[[1.0,0.7918167413525344],[0.7918167413525344,1.0]],"textfont":{"size":12},"texttemplate":"%{text:.2f}","x":["BTC\u002fUSDT","ETH\u002fUSDT"],"y":["BTC\u002fUSDT","ETH\u002fUSDT"],"z":[[1.0,0.7918167413525344],[0.7918167413525344,1.0]],"zmax":1,"zmid":0,"zmin":-1,"type":"heatmap"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"font":{"size":18,"color":"#1a1a1a"},"text":"Cross-Asset Correlation Matrix"},"xaxis":{"title":{"text":""},"side":"bottom"},"margin":{"l":100,"r":100,"t":80,"b":80},"yaxis":{"title":{"text":""}},"height":400},                        {"responsive": true}                    )                };                            </script>        </div>
+<h3>Portfolio Risk Contribution by Asset</h3>
+<p><em>Shows how much each asset contributes to total portfolio volatility</em></p>
+<div>                            <div id="e729b971-ac85-4378-93db-8fb02494bde0" class="plotly-graph-div" style="height:200px; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("e729b971-ac85-4378-93db-8fb02494bde0")) {                    Plotly.newPlot(                        "e729b971-ac85-4378-93db-8fb02494bde0",                        [{"hovertemplate":"\u003cb\u003e%{y}\u003c\u002fb\u003e\u003cbr\u003eRisk Contribution: %{x:.1f}%\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#2E86DE","#2E86DE"]},"orientation":"h","text":["3.1%","5.4%"],"textposition":"outside","x":[3.1076183579117878,5.376456148550183],"y":["BTC\u002fUSDT","ETH\u002fUSDT"],"type":"bar"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"font":{"size":18,"color":"#1a1a1a"},"text":"Portfolio Risk Contribution by Asset"},"xaxis":{"title":{"text":"Risk Contribution (%)"},"range":[0,6.45174737826022]},"yaxis":{"title":{"text":""}},"height":200,"showlegend":false},                        {"responsive": true}                    )                };                            </script>        </div>
+<h3>Advanced Risk Metrics (Top Strategy)</h3>
+<p><em>Omega Ratio: probability-weighted gains/losses | Tail Ratio: right/left tail asymmetry | Ulcer Index: drawdown-based volatility | Max Consecutive DD: longest underwater period</em></p>
+<div>                            <div id="11152e63-ee36-47be-b340-55d047884f8f" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("11152e63-ee36-47be-b340-55d047884f8f")) {                    Plotly.newPlot(                        "11152e63-ee36-47be-b340-55d047884f8f",                        [{"delta":{"reference":1.0,"valueformat":".2f"},"domain":{"x":[0.0,0.45],"y":[0.575,1.0]},"mode":"number+delta","number":{"font":{"color":"red","size":48},"valueformat":".2f"},"value":0.0,"type":"indicator"},{"delta":{"reference":1.0,"valueformat":".2f"},"domain":{"x":[0.55,1.0],"y":[0.575,1.0]},"mode":"number+delta","number":{"font":{"color":"orange","size":48},"valueformat":".2f"},"value":1.0,"type":"indicator"},{"domain":{"x":[0.0,0.45],"y":[0.0,0.425]},"mode":"number","number":{"font":{"color":"green","size":48},"suffix":"%","valueformat":".2f"},"value":0.0,"type":"indicator"},{"domain":{"x":[0.55,1.0],"y":[0.0,0.425]},"mode":"number","number":{"font":{"color":"green","size":40},"suffix":" days","valueformat":"d"},"value":0,"type":"indicator"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Omega Ratio","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Tail Ratio","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Ulcer Index","x":0.225,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Max Consecutive DD Days","x":0.775,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"}],"title":{"font":{"size":20,"color":"#1a1a1a"},"text":"Advanced Risk Metrics"},"margin":{"l":20,"r":20,"t":80,"b":20},"height":500},                        {"responsive": true}                    )                };                            </script>        </div>
+<h3>Portfolio Diversification Metrics</h3>
+<table>
+<thead><tr><th>Metric</th><th>Value</th><th>Interpretation</th></tr></thead>
+<tbody>
+<tr><td><strong>Effective Number of Assets</strong></td><td>1.23 / 2</td>
+<td>61.5% diversification efficiency</td></tr>
+<tr><td><strong>Mean Correlation</strong></td><td>0.79</td>
+<td><span class='negative'>High correlation - limited diversification</span></td></tr>
+<tr><td><strong>Diversification Ratio</strong></td><td>39.52</td>
+<td><span class='positive'>Portfolio Sharpe > Average - diversification benefit</span></td></tr>
+</tbody></table>
+<h2>📊 Per-Pair Performance Details</h2>
+<h3>BTC/USDT</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Horizon</th>
+<th>Dataset</th>
+<th>Avg Sharpe</th>
+<th>Avg Return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMA_Crossover</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+1.4%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+4.2%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+8.8%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.03</td>
+<td><span class="positive">+14.6%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+0.7%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+2.9%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+4.0%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.03</td>
+<td><span class="positive">+12.1%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.02</td>
+<td><span class="negative">-4.5%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>30d</td>
+<td>TEST</td>
+<td>-0.05</td>
+<td><span class="negative">-8.6%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.02</td>
+<td><span class="negative">-13.4%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>90d</td>
+<td>TEST</td>
+<td>-0.03</td>
+<td><span class="negative">-17.9%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.00</td>
+<td><span class="positive">+0.2%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>30d</td>
+<td>TEST</td>
+<td>-0.02</td>
+<td><span class="negative">-2.1%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.00</td>
+<td><span class="positive">+0.2%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>90d</td>
+<td>TEST</td>
+<td>-0.00</td>
+<td><span class="negative">-1.7%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+2.6%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>30d</td>
+<td>TEST</td>
+<td>-0.01</td>
+<td><span class="negative">-1.6%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>0.01</td>
+<td><span class="positive">+7.8%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>90d</td>
+<td>TEST</td>
+<td>-0.00</td>
+<td><span class="negative">-1.2%</span></td>
+</tr>
+</tbody>
+</table>
+<h3>ETH/USDT</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Horizon</th>
+<th>Dataset</th>
+<th>Avg Sharpe</th>
+<th>Avg Return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMA_Crossover</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.01</td>
+<td><span class="negative">-0.5%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+6.8%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.00</td>
+<td><span class="positive">+0.9%</span></td>
+</tr>
+<tr>
+<td>SMA_Crossover</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.04</td>
+<td><span class="positive">+59.3%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>0.00</td>
+<td><span class="negative">-1.7%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.03</td>
+<td><span class="positive">+5.2%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>0.00</td>
+<td><span class="negative">-5.6%</span></td>
+</tr>
+<tr>
+<td>RSI_MeanReversion</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.04</td>
+<td><span class="positive">+29.5%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.02</td>
+<td><span class="negative">-6.0%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.00</td>
+<td><span class="positive">+2.4%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.01</td>
+<td><span class="negative">-15.7%</span></td>
+</tr>
+<tr>
+<td>MACD_Momentum</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.03</td>
+<td><span class="positive">+32.3%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.02</td>
+<td><span class="negative">-6.5%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+7.2%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.02</td>
+<td><span class="negative">-15.7%</span></td>
+</tr>
+<tr>
+<td>BollingerBreakout</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+22.8%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>30d</td>
+<td>TRAIN</td>
+<td>-0.01</td>
+<td><span class="negative">-1.0%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>30d</td>
+<td>TEST</td>
+<td>0.02</td>
+<td><span class="positive">+10.8%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>90d</td>
+<td>TRAIN</td>
+<td>-0.00</td>
+<td><span class="negative">-1.5%</span></td>
+</tr>
+<tr>
+<td>TripleEMA</td>
+<td>90d</td>
+<td>TEST</td>
+<td>0.04</td>
+<td><span class="positive">+50.2%</span></td>
+</tr>
+</tbody>
+</table>
+<h2>📈 Trade Analysis</h2>
+<p><em>Aggregated trade statistics across multiple windows and pairs</em></p>
+<h3>Trade Statistics Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy/Horizon</th>
+<th>Total Trades</th>
+<th>Win Rate</th>
+<th>Avg Return</th>
+<th>Avg Sharpe</th>
+<th>Avg Drawdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RSI_MeanReversion/90d</strong></td>
+<td>9</td>
+<td><span class='positive'>77.8%</span></td>
+<td><span class="positive">+12.1%</span></td>
+<td><span class='negative'>0.03</span></td>
+<td><span class="positive">+6.7%</span></td>
+</tr>
+<tr>
+<td><strong>SMA_Crossover/90d</strong></td>
+<td>6</td>
+<td><span class='positive'>66.7%</span></td>
+<td><span class="positive">+14.6%</span></td>
+<td><span class='negative'>0.03</span></td>
+<td><span class="positive">+6.4%</span></td>
+</tr>
+<tr>
+<td><strong>RSI_MeanReversion/30d</strong></td>
+<td>17</td>
+<td><span class='positive'>61.3%</span></td>
+<td><span class="positive">+2.9%</span></td>
+<td><span class='negative'>0.02</span></td>
+<td><span class="positive">+3.9%</span></td>
+</tr>
+<tr>
+<td><strong>SMA_Crossover/30d</strong></td>
+<td>7</td>
+<td><span class='positive'>60.0%</span></td>
+<td><span class="positive">+4.2%</span></td>
+<td><span class='negative'>0.02</span></td>
+<td><span class="positive">+4.6%</span></td>
+</tr>
+<tr>
+<td><strong>TripleEMA/90d</strong></td>
+<td>18</td>
+<td><span class='negative'>27.8%</span></td>
+<td><span class="negative">-1.2%</span></td>
+<td><span class='negative'>-0.00</span></td>
+<td><span class="positive">+8.8%</span></td>
+</tr>
+<tr>
+<td><strong>TripleEMA/30d</strong></td>
+<td>29</td>
+<td><span class='negative'>23.7%</span></td>
+<td><span class="negative">-1.6%</span></td>
+<td><span class='negative'>-0.01</span></td>
+<td><span class="positive">+7.5%</span></td>
+</tr>
+</tbody>
+</table>
+<h3>Key Trade Insights</h3>
+<ul>
+<li><strong>Overall Win Rate:</strong> 43.6% across 86 total trades</li>
+<li>Moderate Risk-Adjusted Returns: Average Sharpe 0.01</li>
+<li><strong>Average Return per Window:</strong> <span class="positive">+2.4%</span></li>
+<li><strong>Most Active:</strong> TripleEMA/30d with 29 trades</li>
+<li><strong>Best Risk-Adjusted:</strong> RSI_MeanReversion/90d (Sharpe: 0.03)</li>
+</ul>
+<h2>📊 Statistical Tests</h2>
+<p><em>Testing return distribution properties and market assumptions</em></p>
+<h3>Return Distribution Tests</h3>
+<div class='blockquote info'>
+<p><strong>Strategy Tested:</strong> RSI_MeanReversion</p>
+<ul>
+<li><strong>Normality Test (Jarque-Bera):</strong> Tests if returns follow a normal distribution. Most financial returns show fat tails (non-normal).</li>
+<li><strong>Autocorrelation:</strong> Measures if returns are predictable from past returns. High values indicate momentum or mean reversion.</li>
+<li><strong>Stationarity (ADF Test):</strong> Tests if statistical properties remain constant over time. Stationary returns are easier to model.</li>
+</ul>
+<p><em>Note: Full statistical testing requires access to raw return series. Current aggregated metrics provide summary statistics only.</em></p>
+<p><strong>Recommendations for robust statistical analysis:</strong></p>
+<ul>
+<li>Enable detailed return series logging in backtest engine</li>
+<li>Calculate statistical tests on raw data before aggregation</li>
+<li>Store test results in PerformanceMetrics dataclass</li>
+</ul>
+</div>
+<h2>💡 Interpretation Guide</h2>
+<div class='blockquote info'>
+<h4>Understanding the Results</h4>
+<ul>
+<li><strong>Portfolio Sharpe Ratio:</strong> Risk-adjusted return across all pairs. >1.0 is excellent, >0.5 is good.</li>
+<li><strong>Overfitting Risk:</strong> Large gap between train and test Sharpe indicates overfitting.</li>
+<li><strong>Test Set Performance:</strong> Most important metric - reflects real-world generalization.</li>
+<li><strong>Multi-Pair Correlation:</strong> Lower correlation between pairs provides better diversification.</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

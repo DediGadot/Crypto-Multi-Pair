@@ -1,0 +1,1 @@
+strategy,symbol,timeframe,horizon,window_id,dataset_type,start_date,end_date,total_return,sharpe_ratio,max_drawdown,win_rate,total_trades,profit_factor,final_capital,cached_at

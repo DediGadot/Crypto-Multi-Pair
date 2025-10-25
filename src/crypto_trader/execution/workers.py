@@ -88,6 +88,9 @@ def run_backtest_worker(
         logger.debug(f"[WORKER-{worker_id}] Recreating DataFrame from dict")
         # Recreate DataFrame from dict
         data = pd.DataFrame(data_dict)
+        # BUGFIX: Convert timestamp column from string to datetime
+        if 'timestamp' in data.columns:
+            data['timestamp'] = pd.to_datetime(data['timestamp'])
         log_dataframe_info(data, f"WORKER-{worker_id} Initial Data", detailed=False)
 
         logger.debug(f"[WORKER-{worker_id}] Slicing data to horizon window ({horizon_days} days)")
@@ -95,18 +98,18 @@ def run_backtest_worker(
         data = slice_data_to_horizon(data, timeframe, horizon_days, warmup_multiplier=1.5)
         log_dataframe_info(data, f"WORKER-{worker_id} After Slicing", detailed=False)
 
-        # Get strategy class with error handling
+        # Get strategy class - HARD STOP on import failure
         logger.debug(f"[WORKER-{worker_id}] Loading strategy: {strategy_name}")
         try:
             import crypto_trader.strategies.library  # noqa: F401
         except ImportError as e:
             error_msg = f'Failed to import strategies library: {e}'
             logger.error(f"[WORKER-{worker_id}] {error_msg}")
-            return {
-                'strategy_name': strategy_name,
-                'horizon': horizon_name,
-                'error': error_msg
-            }
+            raise ImportError(
+                f"FATAL: Cannot import strategies library in worker {worker_id}. "
+                f"This is a critical environment setup issue. "
+                f"Original error: {e}"
+            ) from e
 
         registry = get_registry()
         strategy_class = registry.get_strategy(strategy_name)
@@ -228,7 +231,8 @@ def run_backtest_worker(
         return metrics_dict
 
     except Exception as e:
-        # Return error info with traceback for debugging
+        # HARD STOP: Raise exception instead of returning error dict
+        # Workers must fail fast - no soft fallbacks
         duration = time.perf_counter() - start_time
         error_msg = f"{type(e).__name__}: {str(e)}"
         error_trace = traceback.format_exc()
@@ -243,11 +247,27 @@ def run_backtest_worker(
         }
         log_error_with_context(e, error_context, include_traceback=True)
 
-        return {
-            'strategy_name': strategy_name,
-            'horizon': horizon_name,
-            'error': error_msg
-        }
+        # Extract debug information
+        data_columns = list(data_dict.keys()) if isinstance(data_dict, dict) else "not a dict"
+        timestamp_range = "unknown"
+        if 'timestamp' in data_dict and data_dict['timestamp']:
+            try:
+                ts_list = data_dict['timestamp']
+                if ts_list:
+                    timestamp_range = f"{ts_list[0]} to {ts_list[-1]}"
+            except:
+                pass
+
+        # HARD STOP: Re-raise with enhanced context
+        raise RuntimeError(
+            f"FATAL WORKER FAILURE: {strategy_name}/{horizon_name}/{symbol}\n"
+            f"Error: {error_msg}\n"
+            f"Data shape: {len(data_dict.get('timestamp', []))} rows\n"
+            f"Data columns: {data_columns}\n"
+            f"Timestamp range: {timestamp_range}\n"
+            f"Worker duration: {duration:.2f}s\n"
+            f"Original traceback:\n{error_trace}"
+        ) from e
 
 
 def run_multipair_backtest_worker(
@@ -264,8 +284,18 @@ def run_multipair_backtest_worker(
 
     Handles strategies like Portfolio Rebalancer and Statistical Arbitrage
     that require multiple asset pairs.
+
+    BUGFIX: Apply consistent data slicing to multi-pair strategies (Bug #5)
     """
+    worker_id = f"{strategy_name}_{horizon_name}_{threading.get_ident()}"
+    start_time = time.perf_counter()
+
     try:
+        log_worker_lifecycle(worker_id, "STARTED",
+                           strategy=strategy_name,
+                           horizon=horizon_name,
+                           assets=", ".join(asset_symbols))
+
         # Import inside worker to avoid pickle issues
         import yaml
 
@@ -276,6 +306,18 @@ def run_multipair_backtest_worker(
             sys.path.insert(0, str(src_dir))
 
         from crypto_trader.data.fetchers import BinanceDataFetcher
+
+        # BUGFIX: Apply data slicing BEFORE passing to pipeline (Bug #5)
+        # This ensures multi-pair strategies use the same window as single-pair
+        logger.debug(f"[WORKER-{worker_id}] Slicing multi-pair data to horizon window")
+        sliced_data_dicts = {}
+        for symbol, data_dict in data_dicts.items():
+            df = pd.DataFrame(data_dict)
+            # Apply SAME slicing as single-pair workers (warmup=1.5x)
+            sliced = slice_data_to_horizon(df, timeframe, horizon_days, warmup_multiplier=1.5)
+            # Convert back to dict for serialization
+            sliced_data_dicts[symbol] = sliced.to_dict('list')
+            logger.debug(f"[WORKER-{worker_id}]   {symbol}: {len(df)} -> {len(sliced)} candles")
 
         # For multi-pair strategies, we need to use the pipeline
         # Create a temporary config file
@@ -438,16 +480,17 @@ def run_multipair_backtest_worker(
                 from crypto_trader.features.factory import augment_with_features, DEFAULT_JOIN_CONFIG
 
                 # Use pre-fetched data from shared pool (Bug #1 fix)
-                if pair[0] not in data_dicts or pair[1] not in data_dicts:
+                # BUGFIX: Use sliced_data_dicts instead of raw data_dicts (Bug #5)
+                if pair[0] not in sliced_data_dicts or pair[1] not in sliced_data_dicts:
                     return {
                         'strategy_name': strategy_name,
                         'horizon': horizon_name,
                         'error': f'Pre-fetched data not available for {pair[0]} or {pair[1]}'
                     }
 
-                # Reconstruct DataFrames from dicts
-                asset1_data = pd.DataFrame(data_dicts[pair[0]])
-                asset2_data = pd.DataFrame(data_dicts[pair[1]])
+                # Reconstruct DataFrames from dicts (both using sliced data)
+                asset1_data = pd.DataFrame(sliced_data_dicts[pair[0]])
+                asset2_data = pd.DataFrame(sliced_data_dicts[pair[1]])
 
                 # Set timestamp as index
                 asset1_data['timestamp'] = pd.to_datetime(asset1_data['timestamp'])

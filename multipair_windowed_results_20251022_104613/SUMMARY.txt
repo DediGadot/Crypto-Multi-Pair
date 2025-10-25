@@ -1,0 +1,26 @@
+================================================================================
+MULTI-PAIR WINDOWED TRAIN/TEST ANALYSIS SUMMARY
+================================================================================
+
+Pairs: BTC/USDT, ETH/USDT, BNB/USDT
+Timeframe: 1h
+Test Set: 2.0 years
+Horizons: 30d, 90d, 180d
+Strategies: 20
+Total Windows: 3
+Success Rate: 815/1020 (79.9%)
+
+================================================================================
+TOP STRATEGIES BY PORTFOLIO SHARPE
+================================================================================
+
+1. Ichimoku_Cloud: 0.51
+2. SMA_Crossover: 0.44
+3. RSI_MeanReversion: 0.35
+4. TripleEMA: 0.31
+5. VWAP_MeanReversion: 0.16
+6. OnChainAnalytics: 0.00
+7. MultiTimeframeConfluence: 0.00
+8. DynamicEnsemble: 0.00
+9. OrderFlowImbalance: 0.00
+10. VolatilityRegimeAdaptive: -0.02

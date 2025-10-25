@@ -1,0 +1,102 @@
+2025-10-25 11:32:31.335 | ERROR    | Unhandled exception
+Traceback (most recent call last):
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1676, in <module>
+    app()
+    └ <typer.main.Typer object at 0x79fb60c510d0>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 325, in __call__
+    raise e
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x79fb60c510d0>
+           └ <function get_command at 0x79fb814f1d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x79fb814f1440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x79fb814f05e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x79fb608eb170>
+         │    └ <function Command.invoke at 0x79fb8149f2e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │   │      │    │           └ <click.core.Context object at 0x79fb608eb170>
+           │   │      │    └ <function analyze at 0x79fb609765c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x79fb8149e520>
+           └ <click.core.Context object at 0x79fb608eb170>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │         └ ()
+           └ <function analyze at 0x79fb609765c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x79fb609763e0>
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1494, in analyze
+    raise RuntimeError(
+
+RuntimeError: FATAL: No results for HierarchicalRiskParity/90d/test. If backtests completed successfully, results_list should not be empty. This indicates a critical data flow issue.
+
+Traceback (most recent call last):
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1676, in <module>
+    app()
+    └ <typer.main.Typer object at 0x79fb60c510d0>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 325, in __call__
+    raise e
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x79fb60c510d0>
+           └ <function get_command at 0x79fb814f1d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x79fb814f1440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x79fb814f05e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x79fb608eb170>
+         │    └ <function Command.invoke at 0x79fb8149f2e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │   │      │    │           └ <click.core.Context object at 0x79fb608eb170>
+           │   │      │    └ <function analyze at 0x79fb609765c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x79fb8149e520>
+           └ <click.core.Context object at 0x79fb608eb170>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │         └ ()
+           └ <function analyze at 0x79fb609765c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x79fb609763e0>
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1494, in analyze
+    raise RuntimeError(
+
+RuntimeError: FATAL: No results for HierarchicalRiskParity/90d/test. If backtests completed successfully, results_list should not be empty. This indicates a critical data flow issue.

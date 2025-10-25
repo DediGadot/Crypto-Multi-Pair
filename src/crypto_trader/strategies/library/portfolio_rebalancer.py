@@ -53,6 +53,14 @@ from loguru import logger
 from crypto_trader.strategies.base import BaseStrategy, SignalType
 from crypto_trader.strategies.registry import register_strategy
 
+# [TASK-3.2] Convex optimization for Sharpe maximization
+try:
+    import cvxpy as cp
+    CVXPY_AVAILABLE = True
+except ImportError:
+    logger.warning("cvxpy not available - Sharpe optimization disabled")
+    CVXPY_AVAILABLE = False
+
 
 @register_strategy(
     name="PortfolioRebalancer",
@@ -91,7 +99,18 @@ class PortfolioRebalancerStrategy(BaseStrategy):
         self.use_momentum_filter = False  # Avoid rebalancing during strong trends
         self.momentum_lookback_days = 30  # Lookback period for momentum calculation
 
-        logger.debug(f"Initialized {self.__class__.__name__}")
+        # [TASK-3.2] Sharpe optimization parameters
+        self.use_sharpe_optimization: bool = True  # Use mean-variance Sharpe maximization
+        self.sharpe_lookback_days: int = 90  # Lookback for expected returns/cov
+        self.use_momentum_overlay: bool = True  # Tilt weights based on momentum
+        self.momentum_tilt_pct: float = 0.20  # Max 20% weight adjustment for momentum
+        self.momentum_score_periods: List[int] = [21, 63, 126, 252]  # 1m, 3m, 6m, 12m
+        self.dynamic_threshold: bool = True  # Adjust threshold based on volatility
+        self.base_threshold: float = 0.15  # Base rebalancing threshold
+        self.vol_high_threshold: float = 0.50  # High vol threshold (annual)
+        self.vol_low_threshold: float = 0.20  # Low vol threshold (annual)
+
+        logger.debug(f"Initialized {self.__class__.__name__} with Sharpe optimization")
 
     def initialize(self, config: Dict[str, Any]) -> None:
         """
@@ -117,6 +136,14 @@ class PortfolioRebalancerStrategy(BaseStrategy):
         self.calendar_period_days = config.get("calendar_period_days", 30)
         self.use_momentum_filter = config.get("use_momentum_filter", False)
         self.momentum_lookback_days = config.get("momentum_lookback_days", 30)
+
+        # [TASK-3.2] Sharpe optimization parameters
+        self.use_sharpe_optimization = config.get("use_sharpe_optimization", True)
+        self.sharpe_lookback_days = config.get("sharpe_lookback_days", 90)
+        self.use_momentum_overlay = config.get("use_momentum_overlay", True)
+        self.momentum_tilt_pct = config.get("momentum_tilt_pct", 0.20)
+        self.dynamic_threshold = config.get("dynamic_threshold", True)
+        self.base_threshold = config.get("base_threshold", 0.15)
 
         # Validate configuration
         if len(self.assets) < 2:
@@ -166,6 +193,283 @@ class PortfolioRebalancerStrategy(BaseStrategy):
             Empty list - no indicators needed, only price data
         """
         return []
+
+    def _optimize_weights_sharpe(
+        self,
+        expected_returns: pd.Series,
+        cov_matrix: pd.DataFrame,
+        target_weights: Dict[str, float]
+    ) -> Dict[str, float]:
+        """
+        Optimize portfolio weights to maximize Sharpe ratio.
+
+        [TASK-3.2] CRITICAL ENHANCEMENT for better risk-adjusted returns.
+
+        Mathematical formulation:
+        maximize: (μ'w) / sqrt(w'Σw)
+        subject to: Σw_i = 1, w_i >= 0 (long-only)
+
+        We convert to convex form by maximizing μ'w - λ * sqrt(w'Σw)
+        where λ is risk aversion parameter (we use λ=1 for Sharpe maximization)
+
+        Args:
+            expected_returns: Expected returns for each asset (annualized)
+            cov_matrix: Covariance matrix (annualized)
+            target_weights: Original target weights (for fallback)
+
+        Returns:
+            Dictionary of optimized weights
+        """
+        if not CVXPY_AVAILABLE:
+            logger.warning("cvxpy not available, using target weights")
+            return target_weights
+
+        try:
+            n_assets = len(expected_returns)
+            w = cp.Variable(n_assets)
+
+            # Expected return
+            ret = expected_returns.values @ w
+
+            # Portfolio variance (use quad_form for numerical stability)
+            risk = cp.quad_form(w, cov_matrix.values)
+
+            # Objective: maximize Sharpe = return / risk
+            # Equivalent to: maximize return - 0.5 * risk_aversion * risk
+            # For Sharpe maximization, we set risk_aversion = 1
+            objective = cp.Maximize(ret - 0.5 * risk)
+
+            # Constraints
+            constraints = [
+                cp.sum(w) == 1,  # Weights sum to 1
+                w >= 0,  # Long-only (no shorting)
+                w <= 0.50  # Max 50% per asset (diversification)
+            ]
+
+            # Solve problem
+            problem = cp.Problem(objective, constraints)
+            problem.solve(solver=cp.ECOS, verbose=False)
+
+            if problem.status in ["optimal", "optimal_inaccurate"]:
+                optimized_weights = dict(zip(expected_returns.index, w.value))
+
+                # Clean small weights (< 1%)
+                total_weight = sum(optimized_weights.values())
+                cleaned_weights = {
+                    k: max(0, v / total_weight) if v > 0.01 else 0.0
+                    for k, v in optimized_weights.items()
+                }
+
+                # Renormalize
+                total_cleaned = sum(cleaned_weights.values())
+                if total_cleaned > 0:
+                    cleaned_weights = {k: v / total_cleaned for k, v in cleaned_weights.items()}
+
+                logger.debug(
+                    f"Sharpe optimization: ret={ret.value:.4f}, "
+                    f"risk={np.sqrt(risk.value):.4f}, "
+                    f"sharpe={(ret.value / np.sqrt(risk.value)):.4f}"
+                )
+
+                return cleaned_weights
+            else:
+                logger.warning(f"Optimization failed: {problem.status}, using target weights")
+                return target_weights
+
+        except Exception as e:
+            logger.error(f"Sharpe optimization error: {e}, using target weights")
+            return target_weights
+
+    def _calculate_momentum_scores(
+        self,
+        data: Dict[str, pd.DataFrame],
+        timestamp_idx: int
+    ) -> Dict[str, float]:
+        """
+        Calculate composite momentum scores for tactical allocation.
+
+        [TASK-3.2] Momentum overlay for enhanced returns.
+
+        Composite momentum = weighted average of:
+        - 1-month momentum (21 days): 25% weight
+        - 3-month momentum (63 days): 25% weight
+        - 6-month momentum (126 days): 25% weight
+        - 12-month momentum (252 days): 25% weight
+
+        Each momentum is z-score normalized for cross-asset comparison.
+
+        Args:
+            data: Dictionary mapping symbol to DataFrame with OHLCV data
+            timestamp_idx: Current index in the data
+
+        Returns:
+            Dictionary mapping symbol to momentum score (-2 to +2 typical range)
+        """
+        momentum_scores = {}
+
+        for symbol, _ in self.assets:
+            if symbol not in data:
+                momentum_scores[symbol] = 0.0
+                continue
+
+            asset_data = data[symbol]
+            scores = []
+
+            # Calculate momentum for each period
+            for lookback in self.momentum_score_periods:
+                if timestamp_idx >= lookback:
+                    current_price = asset_data.iloc[timestamp_idx]['close']
+                    past_price = asset_data.iloc[timestamp_idx - lookback]['close']
+                    momentum = (current_price - past_price) / past_price
+                    scores.append(momentum)
+                else:
+                    scores.append(0.0)
+
+            # Z-score normalization (if we have enough data)
+            if len(scores) > 0 and np.std(scores) > 0:
+                z_scores = [(s - np.mean(scores)) / np.std(scores) for s in scores]
+                composite_score = np.mean(z_scores)
+            else:
+                composite_score = 0.0
+
+            momentum_scores[symbol] = composite_score
+
+        logger.debug(f"Momentum scores: {momentum_scores}")
+        return momentum_scores
+
+    def _apply_momentum_overlay(
+        self,
+        base_weights: Dict[str, float],
+        momentum_scores: Dict[str, float]
+    ) -> Dict[str, float]:
+        """
+        Apply momentum overlay to base weights.
+
+        [TASK-3.2] Tilt weights based on momentum (±20% max adjustment).
+
+        Logic:
+        - Top momentum quintile: +20% weight increase
+        - Bottom momentum quintile: -20% weight decrease
+        - Middle quintiles: linear interpolation
+
+        This provides tactical alpha while maintaining strategic allocation.
+
+        Args:
+            base_weights: Base portfolio weights
+            momentum_scores: Momentum scores for each asset
+
+        Returns:
+            Adjusted weights with momentum overlay
+        """
+        if not self.use_momentum_overlay:
+            return base_weights
+
+        # Rank assets by momentum score
+        sorted_assets = sorted(momentum_scores.items(), key=lambda x: x[1], reverse=True)
+        n_assets = len(sorted_assets)
+
+        # Calculate momentum tilts
+        tilts = {}
+        for rank, (symbol, score) in enumerate(sorted_assets):
+            # Rank position (0 = best, 1 = worst)
+            rank_pct = rank / max(1, n_assets - 1)
+
+            # Linear tilt: top gets +tilt_pct, bottom gets -tilt_pct
+            tilt = self.momentum_tilt_pct * (1 - 2 * rank_pct)
+            tilts[symbol] = tilt
+
+        # Apply tilts to base weights
+        adjusted_weights = {}
+        for symbol, base_weight in base_weights.items():
+            tilt = tilts.get(symbol, 0.0)
+            # Apply tilt as multiplicative factor
+            adjusted_weight = base_weight * (1 + tilt)
+            adjusted_weights[symbol] = max(0, adjusted_weight)
+
+        # Renormalize to sum to 1
+        total_weight = sum(adjusted_weights.values())
+        if total_weight > 0:
+            adjusted_weights = {k: v / total_weight for k, v in adjusted_weights.items()}
+
+        logger.debug(
+            f"Momentum overlay applied: "
+            f"base_weights={base_weights}, "
+            f"adjusted_weights={adjusted_weights}"
+        )
+
+        return adjusted_weights
+
+    def _calculate_dynamic_threshold(
+        self,
+        data: Dict[str, pd.DataFrame],
+        timestamp_idx: int
+    ) -> float:
+        """
+        Calculate dynamic rebalancing threshold based on market volatility.
+
+        [TASK-3.2] Volatility-adaptive rebalancing thresholds.
+
+        Logic:
+        - High volatility (>50% annual): 20% threshold (rebalance less frequently)
+        - Medium volatility (20-50% annual): 15% threshold (standard)
+        - Low volatility (<20% annual): 10% threshold (rebalance more frequently)
+
+        This prevents excessive trading in volatile markets and ensures
+        timely rebalancing in stable markets.
+
+        Args:
+            data: Dictionary mapping symbol to DataFrame with OHLCV data
+            timestamp_idx: Current index in the data
+
+        Returns:
+            Dynamic rebalancing threshold (0.10 to 0.20)
+        """
+        if not self.dynamic_threshold:
+            return self.base_threshold
+
+        # Calculate realized volatility for each asset
+        vols = []
+        for symbol, _ in self.assets:
+            if symbol not in data:
+                continue
+
+            asset_data = data[symbol]
+
+            # Use last 30 days of returns for realized volatility
+            lookback = min(30, timestamp_idx)
+            if lookback < 10:
+                continue
+
+            returns = asset_data.iloc[timestamp_idx - lookback:timestamp_idx]['close'].pct_change().dropna()
+            realized_vol = returns.std() * np.sqrt(252)  # Annualized
+            vols.append(realized_vol)
+
+        if len(vols) == 0:
+            return self.base_threshold
+
+        # Average volatility across assets
+        avg_vol = np.mean(vols)
+
+        # Determine threshold based on volatility regime
+        if avg_vol > self.vol_high_threshold:
+            # High volatility: wider threshold (20%)
+            threshold = 0.20
+            regime = "high_volatility"
+        elif avg_vol < self.vol_low_threshold:
+            # Low volatility: tighter threshold (10%)
+            threshold = 0.10
+            regime = "low_volatility"
+        else:
+            # Normal volatility: standard threshold (15%)
+            threshold = self.base_threshold
+            regime = "normal_volatility"
+
+        logger.debug(
+            f"Dynamic threshold: avg_vol={avg_vol:.2%}, "
+            f"regime={regime}, threshold={threshold:.2%}"
+        )
+
+        return threshold
 
     def generate_signals(self, data: Dict[str, pd.DataFrame]) -> pd.DataFrame:
         """
@@ -241,20 +545,61 @@ class PortfolioRebalancerStrategy(BaseStrategy):
                 for symbol in portfolio_values
             }
 
+            # [TASK-3.2] Calculate dynamic threshold based on volatility
+            dynamic_threshold = self._calculate_dynamic_threshold(data, idx)
+
+            # [TASK-3.2] Calculate optimized target weights if enabled
+            if self.use_sharpe_optimization and idx >= self.sharpe_lookback_days:
+                # Calculate expected returns and covariance matrix
+                lookback_returns = {}
+                for symbol, _ in self.assets:
+                    if symbol in data:
+                        returns = data[symbol].iloc[idx - self.sharpe_lookback_days:idx]['close'].pct_change().dropna()
+                        lookback_returns[symbol] = returns
+
+                if len(lookback_returns) == len(self.assets):
+                    returns_df = pd.DataFrame(lookback_returns)
+                    expected_returns = returns_df.mean() * 252  # Annualized
+                    cov_matrix = returns_df.cov() * 252  # Annualized
+
+                    # Get base target weights
+                    base_target_weights = {symbol: target_weight for symbol, target_weight in self.assets}
+
+                    # Optimize for Sharpe ratio
+                    optimized_weights = self._optimize_weights_sharpe(
+                        expected_returns,
+                        cov_matrix,
+                        base_target_weights
+                    )
+
+                    # [TASK-3.2] Apply momentum overlay
+                    momentum_scores = self._calculate_momentum_scores(data, idx)
+                    final_target_weights = self._apply_momentum_overlay(
+                        optimized_weights,
+                        momentum_scores
+                    )
+                else:
+                    # Not enough data, use base target weights
+                    final_target_weights = {symbol: target_weight for symbol, target_weight in self.assets}
+            else:
+                # Use base target weights
+                final_target_weights = {symbol: target_weight for symbol, target_weight in self.assets}
+
             # Check if rebalancing is needed based on method
             needs_rebalance = False
             max_deviation = 0.0
             rebalance_reason = None
 
-            # Calculate deviation for all methods
-            for symbol, target_weight in self.assets:
+            # Calculate deviation from optimized target weights
+            for symbol in final_target_weights.keys():
+                target_weight = final_target_weights[symbol]
                 deviation = abs(current_weights[symbol] - target_weight)
                 max_deviation = max(max_deviation, deviation)
 
-            # Determine rebalancing based on method
+            # Determine rebalancing based on method (use dynamic threshold)
             if self.rebalance_method == "threshold":
-                # Threshold-based: rebalance when deviation exceeds threshold
-                if max_deviation > self.rebalance_threshold:
+                # Threshold-based: rebalance when deviation exceeds dynamic threshold
+                if max_deviation > dynamic_threshold:
                     needs_rebalance = True
                     rebalance_reason = "threshold_rebalance"
 
@@ -271,7 +616,7 @@ class PortfolioRebalancerStrategy(BaseStrategy):
 
             elif self.rebalance_method == "hybrid":
                 # Hybrid: rebalance on calendar OR when threshold exceeded
-                threshold_triggered = max_deviation > self.rebalance_threshold
+                threshold_triggered = max_deviation > dynamic_threshold
 
                 calendar_triggered = False
                 if last_rebalance_time is not None:
@@ -311,8 +656,9 @@ class PortfolioRebalancerStrategy(BaseStrategy):
 
             # Generate signals
             if needs_rebalance:
-                # Rebalance: sell overweight, buy underweight
-                for symbol, target_weight in self.assets:
+                # Rebalance: sell overweight, buy underweight using optimized target weights
+                for symbol in final_target_weights.keys():
+                    target_weight = final_target_weights[symbol]
                     current_weight = current_weights[symbol]
                     if current_weight > target_weight:
                         # Overweight - sell
@@ -328,13 +674,14 @@ class PortfolioRebalancerStrategy(BaseStrategy):
                     'reason': rebalance_reason or 'threshold_rebalance',
                     'max_deviation': float(max_deviation),
                     'current_weights': {s: float(current_weights[s]) for s in current_weights},
-                    'target_weights': {s: float(w) for s, w in self.assets}
+                    'target_weights': {s: float(final_target_weights[s]) for s in final_target_weights},
+                    'dynamic_threshold': float(dynamic_threshold)
                 })
 
-                # Update shares after rebalance
+                # Update shares after rebalance using optimized target weights
                 target_values = {
-                    symbol: total_value * target_weight
-                    for symbol, target_weight in self.assets
+                    symbol: total_value * final_target_weights[symbol]
+                    for symbol in final_target_weights.keys()
                 }
                 shares = {
                     symbol: target_values[symbol] / prices[symbol]

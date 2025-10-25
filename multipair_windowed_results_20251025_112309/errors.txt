@@ -1,0 +1,102 @@
+2025-10-25 11:23:09.023 | ERROR    | ❌ Configuration validation failed
+Traceback (most recent call last):
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1674, in <module>
+    app()
+    └ <typer.main.Typer object at 0x7743de418e90>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x7743de418e90>
+           └ <function get_command at 0x7743faff9d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x7743faff9440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x7743faff85e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x7743e0460350>
+         │    └ <function Command.invoke at 0x7743fafaf2e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 90, 'test_years': 0.25, 'workers': 2, ...
+           │   │      │    │           └ <click.core.Context object at 0x7743e0460350>
+           │   │      │    └ <function analyze at 0x7743de4b25c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x7743fafae520>
+           └ <click.core.Context object at 0x7743e0460350>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 90, 'test_years': 0.25, 'workers': 2, ...
+           │         └ ()
+           └ <function analyze at 0x7743de4b25c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x7743de4b23e0>
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1198, in analyze
+    raise ValueError(f"max_days ({max_days}) < required ({min_days_required})")
+                                  │                       └ 136
+                                  └ 90
+
+ValueError: max_days (90) < required (136)
+
+Traceback (most recent call last):
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1674, in <module>
+    app()
+    └ <typer.main.Typer object at 0x7743de418e90>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x7743de418e90>
+           └ <function get_command at 0x7743faff9d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x7743faff9440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x7743faff85e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x7743e0460350>
+         │    └ <function Command.invoke at 0x7743fafaf2e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 90, 'test_years': 0.25, 'workers': 2, ...
+           │   │      │    │           └ <click.core.Context object at 0x7743e0460350>
+           │   │      │    └ <function analyze at 0x7743de4b25c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x7743fafae520>
+           └ <click.core.Context object at 0x7743e0460350>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 90, 'test_years': 0.25, 'workers': 2, ...
+           │         └ ()
+           └ <function analyze at 0x7743de4b25c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x7743de4b23e0>
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1198, in analyze
+    raise ValueError(f"max_days ({max_days}) < required ({min_days_required})")
+                                  │                       └ 136
+                                  └ 90
+
+ValueError: max_days (90) < required (136)

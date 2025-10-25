@@ -1,0 +1,31 @@
+================================================================================
+WINDOWED TRAIN/TEST ANALYSIS REPORT
+================================================================================
+
+Symbol: BTC/USDT
+Timeframe: 1h
+Test Set: 1.0 years
+Horizons: [30, 90, 180]
+Strategies Tested: 20
+Total Windows: 33
+
+================================================================================
+TRAIN/TEST SPLIT METHODOLOGY
+================================================================================
+
+Training Set: All data before 2024-10-20
+Test Set: 2024-10-20 to 2025-10-20
+Non-overlapping windows within each set
+Statistics: mean, median, std dev, percentiles (25th, 75th)
+
+================================================================================
+TOP STRATEGIES BY TEST SET PERFORMANCE
+================================================================================
+
+
+================================================================================
+GENERALIZATION ANALYSIS
+================================================================================
+
+Strategies with best train-to-test consistency (low overfitting):
+

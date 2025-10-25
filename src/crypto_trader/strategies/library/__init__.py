@@ -32,6 +32,7 @@ def _register(module_path: str, class_name: str) -> Optional[Type[BaseStrategy]]
         return None
 
 
+_register("crypto_trader.strategies.library.buy_and_hold", "BuyAndHoldStrategy")
 _register("crypto_trader.strategies.library.sma_crossover", "SMACrossoverStrategy")
 _register("crypto_trader.strategies.library.rsi_mean_reversion", "RSIMeanReversionStrategy")
 _register("crypto_trader.strategies.library.macd_momentum", "MACDMomentumStrategy")

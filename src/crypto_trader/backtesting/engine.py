@@ -64,6 +64,38 @@ from crypto_trader.core.types import (
 from crypto_trader.strategies.base import BaseStrategy
 
 
+def _get_datetime_index(df: pd.DataFrame, name: str = "data") -> pd.DatetimeIndex:
+    """
+    Extract datetime index from DataFrame, checking column then index.
+
+    BUGFIX (Bug #6): Centralize timestamp extraction to eliminate inconsistencies.
+
+    Args:
+        df: DataFrame to extract datetime index from
+        name: Name for error messages
+
+    Returns:
+        DatetimeIndex extracted from 'timestamp' column or DataFrame index
+
+    Raises:
+        ValueError: If no valid datetime index found
+    """
+    if 'timestamp' in df.columns:
+        # Convert timestamp column to datetime and create DatetimeIndex
+        timestamp_series = pd.to_datetime(df['timestamp'])
+        idx = pd.DatetimeIndex(timestamp_series)
+        if not isinstance(idx, pd.DatetimeIndex):
+            raise ValueError(f"{name} timestamp column could not be converted to DatetimeIndex")
+        return idx
+    elif isinstance(df.index, pd.DatetimeIndex):
+        return df.index
+    else:
+        raise ValueError(
+            f"{name} must have 'timestamp' column or DatetimeIndex. "
+            f"Got columns: {df.columns.tolist()}, index type: {type(df.index).__name__}"
+        )
+
+
 class BacktestEngine:
     """
     Main backtesting engine using VectorBT for vectorized backtesting.
@@ -123,8 +155,21 @@ class BacktestEngine:
         total_return = portfolio.total_return()
         final_value = portfolio.final_value()
 
-        # Risk metrics
-        sharpe_ratio = portfolio.sharpe_ratio()
+        # Risk metrics - BUGFIX: Calculate Sharpe manually to avoid incorrect annualization
+        # VectorBT's sharpe_ratio() assumes full year of data, which inflates ratios for short windows
+        returns = portfolio.returns()
+        if len(returns) > 1:
+            mean_return = returns.mean()
+            std_return = returns.std()
+            if std_return > 0 and not np.isnan(mean_return) and not np.isnan(std_return):
+                # Sharpe = mean / std (non-annualized, consistent across all window sizes)
+                sharpe_ratio = mean_return / std_return
+            else:
+                sharpe_ratio = 0.0
+        else:
+            sharpe_ratio = 0.0
+
+        # Use VectorBT for other metrics (they don't have the same annualization issue)
         sortino_ratio = portfolio.sortino_ratio()
         max_drawdown = portfolio.max_drawdown()
         calmar_ratio = portfolio.calmar_ratio()
@@ -201,7 +246,7 @@ class BacktestEngine:
 
         return PerformanceMetrics(
             total_return=float(total_return),
-            sharpe_ratio=float(sharpe_ratio) if not np.isnan(sharpe_ratio) else 0.0,
+            sharpe_ratio=float(sharpe_ratio) if np.isfinite(sharpe_ratio) else 0.0,
             max_drawdown=float(abs(max_drawdown)),
             win_rate=float(win_rate),
             profit_factor=float(profit_factor),
@@ -213,8 +258,8 @@ class BacktestEngine:
             max_consecutive_wins=int(max_consecutive_wins),
             max_consecutive_losses=int(max_consecutive_losses),
             avg_trade_duration=float(avg_duration),
-            sortino_ratio=float(sortino_ratio) if not np.isnan(sortino_ratio) else 0.0,
-            calmar_ratio=float(calmar_ratio) if not np.isnan(calmar_ratio) else 0.0,
+            sortino_ratio=float(sortino_ratio) if np.isfinite(sortino_ratio) else 0.0,
+            calmar_ratio=float(calmar_ratio) if np.isfinite(calmar_ratio) else 0.0,
             recovery_factor=float(recovery_factor),
             expectancy=float(expectancy),
             total_fees=float(total_fees),
@@ -250,30 +295,48 @@ class BacktestEngine:
             f"({timeframe.value}), capital=${config.initial_capital:,.2f}"
         )
 
-        # Validate data
-        if not strategy.validate_data(data):
-            raise ValueError("Strategy data validation failed")
+        # BUGFIX: Debug logging to diagnose timestamp duplication
+        logger.debug(f"[ENGINE] Data shape: {data.shape}")
+        logger.debug(f"[ENGINE] Data columns: {data.columns.tolist()}")
+        logger.debug(f"[ENGINE] Data index type: {type(data.index).__name__}")
+        logger.debug(f"[ENGINE] Has 'timestamp' column: {'timestamp' in data.columns}")
+        logger.debug(f"[ENGINE] Index is DatetimeIndex: {isinstance(data.index, pd.DatetimeIndex)}")
+
+        # Validate data (skip for portfolio mode with merged multi-asset data)
+        if symbol != 'PORTFOLIO':
+            if not strategy.validate_data(data):
+                raise ValueError("Strategy data validation failed")
 
         # Generate signals
         signals = strategy.generate_signals(data)
 
-        # Ensure all series share the actual timestamp index so downstream consumers
-        # (reports/exports) receive real datetimes instead of integer positions.
-        if 'timestamp' in data.columns:
-            timestamps = pd.to_datetime(data['timestamp'])
+        # BUGFIX (Bug #6): Use centralized timestamp extraction
+        timestamps = _get_datetime_index(data, "market data")
+
+        # Handle portfolio mode: use first asset's close prices as proxy
+        if symbol == 'PORTFOLIO':
+            close_cols = [col for col in data.columns if col.endswith('_close')]
+            if not close_cols:
+                raise ValueError("Portfolio data must have at least one *_close column")
+            # Use first asset as close series proxy for VectorBT
+            close_series = pd.Series(data[close_cols[0]].values, index=timestamps, name='close')
+            logger.debug(f"[PORTFOLIO] Using {close_cols[0]} as close proxy for portfolio backtest")
         else:
-            timestamps = data.index
+            close_series = pd.Series(data['close'].values, index=timestamps, name='close')
 
-        close_series = pd.Series(data['close'].values, index=timestamps, name='close')
+        # Extract signal timestamps and validate alignment
+        signal_timestamps = _get_datetime_index(signals, "strategy signals")
 
-        if 'timestamp' in signals.columns:
-            signal_index = pd.to_datetime(signals['timestamp'])
-            signals = signals.copy()
-            signals.index = signal_index
-        else:
-            signals = signals.copy()
-            signals.index = timestamps
+        # Validate signals align with data
+        if len(signal_timestamps) != len(timestamps):
+            raise ValueError(
+                f"Signal length mismatch: strategy '{strategy.name}' returned "
+                f"{len(signal_timestamps)} signals for {len(timestamps)} data points. "
+                f"Signals must match data row-for-row."
+            )
 
+        signals = signals.copy()
+        signals.index = signal_timestamps
         signals = signals.sort_index()
 
         # Convert signals to entries/exits for VectorBT
@@ -311,7 +374,7 @@ class BacktestEngine:
             freq=freq_value
         )
 
-        # Extract trade records
+        # Extract trade records - HARD STOP on failure
         trades_list: List[Trade] = []
         try:
             vbt_trades = portfolio.trades.records_readable
@@ -366,8 +429,15 @@ class BacktestEngine:
             else:
                 trades_df = pd.DataFrame()
         except Exception as e:
-            logger.warning(f"Could not extract trade records: {e}")
-            trades_df = pd.DataFrame()
+            # HARD STOP: Trade extraction must succeed
+            logger.error(f"FATAL: Failed to extract trade records from VectorBT portfolio")
+            logger.error(f"Strategy: {strategy.name}, Symbol: {symbol}")
+            logger.error(f"This is a critical bug in trade extraction or VectorBT integration")
+            raise RuntimeError(
+                f"FATAL: Trade extraction failed for {strategy.name} on {symbol}. "
+                f"VectorBT portfolio generated but trade records cannot be extracted. "
+                f"Original error: {e}"
+            ) from e
 
         # Calculate metrics
         metrics = self._calculate_metrics(portfolio, trades_df, config.initial_capital)
@@ -378,10 +448,11 @@ class BacktestEngine:
         for timestamp, value in equity_series.items():
             equity_curve.append((timestamp, float(value)))
 
-        # Get date range
-        start_date = data['timestamp'].iloc[0] if 'timestamp' in data.columns else data.index[0]
-        end_date = data['timestamp'].iloc[-1] if 'timestamp' in data.columns else data.index[-1]
+        # Get date range (already have timestamps from above)
+        start_date = timestamps[0]
+        end_date = timestamps[-1]
 
+        # Convert to datetime if needed (timestamps should already be DatetimeIndex)
         if not isinstance(start_date, datetime):
             start_date = pd.to_datetime(start_date)
         if not isinstance(end_date, datetime):

@@ -1,0 +1,108 @@
+2025-10-25 11:27:07.921 | ERROR    | Unhandled exception
+Traceback (most recent call last):
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1674, in <module>
+    app()
+    └ <typer.main.Typer object at 0x7fdadce5c0e0>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 325, in __call__
+    raise e
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x7fdadce5c0e0>
+           └ <function get_command at 0x7fdac37d5d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x7fdac37d5440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x7fdac37d45e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x7fdaa7a8fa40>
+         │    └ <function Command.invoke at 0x7fdac37832e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │   │      │    │           └ <click.core.Context object at 0x7fdaa7a8fa40>
+           │   │      │    └ <function analyze at 0x7fdaa6b9e5c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x7fdac3782520>
+           └ <click.core.Context object at 0x7fdaa7a8fa40>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │         └ ()
+           └ <function analyze at 0x7fdaa6b9e5c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x7fdaa6b9e3e0>
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1509, in analyze
+    pair_results[pair].append(result)
+    │            │            └ {'strategy_name': 'HierarchicalRiskParity', 'strategy_type': 'single_pair', 'symbol': 'PORTFOLIO', 'horizon': '30d', 'horizon...
+    │            └ 'PORTFOLIO'
+    └ {'BTC/USDT': [], 'ETH/USDT': []}
+
+KeyError: 'PORTFOLIO'
+
+Traceback (most recent call last):
+
+> File "/home/fiod/crypto/master_windowed_multipair.py", line 1674, in <module>
+    app()
+    └ <typer.main.Typer object at 0x7fdadce5c0e0>
+
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 325, in __call__
+    raise e
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 308, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x7fdadce5c0e0>
+           └ <function get_command at 0x7fdac37d5d00>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1462, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperCommand.main at 0x7fdac37d5440>
+           └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 719, in main
+    return _main(
+           └ <function _main at 0x7fdac37d45e0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/core.py", line 192, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x7fdaa7a8fa40>
+         │    └ <function Command.invoke at 0x7fdac37832e0>
+         └ <TyperCommand analyze>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 1246, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │   │      │    │           └ <click.core.Context object at 0x7fdaa7a8fa40>
+           │   │      │    └ <function analyze at 0x7fdaa6b9e5c0>
+           │   │      └ <TyperCommand analyze>
+           │   └ <function Context.invoke at 0x7fdac3782520>
+           └ <click.core.Context object at 0x7fdaa7a8fa40>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/click/core.py", line 814, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {'portfolio_mode': True, 'pairs': ('BTC/USDT', 'ETH/USDT'), 'quick': True, 'max_days': 365, 'test_years': 0.25, 'workers': 2,...
+           │         └ ()
+           └ <function analyze at 0x7fdaa6b9e5c0>
+  File "/home/fiod/crypto/.venv/lib/python3.12/site-packages/typer/main.py", line 685, in wrapper
+    return callback(**use_params)
+           │          └ {'pairs': ['BTC/USDT', 'ETH/USDT'], 'timeframe': '1h', 'test_years': 0.25, 'horizons': None, 'workers': 2, 'quick': True, 'ma...
+           └ <function analyze at 0x7fdaa6b9e3e0>
+
+  File "/home/fiod/crypto/master_windowed_multipair.py", line 1509, in analyze
+    pair_results[pair].append(result)
+    │            │            └ {'strategy_name': 'HierarchicalRiskParity', 'strategy_type': 'single_pair', 'symbol': 'PORTFOLIO', 'horizon': '30d', 'horizon...
+    │            └ 'PORTFOLIO'
+    └ {'BTC/USDT': [], 'ETH/USDT': []}
+
+KeyError: 'PORTFOLIO'

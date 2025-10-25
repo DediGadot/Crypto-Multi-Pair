@@ -30,6 +30,12 @@ from loguru import logger
 from crypto_trader.strategies.base import BaseStrategy, SignalType
 from crypto_trader.strategies.registry import register_strategy
 
+# PHASE 1: Risk management imports
+from crypto_trader.risk.position_sizing import calculate_kelly_position_size
+
+# PHASE 3: Transaction cost optimization
+from crypto_trader.optimization.transaction_costs import should_rebalance as check_rebalance_threshold
+
 
 @register_strategy(
     name="RiskParity",
@@ -59,7 +65,17 @@ class RiskParityStrategy(BaseStrategy):
         self.minimize_kurtosis: bool = True  # Enable kurtosis minimization
         self.last_weights: Optional[Dict[str, float]] = None
 
-        logger.debug(f"Initialized {self.name}Strategy")
+        # PHASE 1: Kelly position sizing parameters
+        self.use_kelly_sizing: bool = True  # Enable Kelly Criterion position sizing
+        self.kelly_fraction: float = 0.25  # Conservative 25% of full Kelly
+        self.min_position_pct: float = 0.02  # 2% minimum position
+        self.max_position_pct: float = 0.15  # 15% maximum position
+
+        # PHASE 3: Transaction cost optimization parameters
+        self.transaction_cost_pct: float = 0.001  # 0.1% transaction cost (10 bps)
+        self.min_rebalance_benefit: float = 0.005  # Only rebalance if benefit > 0.5%
+
+        logger.debug(f"Initialized {self.name}Strategy with Kelly sizing and transaction cost optimization")
 
     def initialize(self, params: Dict[str, Any]) -> None:
         """
@@ -99,7 +115,9 @@ class RiskParityStrategy(BaseStrategy):
 
     def generate_signals(self, data: pd.DataFrame) -> pd.DataFrame:
         """
-        Generate Risk Parity portfolio weights.
+        Generate Risk Parity portfolio weights with graceful single-asset handling.
+
+        BUGFIX: Now handles single-asset data gracefully instead of failing.
 
         Args:
             data: DataFrame with columns [timestamp, asset1_close, asset2_close, ...]
@@ -112,9 +130,13 @@ class RiskParityStrategy(BaseStrategy):
         # Extract close price columns
         price_columns = [col for col in data.columns if col.endswith('_close')]
 
+        # BUGFIX: Gracefully handle single-asset case
         if len(price_columns) < 2:
-            logger.error(f"Need at least 2 assets, found {len(price_columns)}")
-            return pd.DataFrame()
+            logger.warning(
+                f"Risk Parity requires ≥2 assets, found {len(price_columns)}. "
+                f"Falling back to single-asset allocation."
+            )
+            return self._generate_single_asset_signals(data, price_columns)
 
         # Create a DataFrame for signals
         signals_df = data[['timestamp']].copy() if 'timestamp' in data.columns else pd.DataFrame(index=data.index)
@@ -132,7 +154,8 @@ class RiskParityStrategy(BaseStrategy):
             equal_weight = 1.0 / len(price_columns)
             for col in price_columns:
                 signals_df[f'weight_{col}'] = equal_weight
-            return signals_df
+            # PHASE 3 FIX: Convert to proper signal format
+            return self._weights_to_signals(signals_df, price_columns)
 
         # Generate weights using Risk Parity at rebalancing intervals
         rebalance_dates = range(self.lookback_period, len(data), self.rebalance_freq)
@@ -145,9 +168,15 @@ class RiskParityStrategy(BaseStrategy):
 
                 if len(window_returns) >= 20:  # Minimum data requirement
                     try:
-                        weights = self._calculate_risk_parity_weights(window_returns)
-                        current_weights = weights
-                        logger.debug(f"Risk Parity weights at index {i}: {weights}")
+                        new_weights = self._calculate_risk_parity_weights(window_returns)
+
+                        # PHASE 3: Check if rebalancing is worthwhile
+                        if self._should_rebalance(new_weights, current_weights):
+                            current_weights = new_weights
+                            logger.debug(f"Risk Parity weights at index {i}: {new_weights}")
+                        else:
+                            logger.debug(f"Skipped rebalancing at index {i} due to transaction costs")
+
                     except Exception as e:
                         logger.warning(f"Risk Parity calculation failed at index {i}: {e}")
                         if current_weights is None:
@@ -163,11 +192,144 @@ class RiskParityStrategy(BaseStrategy):
                     signals_df.loc[signals_df.index[i], f'weight_{col}'] = current_weights.get(col, 0.0)
 
         logger.success(f"Generated Risk Parity signals for {len(signals_df)} periods")
-        return signals_df
+
+        # BUGFIX (Phase 2): Convert weight DataFrame to signal/confidence/metadata format
+        # Required by backtesting engine's _signals_to_entries_exits() method
+        return self._weights_to_signals(signals_df, price_columns)
+
+    def _weights_to_signals(
+        self,
+        weights_df: pd.DataFrame,
+        price_columns: list,
+        weight_change_threshold: float = 0.05
+    ) -> pd.DataFrame:
+        """
+        Convert portfolio weight DataFrame to signal/confidence/metadata format.
+
+        BUGFIX (Phase 2): Portfolio strategies return weight allocations, but the
+        backtesting engine expects BUY/SELL/HOLD signals. This method bridges the gap.
+
+        Args:
+            weights_df: DataFrame with 'weight_{asset}_close' columns
+            price_columns: List of price column names
+            weight_change_threshold: Minimum weight change to generate BUY/SELL signal (default 5%)
+
+        Returns:
+            DataFrame with columns: [timestamp, signal, confidence, metadata]
+            - signal: 'BUY' for weight increases, 'SELL' for decreases, 'HOLD' otherwise
+            - confidence: Magnitude of weight change (0-1 scale)
+            - metadata: Dict containing current weights for all assets
+        """
+        signals = []
+        confidences = []
+        metadata_list = []
+
+        # Track previous weights for change detection
+        prev_weights = {col: 0.0 for col in price_columns}
+
+        for idx, row in weights_df.iterrows():
+            # Extract current weights
+            current_weights = {}
+            for col in price_columns:
+                weight_col = f'weight_{col}'
+                current_weights[col] = row.get(weight_col, 0.0) if weight_col in weights_df.columns else 0.0
+
+            # Calculate total weight change
+            total_weight_change = sum(abs(current_weights[col] - prev_weights[col]) for col in price_columns)
+
+            # Determine signal based on dominant weight change
+            if total_weight_change > weight_change_threshold:
+                # Find asset with largest absolute weight increase
+                max_increase = max(
+                    (current_weights[col] - prev_weights[col], col)
+                    for col in price_columns
+                )
+                weight_delta, dominant_asset = max_increase
+
+                if weight_delta > weight_change_threshold:
+                    signal = SignalType.BUY.value
+                    confidence = min(abs(weight_delta), 1.0)  # Clip to [0, 1]
+                elif weight_delta < -weight_change_threshold:
+                    signal = SignalType.SELL.value
+                    confidence = min(abs(weight_delta), 1.0)
+                else:
+                    signal = SignalType.HOLD.value
+                    confidence = 0.0
+            else:
+                signal = SignalType.HOLD.value
+                confidence = 0.0
+
+            # Store metadata
+            metadata = {
+                'weights': current_weights.copy(),
+                'total_weight_change': total_weight_change,
+                'strategy': 'RiskParity'
+            }
+
+            signals.append(signal)
+            confidences.append(confidence)
+            metadata_list.append(metadata)
+
+            # Update previous weights
+            prev_weights = current_weights.copy()
+
+        # Construct signal DataFrame
+        result_df = pd.DataFrame({
+            'timestamp': weights_df['timestamp'] if 'timestamp' in weights_df.columns else weights_df.index,
+            'signal': signals,
+            'confidence': confidences,
+            'metadata': metadata_list
+        })
+
+        logger.debug(
+            f"Converted {len(result_df)} weight periods to signals: "
+            f"{sum(1 for s in signals if s == SignalType.BUY.value)} BUY, "
+            f"{sum(1 for s in signals if s == SignalType.SELL.value)} SELL, "
+            f"{sum(1 for s in signals if s == SignalType.HOLD.value)} HOLD"
+        )
+
+        return result_df
+
+    def _generate_single_asset_signals(
+        self,
+        data: pd.DataFrame,
+        price_columns: list
+    ) -> pd.DataFrame:
+        """
+        Generate signals for single-asset case (graceful degradation).
+
+        BUGFIX (Phase 3): Returns proper signal/confidence/metadata format
+        required by backtesting engine.
+
+        Args:
+            data: DataFrame with OHLCV data
+            price_columns: List of price column names
+
+        Returns:
+            DataFrame with columns: [timestamp, signal, confidence, metadata]
+        """
+        signals_df = pd.DataFrame({
+            'timestamp': data['timestamp'] if 'timestamp' in data.columns else data.index
+        })
+
+        if len(price_columns) == 1:
+            # 100% allocation to single asset
+            signals_df[f'weight_{price_columns[0]}'] = 1.0
+            logger.info(f"Generated single-asset signals: 100% to {price_columns[0]}")
+        else:
+            logger.warning("No price columns found, returning empty signals")
+
+        # PHASE 3 FIX: Convert to proper signal format
+        return self._weights_to_signals(signals_df, price_columns)
 
     def _calculate_risk_parity_weights(self, returns: pd.DataFrame) -> Dict[str, float]:
         """
-        Calculate Risk Parity weights using Equal Risk Contribution.
+        Calculate Risk Parity weights using Ledoit-Wolf shrinkage and ERC.
+
+        CRITICAL ENHANCEMENTS for Sharpe improvement:
+        1. Ledoit-Wolf covariance shrinkage (2024/2025 best practice)
+        2. Improved numerical stability in ERC optimization
+        3. Transaction cost awareness
 
         Args:
             returns: DataFrame of asset returns
@@ -176,40 +338,78 @@ class RiskParityStrategy(BaseStrategy):
             Dictionary mapping column names to weights
         """
         try:
-            # Calculate covariance matrix
-            cov_matrix = returns.cov().values
+            from pypfopt import risk_models
+
+            # CRITICAL FIX: Use Ledoit-Wolf shrinkage instead of sample covariance
+            prices_df = pd.DataFrame({
+                col: (1 + returns[col]).cumprod() for col in returns.columns
+            })
+            S = risk_models.CovarianceShrinkage(prices_df).ledoit_wolf()
+            cov_matrix = S.values  # Convert to numpy
+
             n_assets = len(returns.columns)
 
             # Use inverse volatility as starting point
             volatilities = np.sqrt(np.diag(cov_matrix))
+
+            # NUMERICAL STABILITY: Check for zero/near-zero volatilities
+            if np.any(volatilities < 1e-8):
+                logger.warning("Near-zero volatility detected, using equal weights")
+                return {col: 1.0 / n_assets for col in returns.columns}
+
             inv_vol_weights = 1.0 / volatilities
             inv_vol_weights = inv_vol_weights / inv_vol_weights.sum()
 
-            # Optimize for equal risk contribution using iterative method
-            weights = self._optimize_risk_parity(cov_matrix, initial_weights=inv_vol_weights)
+            # Optimize for equal risk contribution with better numerical conditioning
+            weights = self._optimize_risk_parity_robust(cov_matrix, inv_vol_weights)
 
             # Apply kurtosis minimization if enabled
             if self.minimize_kurtosis:
                 kurtosis_scores = self._calculate_kurtosis(returns)
-                # Adjust weights by kurtosis penalty (reduce allocation to high-kurtosis assets)
+                # Penalize high-kurtosis assets (fat tails)
                 kurtosis_adjustment = 1.0 / (1.0 + np.abs(kurtosis_scores))
                 kurtosis_adjustment = kurtosis_adjustment / kurtosis_adjustment.sum()
 
-                # Blend ERC weights with kurtosis adjustment (80% ERC, 20% kurtosis)
+                # Blend: 80% ERC, 20% kurtosis penalty
                 weights = 0.8 * weights + 0.2 * kurtosis_adjustment
-                weights = weights / weights.sum()  # Renormalize
+                weights = weights / weights.sum()
 
-            # Create dictionary mapping column names to weights
+            # PHASE 1: Apply Kelly sizing to scale positions
             weight_dict = {col: float(weights[i]) for i, col in enumerate(returns.columns)}
+
+            if self.use_kelly_sizing:
+                try:
+                    weight_dict = self._apply_kelly_sizing(
+                        weights=weight_dict,
+                        returns=returns,
+                        cov_matrix=cov_matrix
+                    )
+                    # Convert back to array for transaction cost check
+                    weights = np.array([weight_dict[col] for col in returns.columns])
+                    logger.debug("Applied Kelly sizing to Risk Parity weights")
+                except Exception as e:
+                    logger.warning(f"Kelly sizing failed, using base weights: {e}")
+
+            # Transaction cost check
+            if self.last_weights is not None:
+                prev_weights_array = np.array([self.last_weights.get(col, 0.0) for col in returns.columns])
+                turnover = np.sum(np.abs(weights - prev_weights_array))
+                tx_cost = turnover * 0.001  # 10 bps
+
+                if tx_cost > 0.005:  # 50 bps threshold
+                    logger.debug(f"Skipping rebalance: tx_cost={tx_cost:.4f}")
+                    return self.last_weights
+
+            # Save weights for next transaction cost check
+            self.last_weights = weight_dict.copy()
 
             return weight_dict
 
         except Exception as e:
             logger.error(f"Risk Parity optimization error: {e}")
-            # Fallback to equal weights
             return {col: 1.0 / len(returns.columns) for col in returns.columns}
 
-    def _optimize_risk_parity(
+    def _optimize_risk_parity_robust(
         self,
         cov_matrix: np.ndarray,
         initial_weights: np.ndarray,
@@ -217,7 +417,9 @@ class RiskParityStrategy(BaseStrategy):
         tol: float = 1e-6
     ) -> np.ndarray:
         """
-        Optimize for equal risk contribution using Newton's method.
+        Optimize for equal risk contribution with improved numerical stability.
+
+        BUGFIX: Added convergence checks and adaptive learning rate.
 
         Args:
             cov_matrix: Covariance matrix of returns
@@ -231,32 +433,51 @@ class RiskParityStrategy(BaseStrategy):
         weights = initial_weights.copy()
         n_assets = len(weights)
 
+        # Adaptive learning rate
+        learning_rate = 0.1
+        prev_diff_norm = float('inf')
+
         for iteration in range(max_iter):
-            # Calculate portfolio variance and marginal contributions
+            # Calculate portfolio variance
             portfolio_var = weights @ cov_matrix @ weights
+
+            # NUMERICAL STABILITY: Prevent division by zero
+            if portfolio_var < 1e-12:
+                logger.warning("Portfolio variance near zero, returning equal weights")
+                return np.ones(n_assets) / n_assets
+
+            # Marginal risk contribution
             marginal_contrib = cov_matrix @ weights
 
-            # Risk contribution of each asset
+            # Risk contribution
             risk_contrib = weights * marginal_contrib / np.sqrt(portfolio_var)
 
-            # Target: equal risk contribution
+            # Target: equal risk
             target_contrib = np.ones(n_assets) / n_assets
 
-            # Calculate adjustment
+            # Difference
             diff = risk_contrib - target_contrib
+            diff_norm = np.max(np.abs(diff))
 
-            if np.max(np.abs(diff)) < tol:
+            # Check convergence
+            if diff_norm < tol:
+                logger.debug(f"Risk Parity converged in {iteration} iterations")
                 break
 
-            # Update weights (gradient descent step)
-            learning_rate = 0.05
+            # Adaptive learning rate (reduce if not improving)
+            if diff_norm > prev_diff_norm:
+                learning_rate *= 0.5  # Reduce step size
+            prev_diff_norm = diff_norm
+
+            # Update weights
             weights = weights - learning_rate * diff
 
-            # Project back to simplex (non-negative, sum to 1)
+            # Project to simplex (non-negative, sum to 1)
             weights = np.maximum(weights, 0)
             if weights.sum() > 0:
                 weights = weights / weights.sum()
             else:
+                # Recovery: reset to equal weights
                 weights = np.ones(n_assets) / n_assets
 
         return weights
@@ -279,6 +500,104 @@ class RiskParityStrategy(BaseStrategy):
         ])
 
         return kurtosis_values
+
+    def _apply_kelly_sizing(
+        self,
+        weights: Dict[str, float],
+        returns: pd.DataFrame,
+        cov_matrix: np.ndarray
+    ) -> Dict[str, float]:
+        """
+        Apply Kelly Criterion position sizing to scale portfolio weights.
+
+        PHASE 1: Risk management enhancement.
+
+        Uses Risk Parity base weights as signal confidence and calculates
+        Kelly-optimal position sizes based on expected return and volatility.
+
+        Args:
+            weights: Base Risk Parity weights (from ERC optimization)
+            returns: Historical returns DataFrame
+            cov_matrix: Covariance matrix
+
+        Returns:
+            Kelly-scaled weights (normalized to sum to 1.0)
+        """
+        kelly_scaled_weights = {}
+
+        for asset, base_weight in weights.items():
+            # Skip negligible weights
+            if base_weight < 0.01:
+                kelly_scaled_weights[asset] = 0.0
+                continue
+
+            # Calculate expected return and volatility for this asset
+            asset_returns = returns[asset]
+            expected_return = asset_returns.mean() * 252  # Annualized
+            volatility = asset_returns.std() * np.sqrt(252)  # Annualized
+
+            # Estimate win rate from historical data
+            win_rate = (asset_returns > 0).sum() / len(asset_returns)
+
+            # Apply Kelly sizing using base weight as signal confidence
+            kelly_size = calculate_kelly_position_size(
+                expected_return=expected_return,
+                volatility=volatility,
+                win_rate=win_rate,
+                signal_confidence=base_weight,  # RP weight = confidence
+                kelly_fraction=self.kelly_fraction,
+                min_position_pct=self.min_position_pct,
+                max_position_pct=self.max_position_pct
+            )
+
+            kelly_scaled_weights[asset] = kelly_size
+
+            logger.debug(
+                f"Kelly sizing: {asset} return={expected_return:.3f}, "
+                f"vol={volatility:.3f}, win_rate={win_rate:.3f}, "
+                f"confidence={base_weight:.3f} → size={kelly_size:.4f}"
+            )
+
+        # Normalize weights to sum to 1.0
+        total_weight = sum(kelly_scaled_weights.values())
+        if total_weight > 0:
+            kelly_scaled_weights = {
+                asset: weight / total_weight
+                for asset, weight in kelly_scaled_weights.items()
+            }
+
+        logger.debug(f"Kelly-scaled weights: {kelly_scaled_weights}")
+        return kelly_scaled_weights
+
+    def _should_rebalance(
+        self,
+        new_weights: Dict[str, float],
+        current_weights: Optional[Dict[str, float]]
+    ) -> bool:
+        """
+        Determine if rebalancing is beneficial after accounting for transaction costs.
+
+        PHASE 3: Uses standardized transaction cost module for rebalancing decisions.
+
+        Args:
+            new_weights: Newly calculated optimal weights
+            current_weights: Current portfolio weights (None if first allocation)
+
+        Returns:
+            True if rebalancing is beneficial, False otherwise
+        """
+        if current_weights is None:
+            return True  # Initial allocation
+
+        # PHASE 3: Use standardized transaction cost module
+        should_rebal, turnover = check_rebalance_threshold(
+            current_weights=current_weights,
+            target_weights=new_weights,
+            transaction_cost_pct=self.transaction_cost_pct,
+            min_benefit_pct=self.min_rebalance_benefit
+        )
+
+        return should_rebal
 
 
 if __name__ == "__main__":
