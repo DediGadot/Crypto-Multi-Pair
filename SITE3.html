@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Alignment Company | Founder Alignment Consulting</title>
+  <meta name="description" content="Founder alignment consulting for Israeli startups. Recalibrate story, culture, and leadership with the SOS™ framework and immersive experiences." />
+  <style>
+    :root {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color-scheme: light;
+      --bg: #0d101c;
+      --bg-soft: #121528;
+      --text: #f4f7ff;
+      --muted: rgba(244, 247, 255, 0.72);
+      --accent: #7c5dff;
+      --accent-2: #08d1c4;
+      --accent-3: #ff9b6a;
+      --card: rgba(17, 22, 43, 0.84);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 10% 20%, rgba(124, 93, 255, 0.35), transparent 45%),
+        radial-gradient(circle at 80% 0%, rgba(8, 209, 196, 0.22), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem clamp(1.5rem, 5vw, 4rem);
+    }
+    .hero {
+      background: linear-gradient(120deg, rgba(8, 209, 196, 0.25), rgba(124, 93, 255, 0.25));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(2rem, 4vw, 4rem);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(13, 16, 28, 0.4), transparent 40%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+    .cta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    a.cta-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.95rem 1.8rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 15px 35px rgba(124, 93, 255, 0.45);
+    }
+    a.cta-primary:hover {
+      transform: translateY(-3px);
+    }
+    a.cta-secondary {
+      color: var(--accent-2);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 5vw, 4rem) 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    section {
+      background: var(--card);
+      border-radius: 24px;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+    }
+    section h2 {
+      margin-top: 0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 1rem;
+      color: var(--accent-2);
+    }
+    section h3 {
+      margin-bottom: 0.3rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.7rem;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+    }
+    ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.4rem;
+    }
+    li {
+      margin-bottom: 0.4rem;
+    }
+    .framework-diagram {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .framework-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .framework-card span {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .pricing-table th,
+    .pricing-table td {
+      padding: 0.85rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .pricing-table th {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    blockquote {
+      margin: 0;
+      padding: 1.4rem;
+      border-radius: 20px;
+      background: rgba(8, 209, 196, 0.08);
+      border: 1px solid rgba(8, 209, 196, 0.25);
+    }
+    blockquote footer {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .split {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .founder-card {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .founder-card strong {
+      display: block;
+      font-size: 1.3rem;
+    }
+    .podcast-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 0;
+    }
+    .podcast-list li {
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    input,
+    textarea,
+    select {
+      margin-top: 0.4rem;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+    }
+    textarea {
+      min-height: 140px;
+      grid-column: 1 / -1;
+      resize: vertical;
+    }
+    button {
+      grid-column: 1 / -1;
+      border: none;
+      padding: 0.95rem;
+      border-radius: 14px;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 3rem 1rem 4rem;
+      font-size: 0.9rem;
+    }
+    .logo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .stat {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .stat strong {
+      font-size: 2rem;
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .cta-bar {
+        flex-direction: column;
+      }
+      form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="hero-content">
+        <div class="chip">Founder Alignment Consulting</div>
+        <h1>Scale in sync. Align story, culture, and leadership before you outgrow your truth.</h1>
+        <p>We guide Israeli founders through deep recalibration so their inner drive, team energy, and external narrative move as one. The SOS™ framework transforms chaos into rhythm in 30 days.</p>
+        <div class="cta-bar">
+          <a class="cta-primary" href="#contact">Book a 30‑minute sync call</a>
+          <a class="cta-secondary" href="#framework">See the SOS™ framework →</a>
+        </div>
+        <div class="logo-row" aria-label="Client highlights">
+          <span>TIPA</span>
+          <span>FutureFund</span>
+          <span>PulseOps</span>
+          <span>NorthStar Ventures</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="proof">
+      <h2>Proof & Outcomes</h2>
+      <div class="grid">
+        <div>
+          <h3>Recent wins</h3>
+          <ul>
+            <li>Helped health-tech founder unblock a stalled Series A by aligning co-founder narrative → $12M raised within 8 weeks.</li>
+            <li>Rebuilt product team rituals for an AI startup, reducing leadership churn to zero and doubling execution velocity.</li>
+            <li>Guided 3 founding teams through immersive offsites that unlocked refreshed brand stories and hiring roadmaps.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Key stats</h3>
+          <div class="stat-grid">
+            <div class="stat"><strong>94%</strong>report stronger team trust.</div>
+            <div class="stat"><strong>21</strong>founder recalibrations this year.</div>
+            <div class="stat"><strong>3x</strong>average increase in investor conversion.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="framework">
+      <h2>SOS™ Framework (Sync Operating System)</h2>
+      <p>The SOS™ architecture keeps concept, culture, and communication in sync through three interlocking layers. Every engagement touches each layer, but we enter through the one with the greatest leverage.</p>
+      <div class="framework-diagram">
+        <div class="framework-card">
+          <span>Layer 01</span>
+          <h3>The Inner Self</h3>
+          <p>Emotional clarity, regulation, embodied vision. Modalities include breathwork, somatic dialogue, and strategic reflection.</p>
+          <ul>
+            <li>Outcome: grounded confidence</li>
+            <li>Format: 1:1 recalibration or immersive reset</li>
+          </ul>
+        </div>
+        <div class="framework-card">
+          <span>Layer 02</span>
+          <h3>The Organization</h3>
+          <p>Relational diagnostics, culture mirrors, systemic leadership labs. We surface unseen patterns across the team.</p>
+          <ul>
+            <li>Outcome: sync’d team energy</li>
+            <li>Format: founder circles, co-founder syncs</li>
+          </ul>
+        </div>
+        <div class="framework-card">
+          <span>Layer 03</span>
+          <h3>The Story</h3>
+          <p>Authentic narratives for investors, customers, and talent. We translate the inner truth outward with pitch and PR coaching.</p>
+          <ul>
+            <li>Outcome: magnetic storytelling</li>
+            <li>Format: story labs, investor narrative design</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <h2>Three Portals, One Result: Sync</h2>
+      <div class="grid">
+        <div>
+          <h3>The Inner Portal</h3>
+          <p>1:1 founder recalibration, conscious leadership mentoring, and immersive experiences for emotional reset.</p>
+          <ul>
+            <li>Navigate burnout, regain clarity, reconnect to purpose.</li>
+            <li>Duration: 1–10 sessions.</li>
+            <li>CTA: Schedule a private intake call.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>The Relational Portal</h3>
+          <p>Founder circles, systemic leadership labs, and co-founder sync sessions to realign how your team moves.</p>
+          <ul>
+            <li>Resolve unspoken tensions, recalibrate rituals, rebuild trust.</li>
+            <li>Duration: Half-day to ongoing.</li>
+            <li>CTA: Request an organizational scan.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>The Expression Portal</h3>
+          <p>Story alignment, investor storytelling, and thought-leadership mentoring for resonant public presence.</p>
+          <ul>
+            <li>Translate inner truth into decks, keynotes, and content.</li>
+            <li>Duration: 1–3 sprints.</li>
+            <li>CTA: Book a narrative lab.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <h2>Transparent Investment</h2>
+      <p>Every engagement includes a diagnostic session to design the right rhythm. Currency available in ₪ and USD.</p>
+      <table class="pricing-table" aria-label="Pricing table">
+        <thead>
+          <tr>
+            <th>Experience</th>
+            <th>Investment</th>
+            <th>Duration</th>
+            <th>Includes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Focused Portal Journey</td>
+            <td>₪4,500 – ₪7,000</td>
+            <td>4–8 weeks</td>
+            <td>Weekly sessions, async coaching, action playbook.</td>
+          </tr>
+          <tr>
+            <td>Immersive Alignment Experience</td>
+            <td>₪2,500 – ₪3,500</td>
+            <td>3–4 hours</td>
+            <td>Offsite facilitation, somatic reset, integration plan.</td>
+          </tr>
+          <tr>
+            <td>Single Alignment Session</td>
+            <td>₪650 – ₪950</td>
+            <td>60–90 minutes</td>
+            <td>Diagnostic, clarity sprint, next-step roadmap.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="testimonials">
+      <h2>Testimonials</h2>
+      <div class="grid">
+        <blockquote>
+          “Our investors kept telling us the story felt off. Two SOS™ sprints later we closed the round with the exact same deck because my voice finally matched our reality.”
+          <footer>— Maya S., Founder & CEO, PulseOps</footer>
+        </blockquote>
+        <blockquote>
+          “The co-founder sync session surfaced an emotional backlog we denied for months. Within a week we restructured responsibilities and performance skyrocketed.”
+          <footer>— Lior K., Co-founder, TerraMesh</footer>
+        </blockquote>
+        <blockquote>
+          “It felt like therapy meets strategy workshop. I left the immersion knowing exactly what to say to my team and investors.”
+          <footer>— Daniel R., General Partner, NorthStar Ventures</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <section id="founder">
+      <h2>Founder Profile</h2>
+      <div class="split">
+        <div class="founder-card">
+          <strong>Nkorit Shoner</strong>
+          <p>Founder, The Alignment Company</p>
+          <ul>
+            <li>15 years advising Israeli founders on leadership, storytelling, and conscious culture building.</li>
+            <li>Certified somatic coach, former COO at a Series B SaaS startup, host of “Mindful Leadership”.</li>
+            <li>Known for blending trauma-informed facilitation with sharp strategic insight.</li>
+          </ul>
+        </div>
+        <div>
+          <p>“We’re not chasing hacks. We’re restoring integrity so every decision, investor pitch, and team ritual comes from a coherent center. When the founder is synced, everything else follows.”</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="podcast">
+      <h2>Mindful Leadership Podcast</h2>
+      <p>Intimate interviews with Israeli founders and investors unpacking the inner work behind their breakout moments. New episodes every Tuesday.</p>
+      <ul class="podcast-list">
+        <li>
+          <strong>Ep. 34 · Healing the Hustle</strong> — Adi Koren, Founder of TIPA. <a href="#">Listen on Spotify</a>
+        </li>
+        <li>
+          <strong>Ep. 33 · Leading After Layoffs</strong> — Dror Peleg, CEO of Syncware. <a href="#">Listen on Apple Podcasts</a>
+        </li>
+        <li>
+          <strong>Ep. 32 · Embodied Storytelling</strong> — Daphna Azulay, Investor at Aurora Capital. <a href="#">Watch on YouTube</a>
+        </li>
+      </ul>
+    </section>
+
+    <section id="lead-magnet">
+      <h2>Download the Founder Alignment Playbook</h2>
+      <div class="split">
+        <p>A 15-page actionable guide covering pre-offsite rituals, alignment questions for co-founders, and a diagnostic checklist to spot culture drift. Perfect for teams under 150.</p>
+        <a class="cta-primary" href="#contact">Get the PDF</a>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Start Syncing</h2>
+      <p>Share a few details and we’ll respond within 24 hours with a tailored next step.</p>
+      <form>
+        <label>
+          Full name
+          <input type="text" name="name" placeholder="Dana Levi" required />
+        </label>
+        <label>
+          Company
+          <input type="text" name="company" placeholder="PulseOps" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="you@company.com" required />
+        </label>
+        <label>
+          Role
+          <select name="role" required>
+            <option value="">Select</option>
+            <option value="founder">Founder / CEO</option>
+            <option value="cofounder">Co-founder</option>
+            <option value="investor">Investor</option>
+            <option value="people">People / Culture Lead</option>
+          </select>
+        </label>
+        <label>
+          What needs to be realigned?
+          <textarea name="message" placeholder="Give us context so we can come prepared."></textarea>
+        </label>
+        <label>
+          <input type="checkbox" required /> I agree to the confidentiality & privacy terms.
+        </label>
+        <button type="submit">Send my sync request</button>
+      </form>
+      <p style="margin-top: 1rem; color: var(--muted);">Prefer direct contact? WhatsApp <a href="tel:+972541234567" style="color: var(--accent-2); text-decoration: none;">+972 54 123 4567</a> · Email <a href="mailto:hello@alignmentcompany.co" style="color: var(--accent-2); text-decoration: none;">hello@alignmentcompany.co</a></p>
+    </section>
+  </main>
+
+  <footer>
+    © 2024 The Alignment Company · Tel Aviv & Remote Worldwide · Privacy · Accessibility · Terms
+  </footer>
+</body>
+</html>
